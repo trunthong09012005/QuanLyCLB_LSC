@@ -1,0 +1,194 @@
+﻿body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 40px 0;
+}
+
+.register-container {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.header-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+    .header-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.logo-badge {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #667eea;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+.form-control, .form-select {
+    border-left: none;
+}
+
+.password-toggle {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: #667eea;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #6c757d;
+    position: relative;
+    z-index: 2;
+}
+
+    .step.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .step.completed {
+        background: #28a745;
+        color: white;
+    }
+
+.step-line {
+    height: 2px;
+    background: #e9ecef;
+    width: 100px;
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+}
+
+.form-section {
+    display: none;
+}
+
+    .form-section.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.password-strength {
+    height: 5px;
+    border-radius: 3px;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak {
+    background: #dc3545;
+    width: 33%;
+}
+
+.strength-medium {
+    background: #ffc107;
+    width: 66%;
+}
+
+.strength-strong {
+    background: #28a745;
+    width: 100%;
+}
+
+

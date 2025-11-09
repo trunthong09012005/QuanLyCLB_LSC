@@ -1,0 +1,287 @@
+﻿@model QuanLyCLB_LSC.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký thành viên - CLB Kỹ Năng Sống";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/register.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="register-container col-lg-8 mx-auto">
+            <div class="card">
+                <!-- Header -->
+                <div class="header-section">
+                    <div class="logo-badge">LSC</div>
+                    <h3 class="fw-bold mb-2" style="position: relative; z-index: 1;">Đăng Ký Thành Viên</h3>
+                    <p class="mb-0" style="position: relative; z-index: 1; opacity: 0.95;">
+                        Câu Lạc Bộ Kỹ Năng Sống
+                    </p>
+                </div>
+
+                <!-- Form Content -->
+                <div class="p-4 p-md-5">
+                    <!-- Step Indicator -->
+                    <div class="step-indicator mb-4">
+                        <div class="step active" id="step1">1</div>
+                        <div class="step-line" style="left: calc(50% - 70px);"></div>
+                        <div class="step" id="step2">2</div>
+                        <div class="step-line" style="left: calc(50% + 30px);"></div>
+                        <div class="step" id="step3">3</div>
+                    </div>
+
+                    <form id="registerForm">
+                        <!-- Step 1: Account Info -->
+                        <div class="form-section active" id="section1">
+                            <h5 class="text-center mb-4 fw-bold" style="color: #667eea;">
+                                <i class="fas fa-user-circle me-2"></i>Thông Tin Tài Khoản
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-user me-2 text-primary"></i>Tên Đăng Nhập <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="tenDN" name="TenDN"
+                                           placeholder="Nhập tên đăng nhập" required>
+                                </div>
+                                <small class="text-muted">Tên đăng nhập phải từ 5-50 ký tự</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>Email <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope text-muted"></i>
+                                    </span>
+                                    <input type="email" class="form-control" id="email" name="Email"
+                                           placeholder="example@email.com" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2 text-primary"></i>Mật Khẩu <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-muted"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="matKhau" name="MatKhau"
+                                           placeholder="Nhập mật khẩu" required>
+                                    <button class="input-group-text password-toggle" type="button" onclick="togglePassword('matKhau', 'toggleIcon1')">
+                                        <i class="fas fa-eye" id="toggleIcon1"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2 text-primary"></i>Xác Nhận Mật Khẩu <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-muted"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="xacNhanMatKhau"
+                                           placeholder="Nhập lại mật khẩu" required>
+                                    <button class="input-group-text password-toggle" type="button" onclick="togglePassword('xacNhanMatKhau', 'toggleIcon2')">
+                                        <i class="fas fa-eye" id="toggleIcon2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-register btn-primary w-100 text-white" onclick="nextStep(1)">
+                                Tiếp Theo <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Personal Info -->
+                        <div class="form-section" id="section2">
+                            <h5 class="text-center mb-4 fw-bold" style="color: #667eea;">
+                                <i class="fas fa-id-card me-2"></i>Thông Tin Cá Nhân
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-signature me-2 text-primary"></i>Họ và Tên <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-signature text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="hoTen" name="HoTen"
+                                           placeholder="Nguyễn Văn A" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-calendar me-2 text-primary"></i>Ngày Sinh
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-calendar text-muted"></i>
+                                        </span>
+                                        <input type="date" class="form-control" id="ngaySinh" name="NgaySinh">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-venus-mars me-2 text-primary"></i>Giới Tính
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-venus-mars text-muted"></i>
+                                        </span>
+                                        <select class="form-select" id="gioiTinh" name="GioiTinh">
+                                            <option value="">Chọn giới tính</option>
+                                            <option value="Nam">Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                            <option value="Khác">Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-phone me-2 text-primary"></i>Số Điện Thoại <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone text-muted"></i>
+                                    </span>
+                                    <input type="tel" class="form-control" id="sdt" name="SDT"
+                                           placeholder="0123456789" pattern="[0-9]{9,15}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Địa Chỉ
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-map-marker-alt text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="diaChi" name="DiaChi"
+                                           placeholder="Nhập địa chỉ">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-secondary w-50" onclick="prevStep(2)">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                                </button>
+                                <button type="button" class="btn btn-register btn-primary w-50 text-white" onclick="nextStep(2)">
+                                    Tiếp Theo <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Academic Info -->
+                        <div class="form-section" id="section3">
+                            <h5 class="text-center mb-4 fw-bold" style="color: #667eea;">
+                                <i class="fas fa-graduation-cap me-2"></i>Thông Tin Học Vấn
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-school me-2 text-primary"></i>Khoa
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-school text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="khoa" name="Khoa"
+                                           placeholder="VD: Công nghệ thông tin">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-users me-2 text-primary"></i>Lớp
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-users text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="lop" name="Lop"
+                                           placeholder="VD: CNTT K18">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-user-tag me-2 text-primary"></i>Vai Trò Mong Muốn
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-tag text-muted"></i>
+                                    </span>
+                                    <select class="form-select" id="vaiTro" name="VaiTro">
+                                        <option value="">Chọn vai trò</option>
+                                        <option value="Thành viên">Thành viên</option>
+                                        <option value="Tình nguyện viên">Tình nguyện viên</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="acceptTerms" required>
+                                    <label class="form-check-label" for="acceptTerms">
+                                        Tôi đồng ý với <a href="#" style="color: #667eea;">Điều khoản và Điều kiện</a>
+                                        của CLB Kỹ Năng Sống <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-secondary w-50" onclick="prevStep(3)">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                                </button>
+                                <button type="submit" class="btn btn-register btn-primary w-50 text-white">
+                                    <i class="fas fa-check-circle me-2"></i>Hoàn Tất Đăng Ký
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Alert Message -->
+                    <div id="alertMessage" class="mt-4" style="display: none;"></div>
+
+                    <!-- Login Link -->
+                    <div class="text-center mt-4">
+                        <span class="text-muted">Đã có tài khoản?</span>
+                        <a href="@Url.Action("Login", "Auth")" class="text-decoration-none fw-semibold ms-1" style="color: #667eea;">
+                            Đăng nhập ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/register.js"></script>
+</body>
+</html>

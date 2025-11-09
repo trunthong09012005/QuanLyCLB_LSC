@@ -1,0 +1,6 @@
+﻿header, .navbar {
+    display: none;
+}
+footer {
+    display: none !important;
+}
