@@ -1,44 +1,62 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using QuanLyCLB_LSC;
 using QuanLyCLB_LSC.Models;
 
-namespace QuanLyCLB_LSC
+var builder = WebApplication.CreateBuilder(args);
+
+// ============================
+// 1️⃣ Cấu hình DbContext (SQL Server)
+// ============================
+builder.Services.AddDbContext<QlClbLscContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn"))
+);
+
+// ============================
+// 2️⃣ Thêm MVC (Controller + View)
+// ============================
+builder.Services.AddControllersWithViews();
+
+// ============================
+// 3️⃣ Thêm Session
+// ============================
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    options.IdleTimeout = TimeSpan.FromHours(1); // thời gian tồn tại session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-            // 🔗 1. Cấu hình DbContext (kết nối SQL Server)
-            builder.Services.AddDbContext<QlClbLscContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn"))
-            );
+var app = builder.Build();
 
-            // 🌐 2. Thêm MVC (Controller + View)
-            builder.Services.AddControllersWithViews();
-
-            var app = builder.Build();
-
-            // ⚙️ 3. Cấu hình pipeline xử lý request
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts(); // Bật HTTPS Strict Transport Security (bảo mật)
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles(); // Để đọc file CSS, JS trong wwwroot
-            app.UseRouting();
-            app.UseAuthorization();
-
-            // 🧭 4. Cấu hình route mặc định
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Auth}/{action=Login}/{id?}"
-            );
-
-            // 🚀 5. Chạy ứng dụng
-            app.Run();
-        }
-    }
+// ============================
+// 4️⃣ Pipeline xử lý request
+// ============================
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// ⚠️ Bật session trước Authorization
+app.UseSession();
+
+app.UseAuthorization();
+
+// ============================
+// 5️⃣ Cấu hình route mặc định
+// ============================
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Auth}/{action=Login}/{id?}"
+);
+
+// ============================
+// 6️⃣ Chạy ứng dụng
+// ============================
+app.Run();

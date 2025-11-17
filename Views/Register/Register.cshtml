@@ -37,7 +37,9 @@
                         <div class="step" id="step3">3</div>
                     </div>
 
-                    <form id="registerForm">
+                    <form asp-action="Register" asp-controller="Register" method="post">
+                        @Html.AntiForgeryToken()
+
                         <!-- Step 1: Account Info -->
                         <div class="form-section active" id="section1">
                             <h5 class="text-center mb-4 fw-bold" style="color: #667eea;">

@@ -1,0 +1,727 @@
+﻿@model QuanLyCLB_LSC.ViewModels.UserDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard - CLB Kỹ Năng Sống";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - CLB Lập Trình LSC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="~/css/user.css" />
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md">
+                            LSC
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">CLB Lập Trình</span>
+                    </div>
+
+                    <div class="hidden md:flex space-x-1">
+                        <button onclick="showTab('home')" class="tab-button active px-4 py-2 rounded-lg font-medium" id="tab-home">
+                            🏠 Trang chủ
+                        </button>
+                        <button onclick="showTab('timeline')" class="tab-button px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50" id="tab-timeline">
+                            ⏱️ Timeline
+                        </button>
+                        <button onclick="showTab('awards')" class="tab-button px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50" id="tab-awards">
+                            🏆 Khen thưởng
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors relative">
+                        🔔
+                        <span class="notification-dot"></span>
+                    </button>
+                    <div class="flex items-center space-x-3 pl-4 border-l">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800 text-right">Nguyễn Vương Khang</p>
+                            <p class="text-xs text-gray-500 text-right">Chủ nhiệm</p>
+                        </div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
+                            K
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- HOME TAB -->
+        <div id="content-home" class="tab-content">
+            <!-- Hero Section -->
+            <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl overflow-hidden mb-8">
+                <div class="px-8 py-12 md:py-16">
+                    <div class="max-w-3xl">
+                        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                            Chào mừng trở lại, Khang! 👋
+                        </h1>
+                        <p class="text-xl text-blue-100 mb-6">
+                            Cùng nhau xây dựng cộng đồng lập trình viên mạnh mẽ và năng động
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
+                                <p class="text-white/80 text-sm">Thành viên từ</p>
+                                <p class="text-white font-bold text-lg">01/01/2024</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
+                                <p class="text-white/80 text-sm">Điểm rèn luyện</p>
+                                <p class="text-white font-bold text-lg">95/100</p>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
+                                <p class="text-white/80 text-sm">Xếp hạng</p>
+                                <p class="text-white font-bold text-lg">#5</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="p-3 bg-blue-100 rounded-xl text-2xl">
+                            👥
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">156</p>
+                    <p class="text-sm text-gray-500 mt-1">Thành viên</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="p-3 bg-green-100 rounded-xl text-2xl">
+                            📅
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">24</p>
+                    <p class="text-sm text-gray-500 mt-1">Sự kiện</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="p-3 bg-purple-100 rounded-xl text-2xl">
+                            📋
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">8</p>
+                    <p class="text-sm text-gray-500 mt-1">Dự án</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="p-3 bg-yellow-100 rounded-xl text-2xl">
+                            🏆
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800">3</p>
+                    <p class="text-sm text-gray-500 mt-1">Giải thưởng</p>
+                </div>
+            </div>
+
+            <!-- Member Info Card -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Thông tin cá nhân</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">👤</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Họ và tên</p>
+                                    <p class="font-semibold text-gray-800">Nguyễn Vương Khang</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">📅</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Ngày sinh</p>
+                                    <p class="font-semibold text-gray-800">15/02/2004</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">📧</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Email</p>
+                                    <p class="font-semibold text-gray-800">huytm@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">📱</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Số điện thoại</p>
+                                    <p class="font-semibold text-gray-800">0912345678</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">📚</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Lớp</p>
+                                    <p class="font-semibold text-gray-800">DHKTPM17A</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">🎓</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Khoa</p>
+                                    <p class="font-semibold text-gray-800">Công nghệ thông tin</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">⭐</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Chức vụ</p>
+                                    <p class="font-semibold text-gray-800">Chủ nhiệm</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-2xl">👥</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Ban chuyên môn</p>
+                                    <p class="font-semibold text-gray-800">Ban Truyền thông</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Section -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-white">Hoạt động nổi bật của CLB</h2>
+                    <span class="text-2xl">🖼️</span>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Gallery Item 1 -->
+                        <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+                            <div class="aspect-video overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800" alt="Chiến dịch Mùa hè xanh" class="w-full h-full object-cover">
+                            </div>
+                            <div class="gallery-overlay">
+                                <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+                                    Tình nguyện
+                                </span>
+                                <h3 class="text-white font-bold text-lg mb-1">Chiến dịch Mùa hè xanh 2025</h3>
+                                <p class="text-gray-200 text-sm mb-2">Hoạt động tình nguyện giúp đỡ bà con tại vùng nông thôn Củ Chi</p>
+                                <p class="text-gray-300 text-xs">📅 10/07/2025</p>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                                        Tình nguyện
+                                    </span>
+                                    <span class="text-xs text-gray-500">25/03/2025</span>
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-sm mb-2">Chương trình "Máy tính cho em"</h3>
+                                <p class="text-xs text-gray-600 line-clamp-2">Tặng máy tính và dạy tin học cho trẻ em vùng cao</p>
+                            </div>
+                        </div>
+
+                        <!-- Gallery Item 9 -->
+                        <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+                            <div class="aspect-video overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Coding Contest" class="w-full h-full object-cover">
+                            </div>
+                            <div class="gallery-overlay">
+                                <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+                                    Học thuật
+                                </span>
+                                <h3 class="text-white font-bold text-lg mb-1">Cuộc thi Lập trình LSC Code War</h3>
+                                <p class="text-gray-200 text-sm mb-2">Tranh tài giải thuật và tư duy lập trình</p>
+                                <p class="text-gray-300 text-xs">📅 18/04/2025</p>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                                        Học thuật
+                                    </span>
+                                    <span class="text-xs text-gray-500">18/04/2025</span>
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-sm mb-2">Cuộc thi Lập trình LSC Code War</h3>
+                                <p class="text-xs text-gray-600 line-clamp-2">Tranh tài giải thuật và tư duy lập trình</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMELINE TAB -->
+        <div id="content-timeline" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Lịch trình hoạt động</h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <!-- Timeline Item 1 -->
+                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
+                                        <span class="text-xs text-gray-500">20/11/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Họp Ban Chủ nhiệm khẩn cấp</h3>
+                                    <p class="text-sm text-gray-600">Thảo luận về kế hoạch tổ chức sự kiện cuối năm</p>
+                                </div>
+                                <span class="text-2xl">🚨</span>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 2 -->
+                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
+                                        <span class="text-xs text-gray-500">25/11/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Deadline nộp đề xuất dự án mới</h3>
+                                    <p class="text-sm text-gray-600">Nộp đề xuất dự án cho học kỳ 2</p>
+                                </div>
+                                <span class="text-2xl">⏰</span>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 3 -->
+                        <div class="timeline-item medium pl-6 py-4 bg-yellow-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">Trung bình</span>
+                                        <span class="text-xs text-gray-500">30/11/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Workshop React & Next.js</h3>
+                                    <p class="text-sm text-gray-600">Học cách xây dựng ứng dụng web hiện đại</p>
+                                </div>
+                                <span class="text-2xl">💻</span>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 4 -->
+                        <div class="timeline-item low pl-6 py-4 bg-green-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">Thấp</span>
+                                        <span class="text-xs text-gray-500">05/12/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Buổi giao lưu thành viên mới</h3>
+                                    <p class="text-sm text-gray-600">Hoạt động team building cho thành viên mới</p>
+                                </div>
+                                <span class="text-2xl">🎉</span>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 5 -->
+                        <div class="timeline-item medium pl-6 py-4 bg-yellow-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">Trung bình</span>
+                                        <span class="text-xs text-gray-500">10/12/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Seminar AI & Machine Learning</h3>
+                                    <p class="text-sm text-gray-600">Giới thiệu về xu hướng AI trong phát triển phần mềm</p>
+                                </div>
+                                <span class="text-2xl">🤖</span>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 6 -->
+                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
+                                        <span class="text-xs text-gray-500">20/12/2025</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 mb-1">Gala Year End Party 2025</h3>
+                                    <p class="text-sm text-gray-600">Sự kiện lớn nhất năm - Tiệc tổng kết và trao giải</p>
+                                </div>
+                                <span class="text-2xl">🎊</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AWARDS TAB -->
+        <div id="content-awards" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Personal Awards -->
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
+                        <h2 class="text-xl font-bold text-white">Thành tích cá nhân</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <!-- Award 1 -->
+                        <div class="award-card gold bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">🏆</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">Thành viên xuất sắc năm 2024</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Đóng góp tích cực cho hoạt động CLB</p>
+                                    <span class="text-xs text-gray-500">📅 20/01/2025</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Award 2 -->
+                        <div class="award-card silver bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">🥈</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">Giải Nhì Hackathon 2024</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Dự án: Smart Campus Management System</p>
+                                    <span class="text-xs text-gray-500">📅 20/06/2024</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Award 3 -->
+                        <div class="award-card gold bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">⭐</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">Best Team Leader 2024</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Lãnh đạo team xuất sắc nhất</p>
+                                    <span class="text-xs text-gray-500">📅 15/12/2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Club Recognition -->
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
+                        <h2 class="text-xl font-bold text-white">Khen thưởng CLB</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <!-- Recognition 1 -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">🎖️</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">CLB xuất sắc cấp Khoa</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Đạt thành tích cao trong hoạt động năm học</p>
+                                    <span class="text-xs text-gray-500">📅 10/06/2025</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recognition 2 -->
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">🌟</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">Giải thưởng Sáng tạo trẻ</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Cho dự án công nghệ giáo dục</p>
+                                    <span class="text-xs text-gray-500">📅 15/03/2025</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recognition 3 -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-5xl">💝</div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 mb-1">Tập thể tình nguyện tiêu biểu</h3>
+                                    <p class="text-sm text-gray-600 mb-2">Đóng góp 500+ giờ hoạt động cộng đồng</p>
+                                    <span class="text-xs text-gray-500">📅 05/05/2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement Stats -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden mt-6">
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Thống kê thành tích</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                            <div class="text-4xl mb-2">🏆</div>
+                            <p class="text-2xl font-bold text-gray-800">12</p>
+                            <p class="text-sm text-gray-600">Giải thưởng</p>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                            <div class="text-4xl mb-2">📚</div>
+                            <p class="text-2xl font-bold text-gray-800">28</p>
+                            <p class="text-sm text-gray-600">Dự án hoàn thành</p>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                            <div class="text-4xl mb-2">👥</div>
+                            <p class="text-2xl font-bold text-gray-800">156</p>
+                            <p class="text-sm text-gray-600">Thành viên đã đào tạo</p>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl">
+                            <div class="text-4xl mb-2">⏰</div>
+                            <p class="text-2xl font-bold text-gray-800">520</p>
+                            <p class="text-sm text-gray-600">Giờ tình nguyện</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
+<!-- Gallery Item 1 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300">
+    <!-- Image -->
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800"
+             alt="Chiến dịch Mùa hè xanh 2025"
+             class="w-full h-full object-cover">
+    </div>
+
+    <!-- Overlay (xuất hiện khi hover) -->
+    <div class="gallery-overlay absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Tình nguyện
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Chiến dịch Mùa hè xanh 2025</h3>
+        <p class="text-gray-200 text-sm mb-2">Hoạt động tình nguyện giúp đỡ bà con tại vùng nông thôn Củ Chi</p>
+        <p class="text-gray-300 text-xs">📅 10/07/2025</p>
+    </div>
+
+    <!-- Card thông tin bên dưới hình -->
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                Tình nguyện
+            </span>
+            <span class="text-xs text-gray-500">10/07/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Chiến dịch Mùa hè xanh 2025</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Hoạt động tình nguyện giúp đỡ bà con tại vùng nông thôn Củ Chi</p>
+    </div>
+</div>
+
+
+<!-- Gallery Item 2 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800" alt="Hội thảo kỹ năng mềm" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Học thuật
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Hội thảo kỹ năng mềm</h3>
+        <p class="text-gray-200 text-sm mb-2">Workshop về kỹ năng giao tiếp và làm việc nhóm hiệu quả</p>
+        <p class="text-gray-300 text-xs">📅 15/08/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                Học thuật
+            </span>
+            <span class="text-xs text-gray-500">15/08/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Hội thảo kỹ năng mềm</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Workshop về kỹ năng giao tiếp và làm việc nhóm hiệu quả</p>
+    </div>
+</div>
+
+<!-- Gallery Item 3 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800" alt="Team Building" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Giải trí
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Team Building Vũng Tàu</h3>
+        <p class="text-gray-200 text-sm mb-2">Chuyến du lịch gắn kết và tạo tinh thần đồng đội</p>
+        <p class="text-gray-300 text-xs">📅 05/09/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded">
+                Giải trí
+            </span>
+            <span class="text-xs text-gray-500">05/09/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Team Building Vũng Tàu</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Chuyến du lịch gắn kết và tạo tinh thần đồng đội</p>
+    </div>
+</div>
+
+<!-- Gallery Item 4 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800" alt="Hackathon" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Học thuật
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Hackathon 2025</h3>
+        <p class="text-gray-200 text-sm mb-2">Cuộc thi lập trình 24 giờ với nhiều giải thưởng hấp dẫn</p>
+        <p class="text-gray-300 text-xs">📅 20/06/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                Học thuật
+            </span>
+            <span class="text-xs text-gray-500">20/06/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Hackathon 2025</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Cuộc thi lập trình 24 giờ với nhiều giải thưởng hấp dẫn</p>
+    </div>
+</div>
+
+<!-- Gallery Item 5 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800" alt="Workshop UI/UX" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Học thuật
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Workshop thiết kế UI/UX</h3>
+        <p class="text-gray-200 text-sm mb-2">Học cách thiết kế giao diện người dùng chuyên nghiệp</p>
+        <p class="text-gray-300 text-xs">📅 15/05/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                Học thuật
+            </span>
+            <span class="text-xs text-gray-500">15/05/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Workshop thiết kế UI/UX</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Học cách thiết kế giao diện người dùng chuyên nghiệp</p>
+    </div>
+</div>
+
+<!-- Gallery Item 6 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800" alt="Lễ kỷ niệm" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Sự kiện
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Lễ kỷ niệm 5 năm thành lập</h3>
+        <p class="text-gray-200 text-sm mb-2">Chương trình gala đặc biệt với sự góp mặt của cựu thành viên</p>
+        <p class="text-gray-300 text-xs">📅 01/01/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded">
+                Sự kiện
+            </span>
+            <span class="text-xs text-gray-500">01/01/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Lễ kỷ niệm 5 năm thành lập</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Chương trình gala đặc biệt với sự góp mặt của cựu thành viên</p>
+    </div>
+</div>
+
+<!-- Gallery Item 7 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=800" alt="Đêm nhạc" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Giải trí
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Đêm nhạc "Code & Music"</h3>
+        <p class="text-gray-200 text-sm mb-2">Buổi biểu diễn âm nhạc kết hợp coding performance</p>
+        <p class="text-gray-300 text-xs">📅 14/02/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded">
+                Giải trí
+            </span>
+            <span class="text-xs text-gray-500">14/02/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Đêm nhạc "Code & Music"</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Buổi biểu diễn âm nhạc kết hợp coding performance</p>
+    </div>
+</div>
+
+<!-- Gallery Item 8 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800" alt="Máy tính cho em" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Tình nguyện
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Chương trình "Máy tính cho em"</h3>
+        <p class="text-gray-200 text-sm mb-2">Tặng máy tính và dạy tin học cho trẻ em vùng cao</p>
+        <p class="text-gray-300 text-xs">📅 25/03/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+
+            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                Tình nguyện
+            </span>
+            <span class="text-xs text-gray-500">25/03/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Chương trình "Máy tính cho em"</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Tặng máy tính và dạy tin học cho trẻ em vùng cao</p>
+    </div>
+</div>
+
+<!-- Gallery Item 9 -->
+<div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+    <div class="aspect-video overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Coding Contest" class="w-full h-full object-cover">
+    </div>
+    <div class="gallery-overlay">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+            Học thuật
+        </span>
+        <h3 class="text-white font-bold text-lg mb-1">Cuộc thi Lập trình LSC Code War</h3>
+        <p class="text-gray-200 text-sm mb-2">Tranh tài giải thuật và tư duy lập trình</p>
+        <p class="text-gray-300 text-xs">📅 18/04/2025</p>
+    </div>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                Học thuật
+            </span>
+            <span class="text-xs text-gray-500">18/04/2025</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Cuộc thi Lập trình LSC Code War</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Tranh tài giải thuật và tư duy lập trình</p>
+    </div>
+    <script src="~/js/user.js"></script>
+</div>

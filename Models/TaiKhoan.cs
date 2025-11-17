@@ -38,3 +38,6 @@ public partial class TaiKhoan
     [InverseProperty("TaiKhoan")]
     public virtual ThanhVien MaTvNavigation { get; set; } = null!;
 }
+#if true
+
+#endif
