@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
-using BCrypt.Net;
+using QuanLyCLB_LSC.Helpers;
 
 namespace QuanLyCLB_LSC.Controllers
 {
@@ -46,11 +46,6 @@ namespace QuanLyCLB_LSC.Controllers
                 return View("~/Views/Register/Register.cshtml", model);
             }
 
-            {
-                ModelState.AddModelError(nameof(model.Email), "Email đã được sử dụng!");
-                return View("~/Views/Register/Register.cshtml", model);
-            }
-
             using var transaction = _context.Database.BeginTransaction();
             try
             {
@@ -77,10 +72,10 @@ namespace QuanLyCLB_LSC.Controllers
                 var taiKhoan = new TaiKhoan
                 {
                     TenDn = model.TenDN,
-                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
+                    MatKhau = PasswordHelper.HashPassword(model.MatKhau),
                     NgayTao = DateTime.Now,
                     TrangThai = "Hoạt động",
-                    QuyenHan = "Member",    
+                    QuyenHan = "Thành viên",
                     MaTv = thanhVien.MaTv
                 };
 
