@@ -242,3 +242,29 @@ function initUserCharts() {
         }
     });
 }
+/* Dropdown menu styles */
+#avatarMenu {
+    min-width: 160px;
+    z-index: 1000;
+}
+
+    #avatarMenu button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        transition: background-color 0.2s;
+    }
+
+        #avatarMenu button:hover {
+            background-color: #f3f4f6;
+        }
+.notification-dot {
+    width: 0.75rem; /* 3 */
+    height: 0.75rem; /* 3 */
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 2px solid white; /* tạo viền trắng cho nổi bật */
+}

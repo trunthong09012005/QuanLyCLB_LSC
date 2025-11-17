@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace QuanLyCLB_LSC.Controllers
 {
@@ -19,22 +20,21 @@ namespace QuanLyCLB_LSC.Controllers
 
         public async Task<IActionResult> User()
         {
-            // Lấy MaTV từ session hoặc claims
+            // Lấy MaTV từ session
             int maTV = HttpContext.Session.GetInt32("MaTV") ?? 0;
-
+            if (maTV == 0)
+                return RedirectToAction("Login", "Auth"); // hoặc xử lý khác nếu chưa đăng nhập
 
             var viewModel = new UserDashboardViewModel();
 
-            // 1. Lấy thông tin thành viên
+            // 1. Thông tin thành viên
             var thanhVien = await _context.ThanhViens
                 .Include(tv => tv.MaCvNavigation)
                 .Include(tv => tv.MaBanNavigation)
                 .FirstOrDefaultAsync(tv => tv.MaTv == maTV);
 
             if (thanhVien == null)
-            {
                 return NotFound("Không tìm thấy thông tin thành viên");
-            }
 
             viewModel.MaTV = thanhVien.MaTv;
             viewModel.HoTen = thanhVien.HoTen;
@@ -51,7 +51,7 @@ namespace QuanLyCLB_LSC.Controllers
             viewModel.TenChucVu = thanhVien.MaCvNavigation?.TenCv;
             viewModel.TenBan = thanhVien.MaBanNavigation?.TenBan;
 
-            // 2. Lấy điểm rèn luyện mới nhất
+            // 2. Điểm rèn luyện mới nhất
             var diemRL = await _context.DiemRenLuyens
                 .Where(d => d.MaTv == maTV)
                 .OrderByDescending(d => d.NamHoc)
@@ -72,6 +72,7 @@ namespace QuanLyCLB_LSC.Controllers
             viewModel.SoGiaiThuong = await _context.KhenThuongs
                 .Where(kt => kt.MaTv == maTV)
                 .CountAsync();
+
             // 4. Danh sách hoạt động (9 hoạt động gần nhất)
             var danhSachHoatDongDb = await _context.HoatDongs
                 .Include(hd => hd.MaLoaiHdNavigation)
@@ -84,9 +85,7 @@ namespace QuanLyCLB_LSC.Controllers
                 {
                     MaHD = hd.MaHd,
                     TenHD = hd.TenHd,
-                    NgayToChuc = hd.NgayToChuc.HasValue
-                        ? hd.NgayToChuc.Value.ToDateTime(TimeOnly.MinValue)
-                        : null,
+                    NgayToChuc = hd.NgayToChuc?.ToDateTime(TimeOnly.MinValue),
                     DiaDiem = hd.DiaDiem,
                     MoTa = hd.MoTa,
                     TenLoaiHD = hd.MaLoaiHdNavigation?.TenLoaiHd ?? "",
@@ -95,7 +94,7 @@ namespace QuanLyCLB_LSC.Controllers
                 })
                 .ToList();
 
-            // 5. Danh sách khen thưởng
+            // 5. Danh sách khen thưởng (5 khen thưởng gần nhất)
             var danhSachKhenThuongDb = await _context.KhenThuongs
                 .Where(kt => kt.MaTv == maTV)
                 .OrderByDescending(kt => kt.NgayKt)
@@ -107,14 +106,23 @@ namespace QuanLyCLB_LSC.Controllers
                 {
                     MaKT = kt.MaKt,
                     LyDo = kt.LyDo,
-                    NgayKT = kt.NgayKt.HasValue
-                        ? kt.NgayKt.Value.ToDateTime(TimeOnly.MinValue)
-                        : DateTime.MinValue, // hoặc để null nếu bạn muốn
-                    LoaiKhenThuong = "Gold"
+                    NgayKT = kt.NgayKt?.ToDateTime(TimeOnly.MinValue),
+                    LoaiKhenThuong = "Gold" // bạn có thể thay đổi logic loại khen thưởng
                 })
                 .ToList();
 
             // 6. Timeline (Hoạt động + Lịch họp sắp tới)
+            viewModel.DanhSachTimeline = await GetTimelineForUser(maTV);
+
+            // Kiểm tra timeline mới
+            viewModel.CoTimelineMoi = viewModel.DanhSachTimeline.Any(t => t.NgayDienRa >= DateTime.Today);
+
+            return View(viewModel);
+        }
+
+        // Phương thức tách riêng Timeline
+        private async Task<List<TimelineItemViewModel>> GetTimelineForUser(int maTV)
+        {
             var hoatDongTimeline = await _context.HoatDongs
                 .OrderBy(hd => hd.NgayToChuc)
                 .Select(hd => new TimelineItemViewModel
@@ -124,14 +132,14 @@ namespace QuanLyCLB_LSC.Controllers
                     TieuDe = hd.TenHd,
                     NoiDung = hd.MoTa,
                     NgayDienRa = hd.NgayToChuc.HasValue
-                        ? hd.NgayToChuc.Value.ToDateTime(TimeOnly.MinValue)
-                        : (DateTime?)null,
+    ? hd.NgayToChuc.Value.ToDateTime(TimeOnly.MinValue)
+    : (DateTime?)null,
+
                     DiaDiem = hd.DiaDiem,
                     MucDoUuTien = "Trung bình",
                     Icon = "💻"
                 })
                 .ToListAsync();
-
 
             var lichHopTimeline = await _context.LichHops
                 .Where(lh => lh.NgayHop >= DateTime.Now.Date)
@@ -143,21 +151,18 @@ namespace QuanLyCLB_LSC.Controllers
                     MaItem = lh.MaLh,
                     TieuDe = "Lịch họp",
                     NoiDung = lh.NoiDung,
-                    NgayDienRa = lh.NgayHop, // Không cần HasValue
+                    NgayDienRa = lh.NgayHop,
                     DiaDiem = lh.DiaDiem,
                     MucDoUuTien = "Cao",
                     Icon = "🚨"
                 })
                 .ToListAsync();
 
-
-            viewModel.DanhSachTimeline = hoatDongTimeline
+            return hoatDongTimeline
                 .Concat(lichHopTimeline)
                 .OrderBy(t => t.NgayDienRa)
                 .Take(6)
                 .ToList();
-
-            return View(viewModel);
         }
     }
 }

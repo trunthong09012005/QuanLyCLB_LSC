@@ -1,0 +1,159 @@
+﻿@using QuanLyCLB_LSC.Models
+@model TaiKhoan
+
+@{
+    var thanhVien = Model?.MaTvNavigation;
+}
+
+<div class="settings-profile-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-content" type="button" role="tab">
+                <i class="fas fa-user me-2"></i>Thông Tin Cá Nhân
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-content" type="button" role="tab">
+                <i class="fas fa-lock me-2"></i>Thay Đổi Mật Khẩu
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Profile Tab -->
+        <div class="tab-pane fade show active" id="profile-content" role="tabpanel">
+            <form method="post" asp-action="UpdateProfile" class="mt-4">
+                <input type="hidden" name="maTv" value="@thanhVien?.MaTv">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Họ Tên <span class="text-danger">*</span></label>
+                            <input type="text" name="hoTen" class="form-control" value="@thanhVien?.HoTen" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Tên Đăng Nhập</label>
+                            <input type="text" class="form-control" value="@Model?.TenDn" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" value="@thanhVien?.Email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Số Điện Thoại</label>
+                            <input type="tel" name="sdt" class="form-control" value="@thanhVien?.Sdt">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Lớp</label>
+                            <input type="text" name="lop" class="form-control" value="@thanhVien?.Lop">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="settings-form-group">
+                            <label>Khoa</label>
+                            <input type="text" name="khoa" class="form-control" value="@thanhVien?.Khoa">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-form-group">
+                    <label>Địa Chỉ</label>
+                    <textarea name="diaChi" class="form-control" rows="3">@thanhVien?.DiaChi</textarea>
+                </div>
+
+                <div class="settings-form-group">
+                    <label>Ngày Sinh</label>
+                    <input type="date" class="form-control" value="@thanhVien?.NgaySinh?.ToString("yyyy-MM-dd")" disabled>
+                </div>
+
+                <div class="settings-form-group">
+                    <label>Giới Tính</label>
+                    <select class="form-select" disabled>
+                        <option selected>@thanhVien?.GioiTinh</option>
+                    </select>
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Quyền Hạn:</strong> @Model?.QuyenHan
+                </div>
+
+                <button type="submit" class="settings-btn">
+                    <i class="fas fa-save me-2"></i>Lưu Thay Đổi
+                </button>
+            </form>
+        </div>
+
+        <!-- Password Tab -->
+        <div class="tab-pane fade" id="password-content" role="tabpanel">
+            <form method="post" asp-action="ChangePassword" class="mt-4">
+                <input type="hidden" name="tenDn" value="@Model?.TenDn">
+
+                <div class="settings-form-group">
+                    <label>Mật Khẩu Hiện Tại <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="matKhauCu" id="matKhauCu" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('matKhauCu')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-form-group">
+                    <label>Mật Khẩu Mới <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="matKhauMoi" id="matKhauMoi" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('matKhauMoi')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="form-text text-muted mt-1">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số
+                    </small>
+                </div>
+
+                <div class="settings-form-group">
+                    <label>Xác Nhận Mật Khẩu <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="xacNhanMatKhau" id="xacNhanMatKhau" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('xacNhanMatKhau')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Lưu Ý:</strong> Thay đổi mật khẩu sẽ đăng xuất bạn khỏi tất cả các phiên đăng nhập khác.
+                </div>
+
+                <button type="submit" class="settings-btn">
+                    <i class="fas fa-key me-2"></i>Đổi Mật Khẩu
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+        field.setAttribute('type', type);
+    }
+</script>
