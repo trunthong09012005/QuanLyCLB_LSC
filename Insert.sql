@@ -54,10 +54,10 @@ VALUES
 -- =============================================
 INSERT INTO ThanhVien (HoTen, NgaySinh, GioiTinh, Lop, Khoa, SDT, Email, DiaChi, VaiTro, MaCV, MaBan)
 VALUES
-(N'Trần Minh Huy', '2004-02-15', N'Nam', N'DHKTPM17A', N'Công nghệ thông tin', '0912345678', N'huytm@gmail.com', N'Quận 7, TP.HCM', N'Chủ nhiệm', 1, 1),
+(N'Nguyễn Vương Khang', '2004-02-15', N'Nam', N'DHKTPM17A', N'Công nghệ thông tin', '0912345678', N'huytm@gmail.com', N'Quận 7, TP.HCM', N'Chủ nhiệm', 1, 1),
 (N'Nguyễn Thị Lan', '2005-05-10', N'Nữ', N'DHKTPM17A', N'Công nghệ thông tin', '0987654321', N'lannt@gmail.com', N'Quận 5, TP.HCM', N'Phó chủ nhiệm', 2, 2),
-(N'Lê Quốc Bảo', '2005-09-21', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'baolq@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 3, 3);
-
+(N'Lê Quốc Bảo', '2005-09-21', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'baolq@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 3, 3),
+(N'Trần Trung Thông', '2005-01-09', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'trantrungthong@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 3,3 );
 -- Cập nhật Trưởng ban
 UPDATE BanChuyenMon SET TruongBan = 1 WHERE MaBan = 1;
 UPDATE BanChuyenMon SET TruongBan = 2 WHERE MaBan = 2;
@@ -67,15 +67,14 @@ UPDATE BanChuyenMon SET TruongBan = 3 WHERE MaBan = 3;
 -- =============================================
 -- 3️⃣ TÀI KHOẢN
 -- =============================================
-
 INSERT INTO TaiKhoan (TenDN, MatKhau, MaTV, QuyenHan)
 VALUES 
-(N'huytm', N'123456', 1, N'Quản trị viên'),
-(N'lannt', N'123456', 2, N'Thành viên'),
-(N'baolq', N'123456', 3, N'Thành viên');
+(N'khangvn', N'123456', 3, N'Quản trị viên'),
+(N'lannt', N'123456', 1, N'Thành viên'),
+(N'baolq', N'123456', 2, N'Thành viên'),
+(N'thong', N'123456', 4, N'Admin');
+select MaTV from ThanhVien;
 
-INSERT INTO TaiKhoan (MaTV, TenDN, MatKhau, QuyenHan, TrangThai)
-VALUES (5, 'trungthong', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Admin', N'Hoạt động')
 -- =============================================
 -- 4️⃣ HOẠT ĐỘNG
 -- =============================================
@@ -214,9 +213,9 @@ DEALLOCATE cur
 SELECT TenDN, MatKhau, LEN(MatKhau) as Length FROM TaiKhoan
 
 -- Xóa tất cả mật khẩu đã hash sai
-UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'huytm'
 UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'lannt'
 UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'baolq'
-
+UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'khangvn'
+UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'thong'
 -- Kiểm tra
 SELECT * FROM TaiKhoan
