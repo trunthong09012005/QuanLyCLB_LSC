@@ -1,0 +1,235 @@
+﻿@model IEnumerable<QuanLyCLB_LSC.Models.ThanhVien>
+@{
+    ViewData["Title"] = "Quản lý thành viên";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị - Thành Viên</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin Panel</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item active" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <h2 class="mb-4">
+                <i class="fas fa-users me-2" style="color: var(--primary-color);"></i>
+                Quản lý Thành Viên
+            </h2>
+
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card blue">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.TongThanhVien</div>
+                        <div class="stat-label">Tổng Thành Viên</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card green">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.TongTaiKhoan</div>
+                        <div class="stat-label">Tài khoản đã tạo</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card orange">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.HoatDong</div>
+                        <div class="stat-label">Tài khoản hoạt động</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions mb-4">
+                <a class="action-btn btn btn-primary" href="@Url.Action("Create", "Members")">
+                    <i class="fas fa-user-plus me-2"></i>Thêm Thành Viên
+                </a>
+                <a class="action-btn btn btn-outline-secondary" href="@Url.Action("Index", "Reports")">
+                    <i class="fas fa-file-alt me-2"></i>Báo Cáo
+                </a>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-2 mb-3">
+                        <div class="col-md-4">
+                            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên, email hoặc SDT" />
+                        </div>
+                        <div class="col-md-3">
+                            <select name="cvId" class="form-select">
+                                <option value="">-- Lọc theo chức vụ --</option>
+                                @foreach (var cv in ViewBag.ChucVus as List<QuanLyCLB_LSC.Models.ChucVu>)
+                                {
+                                    if (ViewBag.CvId == cv.MaCv)
+                                    {
+                                        <option value="@cv.MaCv" selected>@cv.TenCv</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@cv.MaCv">@cv.TenCv</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="banId" class="form-select">
+                                <option value="">-- Lọc theo ban --</option>
+                                @foreach (var b in ViewBag.Bans as List<QuanLyCLB_LSC.Models.BanChuyenMon>)
+                                {
+                                    if (ViewBag.BanId == b.MaBan)
+                                    {
+                                        <option value="@b.MaBan" selected>@b.TenBan</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@b.MaBan">@b.TenBan</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary">Tìm</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Họ tên</th>
+                                    <th>Chức vụ</th>
+                                    <th>Ban</th>
+                                    <th>Email</th>
+                                    <th>SDT</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.MaTv</td>
+                                        <td>@item.HoTen</td>
+                                        <td>@item.MaCvNavigation?.TenCv</td>
+                                        <td>@item.MaBanNavigation?.TenBan</td>
+                                        <td>@item.Email</td>
+                                        <td>@item.Sdt</td>
+                                        <td>
+                                            @if (item.TrangThai == "Hoạt động")
+                                            {
+                                                <span class="badge bg-success">@item.TrangThai</span>
+                                            }
+                                            else if (item.TrangThai == "Tạm dừng")
+                                            {
+                                                <span class="badge bg-warning text-dark">@item.TrangThai</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">@item.TrangThai</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-info" href="@Url.Action("Details", "Members", new { id = item.MaTv })">Xem</a>
+                                            <a class="btn btn-sm btn-warning ms-1" href="@Url.Action("Edit", "Members", new { id = item.MaTv })">Sửa</a>
+                                            <form asp-action="DeleteConfirmed" asp-controller="Members" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.MaTv" />
+                                                <button type="submit" class="btn btn-sm btn-danger ms-1" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+</body>
+</html>

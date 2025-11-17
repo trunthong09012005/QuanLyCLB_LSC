@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
@@ -27,17 +29,18 @@ namespace QuanLyCLB_LSC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterViewModel model)
         {
+            // Kiểm tra form
             if (!ModelState.IsValid)
                 return View("~/Views/Register/Register.cshtml", model);
 
-            // Kiểm tra tên đăng nhập
+            // 1️⃣ Kiểm tra tên đăng nhập
             if (_context.TaiKhoans.Any(t => t.TenDn.ToLower() == model.TenDN.ToLower()))
             {
                 ModelState.AddModelError(nameof(model.TenDN), "Tên đăng nhập đã tồn tại!");
                 return View("~/Views/Register/Register.cshtml", model);
             }
 
-            // Kiểm tra email
+            // 2️⃣ Kiểm tra email
             var email = model.Email?.Trim().ToLower();
             if (!string.IsNullOrWhiteSpace(email) &&
                 _context.ThanhViens.Any(tv => tv.Email.ToLower() == email))
@@ -49,10 +52,10 @@ namespace QuanLyCLB_LSC.Controllers
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                // 1️⃣ Tạo ThanhVien trước
+                // 3️⃣ Tạo ThanhVien
                 var thanhVien = new ThanhVien
                 {
-                    HoTen = model.HoTen ?? model.TenDN ?? "Người dùng",
+                    HoTen = string.IsNullOrWhiteSpace(model.HoTen) ? model.TenDN : model.HoTen,
                     NgaySinh = model.NgaySinh.HasValue ? DateOnly.FromDateTime(model.NgaySinh.Value) : null,
                     GioiTinh = model.GioiTinh,
                     Sdt = model.SDT,
@@ -66,9 +69,9 @@ namespace QuanLyCLB_LSC.Controllers
                 };
 
                 _context.ThanhViens.Add(thanhVien);
-                _context.SaveChanges(); // EF Core gán MaTV tự động
+                _context.SaveChanges(); // EF Core gán MaTv tự động
 
-                // 2️⃣ Tạo TaiKhoan với MaTv đúng
+                // 4️⃣ Tạo TaiKhoan với MaTv
                 var taiKhoan = new TaiKhoan
                 {
                     TenDn = model.TenDN,
@@ -82,24 +85,17 @@ namespace QuanLyCLB_LSC.Controllers
                 _context.TaiKhoans.Add(taiKhoan);
                 _context.SaveChanges();
 
-                transaction.Commit();
-
                 TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
                 return RedirectToAction("Login", "Auth");
             }
             catch (Exception ex)
             {
-                try { transaction.Rollback(); } catch { }
-
-                // Debug: nếu muốn xem lỗi thực tế
-                // ModelState.AddModelError("", ex.Message);
+                // Nếu lỗi, show message
                 ModelState.AddModelError("", "Có lỗi khi lưu dữ liệu. Vui lòng thử lại.");
-
+                // Debug: nếu muốn xem lỗi thực tế, bỏ comment dòng dưới
+                // ModelState.AddModelError("", ex.Message);
                 return View("~/Views/Register/Register.cshtml", model);
             }
-
         }
-
     }
-
 }

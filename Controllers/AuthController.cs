@@ -55,9 +55,10 @@ namespace QuanLyCLB_LSC.Controllers
             {
                 return RedirectToAction("Index", "Dashboard");
             }
-            else if (user.QuyenHan == "Thành viên")
+            else if (user.QuyenHan == "Member" || user.QuyenHan == "Thành viên")
             {
-                return RedirectToAction("User", "UserDashboard", new { maTV = user.MaTv });
+                return RedirectToAction("User", "UserDashboard");
+
             }
             else
             {

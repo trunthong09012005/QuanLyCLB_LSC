@@ -1,6 +1,6 @@
 ﻿@model QuanLyCLB_LSC.ViewModels.UserDashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard - CLB Kỹ Năng";
+    ViewData["Title"] = "Dashboard - CLB Kỹ Năng X LSC";
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -21,7 +21,7 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md">
                             LSC
                         </div>
-                        <span class="text-xl font-bold text-gray-800">CLB Lập Trình</span>
+                        <span class="text-xl font-bold text-gray-800">CLB Kỹ Năng X LSC</span>
                     </div>
 
                     <div class="hidden md:flex space-x-1">
@@ -35,21 +35,41 @@
                             🏆 Khen thưởng
                         </button>
                     </div>
+
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors relative">
+                    <button class="bell-button p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
+                            onclick="handleNotificationClick()"
+                            title="Xem thông báo mới">
                         🔔
-                        <span class="notification-dot"></span>
+                        @if (Model.CoTimelineMoi)   
+                        {
+                            <span class="notification-dot absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
+                        }
                     </button>
+
                     <div class="flex items-center space-x-3 pl-4 border-l">
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 text-right">Nguyễn Vương Khang</p>
-                            <p class="text-xs text-gray-500 text-right">Chủ nhiệm</p>
+                            <p class="text-sm font-semibold text-gray-800 text-right">@Model.HoTen</p>
+                            <p class="text-xs text-gray-500 text-right">@Model.TenChucVu</p>
                         </div>
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                            K
+                        <!-- Avatar -->
+                        <!-- Avatar -->
+                        <div class="relative">
+                            <div id="avatarLogout" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500
+         rounded-full flex items-center justify-center text-white
+         font-semibold shadow-md cursor-pointer">
+                                @Model.HoTen?.Substring(0, 1).ToUpper()
+                            </div>
+
+                            <!-- Dropdown menu -->
+                            <div id="avatarMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden z-50">
+                                <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">Đăng xuất</button>
+                                <button id="cancelBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">Hủy</button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -65,7 +85,7 @@
                 <div class="px-8 py-12 md:py-16">
                     <div class="max-w-3xl">
                         <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                            Chào mừng trở lại, Khang! 👋
+                            Chào mừng trở lại, @(Model.HoTen?.Split(' ').LastOrDefault())! 👋
                         </h1>
                         <p class="text-xl text-blue-100 mb-6">
                             Cùng nhau xây dựng cộng đồng lập trình viên mạnh mẽ và năng động
@@ -73,15 +93,15 @@
                         <div class="flex flex-wrap gap-4">
                             <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
                                 <p class="text-white/80 text-sm">Thành viên từ</p>
-                                <p class="text-white font-bold text-lg">01/01/2024</p>
+                                <p class="text-white font-bold text-lg">@Model.NgayThamGia?.ToString("dd/MM/yyyy")</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
                                 <p class="text-white/80 text-sm">Điểm rèn luyện</p>
-                                <p class="text-white font-bold text-lg">95/100</p>
+                                <p class="text-white font-bold text-lg">@(Model.DiemRenLuyen ?? 0)/100</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
-                                <p class="text-white/80 text-sm">Xếp hạng</p>
-                                <p class="text-white font-bold text-lg">#5</p>
+                                <p class="text-white/80 text-sm">Giải thưởng</p>
+                                <p class="text-white font-bold text-lg">@Model.SoGiaiThuong</p>
                             </div>
                         </div>
                     </div>
@@ -92,38 +112,30 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="p-3 bg-blue-100 rounded-xl text-2xl">
-                            👥
-                        </div>
+                        <div class="p-3 bg-blue-100 rounded-xl text-2xl">👥</div>
                     </div>
-                    <p class="text-3xl font-bold text-gray-800">156</p>
+                    <p class="text-3xl font-bold text-gray-800">@Model.TongThanhVien</p>
                     <p class="text-sm text-gray-500 mt-1">Thành viên</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="p-3 bg-green-100 rounded-xl text-2xl">
-                            📅
-                        </div>
+                        <div class="p-3 bg-green-100 rounded-xl text-2xl">📅</div>
                     </div>
-                    <p class="text-3xl font-bold text-gray-800">24</p>
+                    <p class="text-3xl font-bold text-gray-800">@Model.TongSuKien</p>
                     <p class="text-sm text-gray-500 mt-1">Sự kiện</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="p-3 bg-purple-100 rounded-xl text-2xl">
-                            📋
-                        </div>
+                        <div class="p-3 bg-purple-100 rounded-xl text-2xl">📋</div>
                     </div>
-                    <p class="text-3xl font-bold text-gray-800">8</p>
+                    <p class="text-3xl font-bold text-gray-800">@Model.TongDuAn</p>
                     <p class="text-sm text-gray-500 mt-1">Dự án</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="p-3 bg-yellow-100 rounded-xl text-2xl">
-                            🏆
-                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-xl text-2xl">🏆</div>
                     </div>
-                    <p class="text-3xl font-bold text-gray-800">3</p>
+                    <p class="text-3xl font-bold text-gray-800">@Model.SoGiaiThuong</p>
                     <p class="text-sm text-gray-500 mt-1">Giải thưởng</p>
                 </div>
             </div>
@@ -140,28 +152,28 @@
                                 <span class="text-2xl">👤</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Họ và tên</p>
-                                    <p class="font-semibold text-gray-800">Nguyễn Vương Khang</p>
+                                    <p class="font-semibold text-gray-800">@Model.HoTen</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">📅</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Ngày sinh</p>
-                                    <p class="font-semibold text-gray-800">15/02/2004</p>
+                                    <p class="font-semibold text-gray-800">@Model.NgaySinh?.ToString("dd/MM/yyyy")</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">📧</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Email</p>
-                                    <p class="font-semibold text-gray-800">huytm@gmail.com</p>
+                                    <p class="font-semibold text-gray-800">@Model.Email</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">📱</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Số điện thoại</p>
-                                    <p class="font-semibold text-gray-800">0912345678</p>
+                                    <p class="font-semibold text-gray-800">@Model.SDT</p>
                                 </div>
                             </div>
                         </div>
@@ -170,28 +182,28 @@
                                 <span class="text-2xl">📚</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Lớp</p>
-                                    <p class="font-semibold text-gray-800">DHKTPM17A</p>
+                                    <p class="font-semibold text-gray-800">@Model.Lop</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">🎓</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Khoa</p>
-                                    <p class="font-semibold text-gray-800">Công nghệ thông tin</p>
+                                    <p class="font-semibold text-gray-800">@Model.Khoa</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">⭐</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Chức vụ</p>
-                                    <p class="font-semibold text-gray-800">Chủ nhiệm</p>
+                                    <p class="font-semibold text-gray-800">@Model.TenChucVu</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
                                 <span class="text-2xl">👥</span>
                                 <div>
                                     <p class="text-sm text-gray-500">Ban chuyên môn</p>
-                                    <p class="font-semibold text-gray-800">Ban Truyền thông</p>
+                                    <p class="font-semibold text-gray-800">@Model.TenBan</p>
                                 </div>
                             </div>
                         </div>
@@ -207,55 +219,32 @@
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Gallery Item 1 -->
-                        <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
-                            <div class="aspect-video overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800" alt="Chiến dịch Mùa hè xanh" class="w-full h-full object-cover">
-                            </div>
-                            <div class="gallery-overlay">
-                                <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
-                                    Tình nguyện
-                                </span>
-                                <h3 class="text-white font-bold text-lg mb-1">Chiến dịch Mùa hè xanh 2025</h3>
-                                <p class="text-gray-200 text-sm mb-2">Hoạt động tình nguyện giúp đỡ bà con tại vùng nông thôn Củ Chi</p>
-                                <p class="text-gray-300 text-xs">📅 10/07/2025</p>
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
-                                        Tình nguyện
-                                    </span>
-                                    <span class="text-xs text-gray-500">25/03/2025</span>
+                        @foreach (var hoatDong in Model.DanhSachHoatDong)
+                        {
+                            <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
+                                <div class="aspect-video overflow-hidden">
+                                    <img src="@hoatDong.HinhAnh" alt="@hoatDong.TenHD" class="w-full h-full object-cover">
                                 </div>
-                                <h3 class="font-bold text-gray-800 text-sm mb-2">Chương trình "Máy tính cho em"</h3>
-                                <p class="text-xs text-gray-600 line-clamp-2">Tặng máy tính và dạy tin học cho trẻ em vùng cao</p>
-                            </div>
-                        </div>
-
-                        <!-- Gallery Item 9 -->
-                        <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
-                            <div class="aspect-video overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Coding Contest" class="w-full h-full object-cover">
-                            </div>
-                            <div class="gallery-overlay">
-                                <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
-                                    Học thuật
-                                </span>
-                                <h3 class="text-white font-bold text-lg mb-1">Cuộc thi Lập trình LSC Code War</h3>
-                                <p class="text-gray-200 text-sm mb-2">Tranh tài giải thuật và tư duy lập trình</p>
-                                <p class="text-gray-300 text-xs">📅 18/04/2025</p>
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
-                                        Học thuật
+                                <div class="gallery-overlay">
+                                    <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
+                                        @hoatDong.TenLoaiHD
                                     </span>
-                                    <span class="text-xs text-gray-500">18/04/2025</span>
+                                    <h3 class="text-white font-bold text-lg mb-1">@hoatDong.TenHD</h3>
+                                    <p class="text-gray-200 text-sm mb-2">@hoatDong.MoTa</p>
+                                    <p class="text-gray-300 text-xs">📅 @hoatDong.NgayToChuc?.ToString("dd/MM/yyyy")</p>
                                 </div>
-                                <h3 class="font-bold text-gray-800 text-sm mb-2">Cuộc thi Lập trình LSC Code War</h3>
-                                <p class="text-xs text-gray-600 line-clamp-2">Tranh tài giải thuật và tư duy lập trình</p>
+                                <div class="p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                                            @hoatDong.TenLoaiHD
+                                        </span>
+                                        <span class="text-xs text-gray-500">@hoatDong.NgayToChuc?.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800 text-sm mb-2">@hoatDong.TenHD</h3>
+                                    <p class="text-xs text-gray-600 line-clamp-2">@hoatDong.MoTa</p>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -269,95 +258,33 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
-                        <!-- Timeline Item 1 -->
-                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
-                                        <span class="text-xs text-gray-500">20/11/2025</span>
-                                    </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Họp Ban Chủ nhiệm khẩn cấp</h3>
-                                    <p class="text-sm text-gray-600">Thảo luận về kế hoạch tổ chức sự kiện cuối năm</p>
-                                </div>
-                                <span class="text-2xl">🚨</span>
-                            </div>
-                        </div>
+                        @foreach (var item in Model.DanhSachTimeline)
+                        {
+                            var cssClass = item.MucDoUuTien == "Cao" ? "high pl-6 py-4 bg-red-50 rounded-lg" :
+                            item.MucDoUuTien == "Trung bình" ? "medium pl-6 py-4 bg-yellow-50 rounded-lg" :
+                            "low pl-6 py-4 bg-green-50 rounded-lg";
+                            var badgeClass = item.MucDoUuTien == "Cao" ? "px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full" :
+                            item.MucDoUuTien == "Trung bình" ? "px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full" :
+                            "px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full";
 
-                        <!-- Timeline Item 2 -->
-                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
-                                        <span class="text-xs text-gray-500">25/11/2025</span>
+                            <div class="timeline-item @cssClass">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <span class="@badgeClass">@item.MucDoUuTien</span>
+                                            <span class="text-xs text-gray-500">@item.NgayDienRa?.ToString("dd/MM/yyyy")</span>
+                                        </div>
+                                        <h3 class="font-bold text-gray-800 mb-1">@item.TieuDe</h3>
+                                        <p class="text-sm text-gray-600">@item.NoiDung</p>
+                                        @if (!string.IsNullOrEmpty(item.DiaDiem))
+                                        {
+                                            <p class="text-xs text-gray-500 mt-1">📍 @item.DiaDiem</p>
+                                        }
                                     </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Deadline nộp đề xuất dự án mới</h3>
-                                    <p class="text-sm text-gray-600">Nộp đề xuất dự án cho học kỳ 2</p>
+                                    <span class="text-2xl">@item.Icon</span>
                                 </div>
-                                <span class="text-2xl">⏰</span>
                             </div>
-                        </div>
-
-                        <!-- Timeline Item 3 -->
-                        <div class="timeline-item medium pl-6 py-4 bg-yellow-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">Trung bình</span>
-                                        <span class="text-xs text-gray-500">30/11/2025</span>
-                                    </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Workshop React & Next.js</h3>
-                                    <p class="text-sm text-gray-600">Học cách xây dựng ứng dụng web hiện đại</p>
-                                </div>
-                                <span class="text-2xl">💻</span>
-                            </div>
-                        </div>
-
-                        <!-- Timeline Item 4 -->
-                        <div class="timeline-item low pl-6 py-4 bg-green-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">Thấp</span>
-                                        <span class="text-xs text-gray-500">05/12/2025</span>
-                                    </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Buổi giao lưu thành viên mới</h3>
-                                    <p class="text-sm text-gray-600">Hoạt động team building cho thành viên mới</p>
-                                </div>
-                                <span class="text-2xl">🎉</span>
-                            </div>
-                        </div>
-
-                        <!-- Timeline Item 5 -->
-                        <div class="timeline-item medium pl-6 py-4 bg-yellow-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-yellow-600 text-white text-xs font-semibold rounded-full">Trung bình</span>
-                                        <span class="text-xs text-gray-500">10/12/2025</span>
-                                    </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Seminar AI & Machine Learning</h3>
-                                    <p class="text-sm text-gray-600">Giới thiệu về xu hướng AI trong phát triển phần mềm</p>
-                                </div>
-                                <span class="text-2xl">🤖</span>
-                            </div>
-                        </div>
-
-                        <!-- Timeline Item 6 -->
-                        <div class="timeline-item high pl-6 py-4 bg-red-50 rounded-lg">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">Cao</span>
-                                        <span class="text-xs text-gray-500">20/12/2025</span>
-                                    </div>
-                                    <h3 class="font-bold text-gray-800 mb-1">Gala Year End Party 2025</h3>
-                                    <p class="text-sm text-gray-600">Sự kiện lớn nhất năm - Tiệc tổng kết và trao giải</p>
-                                </div>
-                                <span class="text-2xl">🎊</span>
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -372,115 +299,54 @@
                         <h2 class="text-xl font-bold text-white">Thành tích cá nhân</h2>
                     </div>
                     <div class="p-6 space-y-4">
-                        <!-- Award 1 -->
-                        <div class="award-card gold bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">🏆</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">Thành viên xuất sắc năm 2024</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Đóng góp tích cực cho hoạt động CLB</p>
-                                    <span class="text-xs text-gray-500">📅 20/01/2025</span>
-                                </div>
-                            </div>
-                        </div>
+                        @foreach (var kt in Model.DanhSachKhenThuong)
+                        {
+                            var bgClass = kt.LoaiKhenThuong == "Gold" ? "gold bg-gradient-to-br from-yellow-50 to-orange-50" :
+                            kt.LoaiKhenThuong == "Silver" ? "silver bg-gradient-to-br from-gray-50 to-gray-100" :
+                            "gold bg-gradient-to-br from-blue-50 to-indigo-50";
+                            var icon = kt.LoaiKhenThuong == "Gold" ? "🏆" :
+                            kt.LoaiKhenThuong == "Silver" ? "🥈" : "⭐";
 
-                        <!-- Award 2 -->
-                        <div class="award-card silver bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">🥈</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">Giải Nhì Hackathon 2024</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Dự án: Smart Campus Management System</p>
-                                    <span class="text-xs text-gray-500">📅 20/06/2024</span>
+                            <div class="award-card @bgClass rounded-xl p-4 shadow-sm">
+                                <div class="flex items-start space-x-4">
+                                    <div class="text-5xl">@icon</div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-800 mb-1">@kt.LyDo</h3>
+                                        <span class="text-xs text-gray-500">📅 @kt.NgayKT?.ToString("dd/MM/yyyy")</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Award 3 -->
-                        <div class="award-card gold bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">⭐</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">Best Team Leader 2024</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Lãnh đạo team xuất sắc nhất</p>
-                                    <span class="text-xs text-gray-500">📅 15/12/2024</span>
-                                </div>
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
 
-                <!-- Club Recognition -->
+                <!-- Achievement Stats -->
                 <div class="bg-white rounded-2xl shadow-md overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
-                        <h2 class="text-xl font-bold text-white">Khen thưởng CLB</h2>
+                        <h2 class="text-xl font-bold text-white">Thống kê thành tích</h2>
                     </div>
-                    <div class="p-6 space-y-4">
-                        <!-- Recognition 1 -->
-                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">🎖️</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">CLB xuất sắc cấp Khoa</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Đạt thành tích cao trong hoạt động năm học</p>
-                                    <span class="text-xs text-gray-500">📅 10/06/2025</span>
-                                </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                                <div class="text-4xl mb-2">🏆</div>
+                                <p class="text-2xl font-bold text-gray-800">@Model.SoGiaiThuong</p>
+                                <p class="text-sm text-gray-600">Giải thưởng</p>
                             </div>
-                        </div>
-
-                        <!-- Recognition 2 -->
-                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">🌟</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">Giải thưởng Sáng tạo trẻ</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Cho dự án công nghệ giáo dục</p>
-                                    <span class="text-xs text-gray-500">📅 15/03/2025</span>
-                                </div>
+                            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                                <div class="text-4xl mb-2">📚</div>
+                                <p class="text-2xl font-bold text-gray-800">@Model.TongDuAn</p>
+                                <p class="text-sm text-gray-600">Dự án tham gia</p>
                             </div>
-                        </div>
-
-                        <!-- Recognition 3 -->
-                        <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 shadow-sm">
-                            <div class="flex items-start space-x-4">
-                                <div class="text-5xl">💝</div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-gray-800 mb-1">Tập thể tình nguyện tiêu biểu</h3>
-                                    <p class="text-sm text-gray-600 mb-2">Đóng góp 500+ giờ hoạt động cộng đồng</p>
-                                    <span class="text-xs text-gray-500">📅 05/05/2025</span>
-                                </div>
+                            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                                <div class="text-4xl mb-2">⭐</div>
+                                <p class="text-2xl font-bold text-gray-800">@(Model.DiemRenLuyen ?? 0)</p>
+                                <p class="text-sm text-gray-600">Điểm rèn luyện</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Achievement Stats -->
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden mt-6">
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
-                    <h2 class="text-xl font-bold text-white">Thống kê thành tích</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                            <div class="text-4xl mb-2">🏆</div>
-                            <p class="text-2xl font-bold text-gray-800">12</p>
-                            <p class="text-sm text-gray-600">Giải thưởng</p>
-                        </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
-                            <div class="text-4xl mb-2">📚</div>
-                            <p class="text-2xl font-bold text-gray-800">28</p>
-                            <p class="text-sm text-gray-600">Dự án hoàn thành</p>
-                        </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
-                            <div class="text-4xl mb-2">👥</div>
-                            <p class="text-2xl font-bold text-gray-800">156</p>
-                            <p class="text-sm text-gray-600">Thành viên đã đào tạo</p>
-                        </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl">
-                            <div class="text-4xl mb-2">⏰</div>
-                            <p class="text-2xl font-bold text-gray-800">520</p>
-                            <p class="text-sm text-gray-600">Giờ tình nguyện</p>
+                            <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl">
+                                <div class="text-4xl mb-2">📅</div>
+                                <p class="text-2xl font-bold text-gray-800">@Model.TongSuKien</p>
+                                <p class="text-sm text-gray-600">Sự kiện CLB</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -488,9 +354,6 @@
         </div>
     </div>
 
-
-</body>
-</html>
 <!-- Gallery Item 1 -->
 <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300">
     <!-- Image -->
@@ -723,5 +586,8 @@
         <h3 class="font-bold text-gray-800 text-sm mb-2">Cuộc thi Lập trình LSC Code War</h3>
         <p class="text-xs text-gray-600 line-clamp-2">Tranh tài giải thuật và tư duy lập trình</p>
     </div>
-    <script src="~/js/user.js"></script>
+  
 </div>
+<script src="~/js/user.js"></script>
+</body>
+</html>
