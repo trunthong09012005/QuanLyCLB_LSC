@@ -70,6 +70,7 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.ThanhViens.Add(thanhVien);
                 _context.SaveChanges(); // EF Core gán MaTv tự động
+                //transaction.Commit();
 
                 // 4️⃣ Tạo TaiKhoan với MaTv
                 var taiKhoan = new TaiKhoan
@@ -84,6 +85,7 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.TaiKhoans.Add(taiKhoan);
                 _context.SaveChanges();
+                transaction.Commit();
 
                 TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
                 return RedirectToAction("Login", "Auth");
