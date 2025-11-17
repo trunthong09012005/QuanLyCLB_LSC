@@ -5,6 +5,7 @@ namespace QuanLyCLB_LSC.ViewModels
 {
     public class UserDashboardViewModel
     {
+        public bool CoTimelineMoi { get; set; }
         // Thông tin thành viên
         public int MaTV { get; set; }
         public string HoTen { get; set; }
@@ -83,5 +84,6 @@ namespace QuanLyCLB_LSC.ViewModels
         public string MucDoUuTien { get; set; }
         public string Icon { get; set; }
     }
+
 
 }
