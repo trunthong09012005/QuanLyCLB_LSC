@@ -7,7 +7,7 @@ namespace QuanLyCLB_LSC.ViewModels
     {
         // ===== Thông tin đăng nhập =====
         [Required(ErrorMessage = "Tên đăng nhập bắt buộc")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Tên đăng nhập từ 3-50 ký tự")]
+        [StringLength(50, MinimumLength = 5, ErrorMessage = "Tên đăng nhập từ 5-50 ký tự")]
         [Display(Name = "Tên đăng nhập")]
         public string TenDN { get; set; } = null!;
 

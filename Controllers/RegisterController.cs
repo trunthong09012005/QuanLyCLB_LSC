@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
 using QuanLyCLB_LSC.Helpers;
@@ -70,6 +67,7 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.ThanhViens.Add(thanhVien);
                 _context.SaveChanges(); // EF Core gán MaTv tự động
+                transaction.Commit();
 
                 // 4️⃣ Tạo TaiKhoan với MaTv
                 var taiKhoan = new TaiKhoan
@@ -84,6 +82,7 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.TaiKhoans.Add(taiKhoan);
                 _context.SaveChanges();
+                transaction.Commit();
 
                 TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
                 return RedirectToAction("Login", "Auth");
@@ -93,7 +92,7 @@ namespace QuanLyCLB_LSC.Controllers
                 // Nếu lỗi, show message
                 ModelState.AddModelError("", "Có lỗi khi lưu dữ liệu. Vui lòng thử lại.");
                 // Debug: nếu muốn xem lỗi thực tế, bỏ comment dòng dưới
-                // ModelState.AddModelError("", ex.Message);
+                 ModelState.AddModelError("", ex.Message);
                 return View("~/Views/Register/Register.cshtml", model);
             }
         }
