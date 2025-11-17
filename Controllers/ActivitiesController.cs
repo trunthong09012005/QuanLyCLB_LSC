@@ -15,7 +15,7 @@ namespace QuanLyCLB_LSC.Controllers
         }
 
         // GET: Activities
-        public async Task<IActionResult> Index(string search, int? loaiId, int? nguoiId)
+        public async Task<IActionResult> Index(string search, int? loaiId, int? nguoiId, int? year)
         {
             var query = _context.HoatDongs
                 .Include(h => h.MaLoaiHdNavigation)
@@ -47,17 +47,30 @@ namespace QuanLyCLB_LSC.Controllers
             ViewBag.TotalActivities = await _context.HoatDongs.CountAsync();
 
             var now = DateTime.Now;
-            // compute activities this month count
-            var dates = (await _context.HoatDongs.Select(h => h.NgayToChuc).ToListAsync()).Where(d => d.HasValue).Select(d => d.Value).ToList();
+            // collect all dates (nullable) from DB
+            var rawDates = await _context.HoatDongs.Select(h => h.NgayToChuc).ToListAsync();
+            var dates = rawDates.Where(d => d.HasValue).Select(d => d.Value).ToList();
+
+            // Available years (from data) + current year if missing
+            var availableYears = dates.Select(d => d.Year).Distinct().OrderByDescending(y => y).ToList();
+            if (!availableYears.Contains(now.Year))
+            {
+                availableYears = (new[] { now.Year }).Concat(availableYears).ToList();
+            }
+            ViewBag.AvailableYears = availableYears;
+            var selectedYear = year ?? now.Year;
+            ViewBag.SelectedYear = selectedYear;
+
+            // compute activities this month count for current month/year
             ViewBag.ActivitiesThisMonth = dates.Count(d => d.Year == now.Year && d.Month == now.Month);
 
             ViewBag.ActiveActivities = await _context.HoatDongs.CountAsync(h => h.TrangThai == "?ang chu?n b?");
 
-            // Chart data: counts per month for current year
+            // Chart data: counts per month for selected year
             var monthlyCounts = new int[12];
             foreach (var d in dates)
             {
-                if (d.Year == now.Year)
+                if (d.Year == selectedYear)
                 {
                     monthlyCounts[d.Month - 1]++;
                 }
