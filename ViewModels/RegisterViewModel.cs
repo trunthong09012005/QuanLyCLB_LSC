@@ -55,6 +55,6 @@ namespace QuanLyCLB_LSC.ViewModels
 
         [StringLength(100)]
         [Display(Name = "Vai trò")]
-        public string? VaiTro { get; set; } = "Member"; // default
+        public string? VaiTro { get; set; } = "Thành viên"; // default
     }
 }
