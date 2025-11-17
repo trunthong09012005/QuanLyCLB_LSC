@@ -1,0 +1,314 @@
+﻿@{
+    ViewData["Title"] = "Cài Đặt - CLB Kỹ Năng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css" />
+<link rel="stylesheet" href="~/css/settings.css" />
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-circle">LSC</div>
+        <h5 class="mb-0">Admin Panel</h5>
+        <small>Life Skills Club</small>
+    </div>
+
+    <div class="sidebar-menu">
+        <a href="@Url.Action("Index", "Dashboard")" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Trang Chủ</span>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Thành Viên</span>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Hoạt Động</span>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fas fa-project-diagram"></i>
+            <span>Dự Án</span>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fas fa-wallet"></i>
+            <span>Tài Chính</span>
+        </a>
+        <a href="@Url.Action("Index", "Reports")" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Báo Cáo</span>
+        </a>
+        <a href="@Url.Action("Index", "Settings")" class="menu-item active">
+            <i class="fas fa-cog"></i>
+            <span>Cài Đặt</span>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Đăng Xuất</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="top-header">
+        <div>
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="user-info">
+            <div class="position-relative">
+                <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                <span class="notification-badge">5</span>
+            </div>
+            <div>
+                <div class="fw-bold">Admin</div>
+                <small class="text-muted">Quản trị viên</small>
+            </div>
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-container">
+        <h2 class="mb-4">
+            <i class="fas fa-cog me-2" style="color: var(--primary-color);"></i>
+            Cài Đặt Hệ Thống
+        </h2>
+
+        <!-- System Statistics -->
+        <div class="settings-stats">
+            <div class="settings-stat-box">
+                <div class="settings-stat-number">@ViewBag.TongThanhVien</div>
+                <div class="settings-stat-label">Tổng Thành Viên</div>
+            </div>
+            <div class="settings-stat-box">
+                <div class="settings-stat-number">@ViewBag.TongHoatDong</div>
+                <div class="settings-stat-label">Tổng Hoạt Động</div>
+            </div>
+            <div class="settings-stat-box">
+                <div class="settings-stat-number">@ViewBag.TongDuAn</div>
+                <div class="settings-stat-label">Tổng Dự Án</div>
+            </div>
+            <div class="settings-stat-box">
+                <div class="settings-stat-number">@ViewBag.TongTaiKhoan</div>
+                <div class="settings-stat-label">Tổng Tài Khoản</div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- System Information -->
+            <div class="col-lg-6">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h5>Thông Tin Hệ Thống</h5>
+                    </div>
+                    <form method="post" asp-action="UpdateSystemInfo">
+                        <div class="settings-form-group">
+                            <label>Tên Câu Lạc Bộ</label>
+                            <input type="text" name="tenClb" class="form-control" value="Life Skills Club" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" value="contact@lsc.edu.vn" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Số Điện Thoại</label>
+                            <input type="tel" name="sdt" class="form-control" value="0123456789" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Địa Chỉ</label>
+                            <textarea name="diaChi" class="form-control" rows="3" required>Đại học XYZ, Thành phố ABC</textarea>
+                        </div>
+                        <button type="submit" class="settings-btn">
+                            <i class="fas fa-save me-2"></i>Lưu Thay Đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Chức Vụ Management -->
+            <div class="col-lg-6">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-user-tag"></i>
+                        <h5>Quản Lý Chức Vụ</h5>
+                    </div>
+                    <form method="post" asp-action="AddChucVu" class="mb-3">
+                        <div class="settings-form-group">
+                            <label>Tên Chức Vụ</label>
+                            <input type="text" name="tenCV" class="form-control" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Mô Tả</label>
+                            <input type="text" name="moTa" class="form-control">
+                        </div>
+                        <button type="submit" class="settings-btn">
+                            <i class="fas fa-plus me-2"></i>Thêm Chức Vụ
+                        </button>
+                    </form>
+                    <ul class="settings-list">
+                        @if (ViewBag.DanhSachChucVu != null)
+                        {
+                            @foreach (var cv in ViewBag.DanhSachChucVu)
+                            {
+                                <li class="settings-list-item">
+                                    <div>
+                                        <strong>@cv.TenCv</strong>
+                                        <br><small class="text-muted">@cv.MoTa</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Ban Chuyên Môn Management -->
+            <div class="col-lg-6">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-users-cog"></i>
+                        <h5>Quản Lý Ban Chuyên Môn</h5>
+                    </div>
+                    <form method="post" asp-action="AddBan" class="mb-3">
+                        <div class="settings-form-group">
+                            <label>Tên Ban</label>
+                            <input type="text" name="tenBan" class="form-control" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Mô Tả</label>
+                            <input type="text" name="moTa" class="form-control">
+                        </div>
+                        <button type="submit" class="settings-btn">
+                            <i class="fas fa-plus me-2"></i>Thêm Ban
+                        </button>
+                    </form>
+                    <ul class="settings-list">
+                        @if (ViewBag.DanhSachBan != null)
+                        {
+                            @foreach (var ban in ViewBag.DanhSachBan)
+                            {
+                                <li class="settings-list-item">
+                                    <div>
+                                        <strong>@ban.TenBan</strong>
+                                        <br><small class="text-muted">Trưởng ban: @(ban.TruongBanNavigation?.HoTen ?? "Chưa có")</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Loại Hoạt Động Management -->
+            <div class="col-lg-6">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-list-alt"></i>
+                        <h5>Quản Lý Loại Hoạt Động</h5>
+                    </div>
+                    <form method="post" asp-action="AddLoaiHoatDong" class="mb-3">
+                        <div class="settings-form-group">
+                            <label>Tên Loại Hoạt Động</label>
+                            <input type="text" name="tenLoaiHD" class="form-control" required>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Mô Tả</label>
+                            <input type="text" name="moTa" class="form-control">
+                        </div>
+                        <button type="submit" class="settings-btn">
+                            <i class="fas fa-plus me-2"></i>Thêm Loại
+                        </button>
+                    </form>
+                    <ul class="settings-list">
+                        @if (ViewBag.DanhSachLoaiHD != null)
+                        {
+                            @foreach (var loai in ViewBag.DanhSachLoaiHD)
+                            {
+                                <li class="settings-list-item">
+                                    <div>
+                                        <strong>@loai.TenLoaiHd</strong>
+                                        <br><small class="text-muted">@loai.MoTa</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="col-lg-12">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h5>Cài Đặt Bảo Mật</h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="settings-form-group">
+                                <label class="d-flex justify-content-between align-items-center">
+                                    <span>Yêu cầu xác thực 2 yếu tố</span>
+                                    <label class="settings-toggle">
+                                        <input type="checkbox">
+                                        <span class="settings-toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="settings-form-group">
+                                <label class="d-flex justify-content-between align-items-center">
+                                    <span>Cho phép đăng nhập từ nhiều thiết bị</span>
+                                    <label class="settings-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="settings-toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="settings-form-group">
+                                <label class="d-flex justify-content-between align-items-center">
+                                    <span>Gửi email thông báo đăng nhập</span>
+                                    <label class="settings-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="settings-toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="settings-form-group">
+                                <label class="d-flex justify-content-between align-items-center">
+                                    <span>Tự động đăng xuất sau 30 phút</span>
+                                    <label class="settings-toggle">
+                                        <input type="checkbox">
+                                        <span class="settings-toggle-slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js"></script>
+}

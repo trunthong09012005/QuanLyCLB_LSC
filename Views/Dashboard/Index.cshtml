@@ -1,13 +1,13 @@
 ﻿@model QuanLyCLB_LSC.ViewModels.DashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard - CLB Kỹ Năng Sống";
+    ViewData["Title"] = "Dashboard - CLB Kỹ Năng";
 }
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Trị - CLB Kỹ Năng Sống</title>
+    <title>Quản Trị - CLB Kỹ Năng</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -18,11 +18,11 @@
         <div class="sidebar-header">
             <div class="logo-circle">LSC</div>
             <h5 class="mb-0">Admin Panel</h5>
-            <small>CLB Kỹ Năng Sống</small>
+            <small>Life Skills Club</small>
         </div>
 
         <div class="sidebar-menu">
-            <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item active" onclick="showSection('dashboard')">
                 <i class="fas fa-home"></i>
                 <span>Trang Chủ</span>
             </a>
@@ -42,11 +42,11 @@
                 <i class="fas fa-wallet"></i>
                 <span>Tài Chính</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('reports')">
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
                 <i class="fas fa-chart-bar"></i>
                 <span>Báo Cáo</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('settings')">
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
                 <i class="fas fa-cog"></i>
                 <span>Cài Đặt</span>
             </a>
