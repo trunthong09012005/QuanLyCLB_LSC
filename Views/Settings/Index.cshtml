@@ -42,7 +42,7 @@
             <i class="fas fa-cog"></i>
             <span>Cài Đặt</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="@Url.Action("Login", "Auth")" class="menu-item">
             <i class="fas fa-sign-out-alt"></i>
             <span>Đăng Xuất</span>
         </a>
@@ -78,237 +78,520 @@
             Cài Đặt Hệ Thống
         </h2>
 
-        <!-- System Statistics -->
-        <div class="settings-stats">
-            <div class="settings-stat-box">
-                <div class="settings-stat-number">@ViewBag.TongThanhVien</div>
-                <div class="settings-stat-label">Tổng Thành Viên</div>
+        <!-- Alert Messages -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <div class="settings-stat-box">
-                <div class="settings-stat-number">@ViewBag.TongHoatDong</div>
-                <div class="settings-stat-label">Tổng Hoạt Động</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-times-circle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <div class="settings-stat-box">
-                <div class="settings-stat-number">@ViewBag.TongDuAn</div>
-                <div class="settings-stat-label">Tổng Dự Án</div>
+        }
+
+        <div class="settings-layout">
+            <!-- Settings Menu -->
+            <div class="settings-menu">
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "dashboard" || ViewBag.ActiveSection == null ? "active" : "")" onclick="loadSection('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Tổng Quan</span>
+                </div>
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "hethong" ? "active" : "")" onclick="loadSection('hethong')">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Thông Tin Hệ Thống</span>
+                </div>
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "canhan" ? "active" : "")" onclick="loadSection('canhan')">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Tài Khoản Cá Nhân</span>
+                </div>
+                <div class="settings-menu-divider"></div>
+                <div class="settings-menu-title">Quản Lý Dữ Liệu</div>
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "chucvu" ? "active" : "")" onclick="loadSection('chucvu')">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Chức Vụ</span>
+                </div>
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "ban" ? "active" : "")" onclick="loadSection('ban')">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Ban Chuyên Môn</span>
+                </div>
+                <div class="settings-menu-item @(ViewBag.ActiveSection == "loaihoatdong" ? "active" : "")" onclick="loadSection('loaihoatdong')">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Loại Hoạt Động</span>
+                </div>
             </div>
-            <div class="settings-stat-box">
-                <div class="settings-stat-number">@ViewBag.TongTaiKhoan</div>
-                <div class="settings-stat-label">Tổng Tài Khoản</div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="settings-section @(ViewBag.ActiveSection == "dashboard" || ViewBag.ActiveSection == null ? "active" : "")">
+                    <div class="settings-stats">
+                        <div class="settings-stat-box">
+                            <div class="settings-stat-number">@ViewBag.TongThanhVien</div>
+                            <div class="settings-stat-label">Tổng Thành Viên</div>
+                        </div>
+                        <div class="settings-stat-box">
+                            <div class="settings-stat-number">@ViewBag.TongHoatDong</div>
+                            <div class="settings-stat-label">Tổng Hoạt Động</div>
+                        </div>
+                        <div class="settings-stat-box">
+                            <div class="settings-stat-number">@ViewBag.TongDuAn</div>
+                            <div class="settings-stat-label">Tổng Dự Án</div>
+                        </div>
+                        <div class="settings-stat-box">
+                            <div class="settings-stat-number">@ViewBag.TongTaiKhoan</div>
+                            <div class="settings-stat-label">Tổng Tài Khoản</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Information Section -->
+                <div id="hethong-section" class="settings-section @(ViewBag.ActiveSection == "hethong" ? "active" : "")">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h5>Thông Tin Hệ Thống</h5>
+                        </div>
+                        <form method="post" asp-action="UpdateSystemInfo">
+                            <div class="settings-form-group">
+                                <label>Tên Câu Lạc Bộ</label>
+                                <input type="text" name="tenClb" class="form-control" value="@ViewBag.TenClb" required>
+                            </div>
+                            <div class="settings-form-group">
+                                <label>Email</label>
+                                <input type="email" name="email" class="form-control" value="@ViewBag.EmailClb" required>
+                            </div>
+                            <div class="settings-form-group">
+                                <label>Số Điện Thoại</label>
+                                <input type="tel" name="sdt" class="form-control" value="@ViewBag.SdtClb" required>
+                            </div>
+                            <div class="settings-form-group">
+                                <label>Địa Chỉ</label>
+                                <textarea name="diaChi" class="form-control" rows="3" required>@ViewBag.DiaChiClb</textarea>
+                            </div>
+                            <button type="submit" class="settings-btn">
+                                <i class="fas fa-save me-2"></i>Lưu Thay Đổi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Personal Account Section -->
+                <div id="canhan-section" class="settings-section @(ViewBag.ActiveSection == "canhan" ? "active" : "")">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h5>Thông Tin Cá Nhân</h5>
+                        </div>
+                        @if (ViewBag.TaiKhoanHienTai != null)
+                        {
+                            @Html.Partial("_ProfileSettings", (object)ViewBag.TaiKhoanHienTai)
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.</div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Chức Vụ Management Section -->
+                <div id="chucvu-section" class="settings-section @(ViewBag.ActiveSection == "chucvu" ? "active" : "")">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-user-tag"></i>
+                            <h5>Quản Lý Chức Vụ</h5>
+                        </div>
+
+                        <!-- Add Form -->
+                        <div class="settings-form-section">
+                            <h6 class="mb-3">Thêm Chức Vụ Mới</h6>
+                            <form method="post" asp-action="AddChucVu" class="mb-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="settings-form-group">
+                                            <label>Tên Chức Vụ <span class="text-danger">*</span></label>
+                                            <input type="text" name="tenCV" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="settings-form-group">
+                                            <label>Mô Tả</label>
+                                            <input type="text" name="moTa" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="settings-btn">
+                                    <i class="fas fa-plus me-2"></i>Thêm Chức Vụ
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Data List -->
+                        <div class="settings-table-section">
+                            <h6 class="mb-3">Danh Sách Chức Vụ</h6>
+                            @if (ViewBag.DanhSachChucVu != null && ViewBag.DanhSachChucVu.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên Chức Vụ</th>
+                                                <th>Mô Tả</th>
+                                                <th style="width: 120px;">Thao Tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var cv in ViewBag.DanhSachChucVu)
+                                            {
+                                                <tr class="settings-data-row">
+                                                    <td>
+                                                        <strong>@cv.TenCv</strong>
+                                                    </td>
+                                                    <td>
+                                                        <small>@cv.MoTa</small>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editChucVu(@cv.MaCv, '@cv.TenCv', '@(cv.MoTa?.Replace("'", "\\'") ?? "")')">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form method="post" asp-action="DeleteChucVu" style="display:inline;">
+                                                            <input type="hidden" name="id" value="@cv.MaCv">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">Chưa có chức vụ nào. Hãy thêm chức vụ mới!</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ban Chuyên Môn Management Section -->
+                <div id="ban-section" class="settings-section @(ViewBag.ActiveSection == "ban" ? "active" : "")">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-users-cog"></i>
+                            <h5>Quản Lý Ban Chuyên Môn</h5>
+                        </div>
+
+                        <!-- Add Form -->
+                        <div class="settings-form-section">
+                            <h6 class="mb-3">Thêm Ban Chuyên Môn Mới</h6>
+                            <form method="post" asp-action="AddBan" class="mb-4">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="settings-form-group">
+                                            <label>Tên Ban <span class="text-danger">*</span></label>
+                                            <input type="text" name="tenBan" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="settings-form-group">
+                                            <label>Mô Tả</label>
+                                            <input type="text" name="moTa" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="settings-btn">
+                                    <i class="fas fa-plus me-2"></i>Thêm Ban
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Data List -->
+                        <div class="settings-table-section">
+                            <h6 class="mb-3">Danh Sách Ban Chuyên Môn</h6>
+                            @if (ViewBag.DanhSachBan != null && ViewBag.DanhSachBan.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên Ban</th>
+                                                <th>Mô Tả</th>
+                                                <th>Trưởng Ban</th>
+                                                <th style="width: 120px;">Thao Tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var ban in ViewBag.DanhSachBan)
+                                            {
+                                                <tr class="settings-data-row">
+                                                    <td>
+                                                        <strong>@ban.TenBan</strong>
+                                                    </td>
+                                                    <td>
+                                                        <small>@ban.MoTa</small>
+                                                    </td>
+                                                    <td>
+                                                        <small>@(ban.TruongBanNavigation?.HoTen ?? "Chưa có")</small>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editBan(@ban.MaBan, '@ban.TenBan', '@(ban.MoTa?.Replace("'", "\\'") ?? "")', @(ban.TruongBan ?? 0))">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form method="post" asp-action="DeleteBan" style="display:inline;">
+                                                            <input type="hidden" name="id" value="@ban.MaBan">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">Chưa có ban chuyên môn nào. Hãy thêm ban mới!</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loại Hoạt Động Management Section -->
+                <div id="loaihoatdong-section" class="settings-section @(ViewBag.ActiveSection == "loaihoatdong" ? "active" : "")">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-list-alt"></i>
+                            <h5>Quản Lý Loại Hoạt Động</h5>
+                        </div>
+
+                        <!-- Add Form -->
+                        <div class="settings-form-section">
+                            <h6 class="mb-3">Thêm Loại Hoạt Động Mới</h6>
+                            <form method="post" asp-action="AddLoaiHoatDong" class="mb-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="settings-form-group">
+                                            <label>Tên Loại Hoạt Động <span class="text-danger">*</span></label>
+                                            <input type="text" name="tenLoaiHD" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="settings-form-group">
+                                            <label>Mô Tả</label>
+                                            <input type="text" name="moTa" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="settings-btn">
+                                    <i class="fas fa-plus me-2"></i>Thêm Loại
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Data List -->
+                        <div class="settings-table-section">
+                            <h6 class="mb-3">Danh Sách Loại Hoạt Động</h6>
+                            @if (ViewBag.DanhSachLoaiHD != null && ViewBag.DanhSachLoaiHD.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên Loại</th>
+                                                <th>Mô Tả</th>
+                                                <th style="width: 120px;">Thao Tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var loai in ViewBag.DanhSachLoaiHD)
+                                            {
+                                                <tr class="settings-data-row">
+                                                    <td>
+                                                        <strong>@loai.TenLoaiHd</strong>
+                                                    </td>
+                                                    <td>
+                                                        <small>@loai.MoTa</small>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editLoaiHoatDong(@loai.MaLoaiHd, '@loai.TenLoaiHd', '@(loai.MoTa?.Replace("'", "\\'") ?? "")')">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form method="post" asp-action="DeleteLoaiHoatDong" style="display:inline;">
+                                                            <input type="hidden" name="id" value="@loai.MaLoaiHd">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">Chưa có loại hoạt động nào. Hãy thêm loại mới!</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="row g-4">
-            <!-- System Information -->
-            <div class="col-lg-6">
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <i class="fas fa-info-circle"></i>
-                        <h5>Thông Tin Hệ Thống</h5>
-                    </div>
-                    <form method="post" asp-action="UpdateSystemInfo">
-                        <div class="settings-form-group">
-                            <label>Tên Câu Lạc Bộ</label>
-                            <input type="text" name="tenClb" class="form-control" value="Life Skills Club" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Email</label>
-                            <input type="email" name="email" class="form-control" value="contact@lsc.edu.vn" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Số Điện Thoại</label>
-                            <input type="tel" name="sdt" class="form-control" value="0123456789" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Địa Chỉ</label>
-                            <textarea name="diaChi" class="form-control" rows="3" required>Đại học XYZ, Thành phố ABC</textarea>
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fas fa-save me-2"></i>Lưu Thay Đổi
-                        </button>
-                    </form>
-                </div>
+<!-- Edit Modal for ChucVu -->
+<div class="modal fade" id="editChucVuModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh Sửa Chức Vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-            <!-- Chức Vụ Management -->
-            <div class="col-lg-6">
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <i class="fas fa-user-tag"></i>
-                        <h5>Quản Lý Chức Vụ</h5>
+            <form method="post" asp-action="UpdateChucVu">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editChucVuId">
+                    <div class="settings-form-group">
+                        <label>Tên Chức Vụ</label>
+                        <input type="text" name="tenCV" id="editChucVuName" class="form-control" required>
                     </div>
-                    <form method="post" asp-action="AddChucVu" class="mb-3">
-                        <div class="settings-form-group">
-                            <label>Tên Chức Vụ</label>
-                            <input type="text" name="tenCV" class="form-control" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Mô Tả</label>
-                            <input type="text" name="moTa" class="form-control">
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fas fa-plus me-2"></i>Thêm Chức Vụ
-                        </button>
-                    </form>
-                    <ul class="settings-list">
-                        @if (ViewBag.DanhSachChucVu != null)
-                        {
-                            @foreach (var cv in ViewBag.DanhSachChucVu)
+                    <div class="settings-form-group">
+                        <label>Mô Tả</label>
+                        <input type="text" name="moTa" id="editChucVuDesc" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="settings-btn">Cập Nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal for Ban -->
+<div class="modal fade" id="editBanModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh Sửa Ban Chuyên Môn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-action="UpdateBan">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editBanId">
+                    <div class="settings-form-group">
+                        <label>Tên Ban</label>
+                        <input type="text" name="tenBan" id="editBanName" class="form-control" required>
+                    </div>
+                    <div class="settings-form-group">
+                        <label>Mô Tả</label>
+                        <input type="text" name="moTa" id="editBanDesc" class="form-control">
+                    </div>
+                    <div class="settings-form-group">
+                        <label>Trưởng Ban</label>
+                        <select name="truongBan" id="editBanTruongBan" class="form-select">
+                            <option value="">-- Chọn Trưởng Ban --</option>
+                            @if (ViewBag.DanhSachThanhVien != null)
                             {
-                                <li class="settings-list-item">
-                                    <div>
-                                        <strong>@cv.TenCv</strong>
-                                        <br><small class="text-muted">@cv.MoTa</small>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </li>
+                                @foreach (var tv in ViewBag.DanhSachThanhVien)
+                                {
+                                    <option value="@tv.MaTv">@tv.HoTen</option>
+                                }
                             }
-                        }
-                    </ul>
+                        </select>
+                    </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="settings-btn">Cập Nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-            <!-- Ban Chuyên Môn Management -->
-            <div class="col-lg-6">
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <i class="fas fa-users-cog"></i>
-                        <h5>Quản Lý Ban Chuyên Môn</h5>
-                    </div>
-                    <form method="post" asp-action="AddBan" class="mb-3">
-                        <div class="settings-form-group">
-                            <label>Tên Ban</label>
-                            <input type="text" name="tenBan" class="form-control" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Mô Tả</label>
-                            <input type="text" name="moTa" class="form-control">
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fas fa-plus me-2"></i>Thêm Ban
-                        </button>
-                    </form>
-                    <ul class="settings-list">
-                        @if (ViewBag.DanhSachBan != null)
-                        {
-                            @foreach (var ban in ViewBag.DanhSachBan)
-                            {
-                                <li class="settings-list-item">
-                                    <div>
-                                        <strong>@ban.TenBan</strong>
-                                        <br><small class="text-muted">Trưởng ban: @(ban.TruongBanNavigation?.HoTen ?? "Chưa có")</small>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </li>
-                            }
-                        }
-                    </ul>
-                </div>
+<!-- Edit Modal for LoaiHoatDong -->
+<div class="modal fade" id="editLoaiHoatDongModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh Sửa Loại Hoạt Động</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-            <!-- Loại Hoạt Động Management -->
-            <div class="col-lg-6">
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <i class="fas fa-list-alt"></i>
-                        <h5>Quản Lý Loại Hoạt Động</h5>
+            <form method="post" asp-action="UpdateLoaiHoatDong">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editLoaiHoatDongId">
+                    <div class="settings-form-group">
+                        <label>Tên Loại Hoạt Động</label>
+                        <input type="text" name="tenLoaiHD" id="editLoaiHoatDongName" class="form-control" required>
                     </div>
-                    <form method="post" asp-action="AddLoaiHoatDong" class="mb-3">
-                        <div class="settings-form-group">
-                            <label>Tên Loại Hoạt Động</label>
-                            <input type="text" name="tenLoaiHD" class="form-control" required>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Mô Tả</label>
-                            <input type="text" name="moTa" class="form-control">
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fas fa-plus me-2"></i>Thêm Loại
-                        </button>
-                    </form>
-                    <ul class="settings-list">
-                        @if (ViewBag.DanhSachLoaiHD != null)
-                        {
-                            @foreach (var loai in ViewBag.DanhSachLoaiHD)
-                            {
-                                <li class="settings-list-item">
-                                    <div>
-                                        <strong>@loai.TenLoaiHd</strong>
-                                        <br><small class="text-muted">@loai.MoTa</small>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </li>
-                            }
-                        }
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Security Settings -->
-            <div class="col-lg-12">
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <i class="fas fa-shield-alt"></i>
-                        <h5>Cài Đặt Bảo Mật</h5>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="settings-form-group">
-                                <label class="d-flex justify-content-between align-items-center">
-                                    <span>Yêu cầu xác thực 2 yếu tố</span>
-                                    <label class="settings-toggle">
-                                        <input type="checkbox">
-                                        <span class="settings-toggle-slider"></span>
-                                    </label>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="settings-form-group">
-                                <label class="d-flex justify-content-between align-items-center">
-                                    <span>Cho phép đăng nhập từ nhiều thiết bị</span>
-                                    <label class="settings-toggle">
-                                        <input type="checkbox" checked>
-                                        <span class="settings-toggle-slider"></span>
-                                    </label>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="settings-form-group">
-                                <label class="d-flex justify-content-between align-items-center">
-                                    <span>Gửi email thông báo đăng nhập</span>
-                                    <label class="settings-toggle">
-                                        <input type="checkbox" checked>
-                                        <span class="settings-toggle-slider"></span>
-                                    </label>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="settings-form-group">
-                                <label class="d-flex justify-content-between align-items-center">
-                                    <span>Tự động đăng xuất sau 30 phút</span>
-                                    <label class="settings-toggle">
-                                        <input type="checkbox">
-                                        <span class="settings-toggle-slider"></span>
-                                    </label>
-                                </label>
-                            </div>
-                        </div>
+                    <div class="settings-form-group">
+                        <label>Mô Tả</label>
+                        <input type="text" name="moTa" id="editLoaiHoatDongDesc" class="form-control">
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="settings-btn">Cập Nhật</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="~/js/dashboard.js"></script>
+    <script>
+        function loadSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show selected section
+            const section = document.getElementById(sectionName + '-section');
+            if (section) {
+                section.classList.add('active');
+            }
+
+            // Update menu active state
+            document.querySelectorAll('.settings-menu-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.settings-menu-item').classList.add('active');
+        }
+
+        function editChucVu(id, tenCV, moTa) {
+            document.getElementById('editChucVuId').value = id;
+            document.getElementById('editChucVuName').value = tenCV;
+            document.getElementById('editChucVuDesc').value = moTa || '';
+            new bootstrap.Modal(document.getElementById('editChucVuModal')).show();
+        }
+
+        function editBan(id, tenBan, moTa, truongBan) {
+            document.getElementById('editBanId').value = id;
+            document.getElementById('editBanName').value = tenBan;
+            document.getElementById('editBanDesc').value = moTa || '';
+            document.getElementById('editBanTruongBan').value = truongBan || '';
+            new bootstrap.Modal(document.getElementById('editBanModal')).show();
+        }
+
+        function editLoaiHoatDong(id, tenLoaiHD, moTa) {
+            document.getElementById('editLoaiHoatDongId').value = id;
+            document.getElementById('editLoaiHoatDongName').value = tenLoaiHD;
+            document.getElementById('editLoaiHoatDongDesc').value = moTa || '';
+            new bootstrap.Modal(document.getElementById('editLoaiHoatDongModal')).show();
+        }
+    </script>
 }
