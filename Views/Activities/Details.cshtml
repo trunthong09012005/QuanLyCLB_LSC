@@ -1,0 +1,127 @@
+﻿@model QuanLyCLB_LSC.Models.HoatDong
+@{
+    ViewData["Title"] = "Chi tiết hoạt động";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Hoạt Động</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin Panel</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item active" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <h2 class="mb-4"><i class="fas fa-calendar-alt me-2"></i>Chi tiết hoạt động</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>@Model.TenHd</h4>
+                            <p><strong>Ngày tổ chức:</strong> @(Model.NgayToChuc?.ToString("dd/MM/yyyy") ?? "Chưa rõ")</p>
+                            <p><strong>Địa điểm:</strong> @(Model.DiaDiem ?? "Chưa xác định")</p>
+                            <p><strong>Mô tả:</strong> @Model.MoTa</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Loại hoạt động:</strong> @Model.MaLoaiHdNavigation?.TenLoaiHd</p>
+                            <p><strong>Người phụ trách:</strong> @Model.NguoiPhuTrachNavigation?.HoTen</p>
+                            <p><strong>Kinh phí dự kiến:</strong> @Model.KinhPhiDuKien</p>
+                            <p><strong>Trạng thái:</strong>
+                                @if (Model.TrangThai == "Hoàn thành")
+                                {
+                                    <span class="badge bg-success">@Model.TrangThai</span>
+                                }
+                                else if (Model.TrangThai == "Đang chuẩn bị")
+                                {
+                                    <span class="badge bg-warning text-dark">@Model.TrangThai</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.TrangThai</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a class="btn btn-warning" href="@Url.Action("Edit", "Activities", new { id = Model.MaHd })">Sửa</a>
+                        <a class="btn btn-secondary ms-2" href="@Url.Action("Index", "Activities")">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+</body>
+</html>
