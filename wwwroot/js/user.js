@@ -25,3 +25,13 @@
         activeButton.classList.remove('text-gray-600', 'hover:bg-gray-50');
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const avatar = document.getElementById("avatarLogout");
+    if (avatar) {
+        avatar.addEventListener("click", function () {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+                window.location.href = '@Url.Action("Login", "Auth")';
+            }
+        });
+    }
+});
