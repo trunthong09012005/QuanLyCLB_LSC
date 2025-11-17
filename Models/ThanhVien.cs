@@ -115,7 +115,7 @@ public partial class ThanhVien
     [InverseProperty("MaTvNavigation")]
     public virtual ICollection<ThanhVienKyNang> ThanhVienKyNangs { get; set; } = new List<ThanhVienKyNang>();
 
-    [InverseProperty("NguoiDangNavigation")]
+    [InverseProperty("NguoiDangNavigation")]    
     public virtual ICollection<ThongBao> ThongBaos { get; set; } = new List<ThongBao>();
 
     [InverseProperty("NguoiThucHienNavigation")]

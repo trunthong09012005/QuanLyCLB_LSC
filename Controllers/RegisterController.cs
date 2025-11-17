@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
+using BCrypt.Net;
 
 namespace QuanLyCLB_LSC.Controllers
 {
@@ -13,39 +15,96 @@ namespace QuanLyCLB_LSC.Controllers
             _context = context;
         }
 
-        // ===== ĐĂNG KÝ =====
+        // ===== ĐĂNG KÝ - GET =====
         [HttpGet]
         public IActionResult Register()
         {
             return View("~/Views/Register/Register.cshtml");
         }
 
+        // ===== ĐĂNG KÝ - POST =====
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View("~/Views/Register/Register.cshtml", model);
 
-            if (_context.TaiKhoans.Any(t => t.TenDn == model.TenDN))
+            // Kiểm tra tên đăng nhập
+            if (_context.TaiKhoans.Any(t => t.TenDn.ToLower() == model.TenDN.ToLower()))
             {
-                ViewBag.Error = "Tên đăng nhập đã tồn tại!";
+                ModelState.AddModelError(nameof(model.TenDN), "Tên đăng nhập đã tồn tại!");
                 return View("~/Views/Register/Register.cshtml", model);
             }
 
-            var taiKhoan = new TaiKhoan
+            // Kiểm tra email
+            var email = model.Email?.Trim().ToLower();
+            if (!string.IsNullOrWhiteSpace(email) &&
+                _context.ThanhViens.Any(tv => tv.Email.ToLower() == email))
             {
-                TenDn = model.TenDN,
-                MatKhau = model.MatKhau,
-                NgayTao = DateTime.Now,
-                TrangThai = "Hoạt động",
-                QuyenHan = "Member"
-            };
+                ModelState.AddModelError(nameof(model.Email), "Email đã được sử dụng!");
+                return View("~/Views/Register/Register.cshtml", model);
+            }
 
-            _context.TaiKhoans.Add(taiKhoan);
-            _context.SaveChanges();
+            {
+                ModelState.AddModelError(nameof(model.Email), "Email đã được sử dụng!");
+                return View("~/Views/Register/Register.cshtml", model);
+            }
 
-            TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
-            return RedirectToAction("Login", "Auth");
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                // 1️⃣ Tạo ThanhVien trước
+                var thanhVien = new ThanhVien
+                {
+                    HoTen = model.HoTen ?? model.TenDN ?? "Người dùng",
+                    NgaySinh = model.NgaySinh.HasValue ? DateOnly.FromDateTime(model.NgaySinh.Value) : null,
+                    GioiTinh = model.GioiTinh,
+                    Sdt = model.SDT,
+                    DiaChi = model.DiaChi,
+                    Khoa = model.Khoa,
+                    Lop = model.Lop,
+                    Email = model.Email,
+                    VaiTro = model.VaiTro,
+                    NgayThamGia = DateOnly.FromDateTime(DateTime.Now),
+                    TrangThai = "Hoạt động"
+                };
+
+                _context.ThanhViens.Add(thanhVien);
+                _context.SaveChanges(); // EF Core gán MaTV tự động
+
+                // 2️⃣ Tạo TaiKhoan với MaTv đúng
+                var taiKhoan = new TaiKhoan
+                {
+                    TenDn = model.TenDN,
+                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
+                    NgayTao = DateTime.Now,
+                    TrangThai = "Hoạt động",
+                    QuyenHan = "Member",    
+                    MaTv = thanhVien.MaTv
+                };
+
+                _context.TaiKhoans.Add(taiKhoan);
+                _context.SaveChanges();
+
+                transaction.Commit();
+
+                TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
+                return RedirectToAction("Login", "Auth");
+            }
+            catch (Exception ex)
+            {
+                try { transaction.Rollback(); } catch { }
+
+                // Debug: nếu muốn xem lỗi thực tế
+                // ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Có lỗi khi lưu dữ liệu. Vui lòng thử lại.");
+
+                return View("~/Views/Register/Register.cshtml", model);
+            }
+
         }
+
     }
+
 }
