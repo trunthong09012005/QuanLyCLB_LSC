@@ -35,24 +35,41 @@
                             🏆 Khen thưởng
                         </button>
                     </div>
+
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors relative">
+                    <button class="bell-button p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
+                            onclick="handleNotificationClick()"
+                            title="Xem thông báo mới">
                         🔔
-                        <span class="notification-dot"></span>
+                        @if (Model.CoTimelineMoi)   
+                        {
+                            <span class="notification-dot absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
+                        }
                     </button>
+
                     <div class="flex items-center space-x-3 pl-4 border-l">
                         <div>
                             <p class="text-sm font-semibold text-gray-800 text-right">@Model.HoTen</p>
                             <p class="text-xs text-gray-500 text-right">@Model.TenChucVu</p>
                         </div>
                         <!-- Avatar -->
-            <div id="avatarLogout" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 
-     rounded-full flex items-center justify-center text-white 
-     font-semibold shadow-md cursor-pointer">
-    @Model.HoTen?.Substring(0, 1).ToUpper()
-</div>
+                        <!-- Avatar -->
+                        <div class="relative">
+                            <div id="avatarLogout" class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500
+         rounded-full flex items-center justify-center text-white
+         font-semibold shadow-md cursor-pointer">
+                                @Model.HoTen?.Substring(0, 1).ToUpper()
+                            </div>
+
+                            <!-- Dropdown menu -->
+                            <div id="avatarMenu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden z-50">
+                                <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">Đăng xuất</button>
+                                <button id="cancelBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100">Hủy</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -336,8 +353,7 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+
 <!-- Gallery Item 1 -->
 <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover:scale-105 transition-transform duration-300">
     <!-- Image -->
@@ -570,5 +586,8 @@
         <h3 class="font-bold text-gray-800 text-sm mb-2">Cuộc thi Lập trình LSC Code War</h3>
         <p class="text-xs text-gray-600 line-clamp-2">Tranh tài giải thuật và tư duy lập trình</p>
     </div>
-    <script src="~/js/user.js"></script>
+  
 </div>
+<script src="~/js/user.js"></script>
+</body>
+</html>
