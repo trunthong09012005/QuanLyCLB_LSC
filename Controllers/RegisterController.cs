@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
-using BCrypt.Net;
+using QuanLyCLB_LSC.Helpers;
 
 namespace QuanLyCLB_LSC.Controllers
 {
@@ -49,6 +49,7 @@ namespace QuanLyCLB_LSC.Controllers
                 return View("~/Views/Register/Register.cshtml", model);
             }
 
+            using var transaction = _context.Database.BeginTransaction();
             try
             {
                 // 3️⃣ Tạo ThanhVien
@@ -74,10 +75,10 @@ namespace QuanLyCLB_LSC.Controllers
                 var taiKhoan = new TaiKhoan
                 {
                     TenDn = model.TenDN,
-                    MatKhau = model.MatKhau,
+                    MatKhau = PasswordHelper.HashPassword(model.MatKhau),
                     NgayTao = DateTime.Now,
                     TrangThai = "Hoạt động",
-                    QuyenHan = "Member",
+                    QuyenHan = "Thành viên",
                     MaTv = thanhVien.MaTv
                 };
 

@@ -2,6 +2,7 @@
 using QuanLyCLB_LSC.Models;
 using QuanLyCLB_LSC.ViewModels;
 using Microsoft.AspNetCore.Http;
+using QuanLyCLB_LSC.Helpers;
 
 namespace QuanLyCLB_LSC.Controllers
 {
@@ -34,8 +35,11 @@ namespace QuanLyCLB_LSC.Controllers
                 return View("~/Views/Auth/Login.cshtml", model);
             }
 
-            // So sánh mật khẩu plain text (hoặc hash nếu DB hash)
-            if (user.MatKhau != model.MatKhau)
+            var storedHash = user.MatKhau ?? string.Empty;
+
+            // Hash input using SHA256 and compare with stored hash
+            var inputHash = PasswordHelper.HashPassword(model.MatKhau);
+            if (!string.Equals(inputHash, storedHash, System.StringComparison.OrdinalIgnoreCase))
             {
                 ViewBag.Error = "Mật khẩu không đúng!";
                 return View("~/Views/Auth/Login.cshtml", model);
