@@ -164,9 +164,5 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
 
     showAlert('success', `Đăng ký thành công! Chào mừng ${formData.HoTen} đến với CLB Kỹ Năng Sống!`);
 
-    // Simulate redirect after 2 seconds
-    setTimeout(() => {
-        const alertDiv = document.getElementById('alertMessage');
-        alertDiv.innerHTML += '<br><small><i class="fas fa-spinner fa-spin me-2"></i>Đang chuyển đến trang đăng nhập...</small>';
-    }, 1500);
+
 });

@@ -1,0 +1,169 @@
+﻿@model QuanLyCLB_LSC.Models.ThanhVien
+
+@{
+    ViewData["Title"] = "Thêm thành viên";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị - Thành Viên</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item active" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                 
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <h2 class="mb-4"><i class="fas fa-user-plus me-2" style="color: var(--primary-color);"></i>Thêm thành viên</h2>
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Họ tên</label>
+                                    <input asp-for="HoTen" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ngày sinh</label>
+                                    <input asp-for="NgaySinh" class="form-control" type="date" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Giới tính</label>
+                                    <select asp-for="GioiTinh" class="form-select">
+                                        <option value="">-- Chọn --</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>SDT</label>
+                                    <input asp-for="Sdt" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input asp-for="Email" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Chức vụ</label>
+                                    <select asp-for="MaCv" class="form-select" name="MaCv">
+                                        <option value="">-- Chọn chức vụ --</option>
+                                        @foreach (var cv in ViewBag.ChucVus as List<QuanLyCLB_LSC.Models.ChucVu>)
+                                        {
+                                            <option value="@cv.MaCv">@cv.TenCv</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ban</label>
+                                    <select asp-for="MaBan" class="form-select" name="MaBan">
+                                        <option value="">-- Chọn ban --</option>
+                                        @foreach (var b in ViewBag.Bans as List<QuanLyCLB_LSC.Models.BanChuyenMon>)
+                                        {
+                                            <option value="@b.MaBan">@b.TenBan</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Địa chỉ</label>
+                                    <input asp-for="DiaChi" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Vai trò</label>
+                                    <input asp-for="VaiTro" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Trạng thái</label>
+                                    <select asp-for="TrangThai" class="form-select" name="TrangThai">
+                                        <option value="Hoạt động">Hoạt động</option>
+                                        <option value="Tạm dừng">Tạm dừng</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary">Lưu</button>
+                        <a class="btn btn-secondary ms-2" href="@Url.Action("Index", "Members")">Hủy</a>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+</body>
+</html>

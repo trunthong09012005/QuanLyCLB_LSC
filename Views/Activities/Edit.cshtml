@@ -1,0 +1,137 @@
+﻿@model QuanLyCLB_LSC.Models.HoatDong
+@{
+    ViewData["Title"] = "Sửa hoạt động";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa Hoạt Động</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item active" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="#" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-content">
+            <h2 class="mb-4"><i class="fas fa-edit me-2"></i>Sửa hoạt động</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="MaHd" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Tên hoạt động</label>
+                                    <input asp-for="TenHd" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ngày tổ chức</label>
+                                    <input asp-for="NgayToChuc" class="form-control" type="date" />
+                                </div>
+                                <div class="mb-3">
+                                    <label>Địa điểm</label>
+                                    <input asp-for="DiaDiem" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Loại hoạt động</label>
+                                    <select asp-for="MaLoaiHd" class="form-select" name="MaLoaiHd">
+                                        <option value="">-- Chọn loại --</option>
+                                        @foreach (var l in ViewBag.LoaiHoatDongs as List<QuanLyCLB_LSC.Models.LoaiHoatDong>)
+                                        {
+                                            if (Model.MaLoaiHd == l.MaLoaiHd)
+                                            {
+                                                <option value="@l.MaLoaiHd" selected>@l.TenLoaiHd</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@l.MaLoaiHd">@l.TenLoaiHd</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Người phụ trách</label>
+                                    <select asp-for="NguoiPhuTrach" class="form-select" name="NguoiPhuTrach">
+                                        <option value="">-- Chọn người --</option>
+                                        @foreach (var t in ViewBag.ThanhViens as List<QuanLyCLB_LSC.Models.ThanhVien>)
+                                        {
+                                            if (Model.NguoiPhuTrach == t.MaTv)
+                                            {
+                                                <option value="@t.MaTv" selected>@t.HoTen</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@t.MaTv">@t.HoTen</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Kinh phí dự kiến</label>
+                                    <input asp-for="KinhPhiDuKien" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Mô tả</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary">Lưu</button>
+                            <a class="btn btn-secondary ms-2" href="@Url.Action("Index", "Activities")">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

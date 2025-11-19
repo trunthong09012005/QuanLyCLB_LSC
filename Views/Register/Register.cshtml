@@ -1,6 +1,6 @@
 ﻿@model QuanLyCLB_LSC.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Đăng ký thành viên - CLB Kỹ Năng Sống";
+    ViewData["Title"] = "Đăng ký thành viên - CLB Kỹ Năng";
 }
 
 <!DOCTYPE html>
@@ -20,9 +20,9 @@
                 <!-- Header -->
                 <div class="header-section">
                     <div class="logo-badge">LSC</div>
-                    <h3 class="fw-bold mb-2" style="position: relative; z-index: 1;">Đăng Ký Thành Viên</h3>
+                    <h3 class="fw-bold mb-2" style="position: relative; z-index: 1;">Đăng Ký Tài Khoản Thành Viên</h3>
                     <p class="mb-0" style="position: relative; z-index: 1; opacity: 0.95;">
-                        Câu Lạc Bộ Kỹ Năng Sống
+                        Câu Lạc Bộ Kỹ Năng
                     </p>
                 </div>
 
@@ -37,7 +37,9 @@
                         <div class="step" id="step3">3</div>
                     </div>
 
-                    <form id="registerForm">
+                    <form asp-action="Register" asp-controller="Register" method="post">
+                        @Html.AntiForgeryToken()
+
                         <!-- Step 1: Account Info -->
                         <div class="form-section active" id="section1">
                             <h5 class="text-center mb-4 fw-bold" style="color: #667eea;">
@@ -223,22 +225,22 @@
                                         <i class="fas fa-users text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control" id="lop" name="Lop"
-                                           placeholder="VD: CNTT K18">
+                                           placeholder="VD: CQ.64.CNTT">
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="fas fa-user-tag me-2 text-primary"></i>Vai Trò Mong Muốn
+                                    <i class="fas fa-user-tag me-2 text-primary"></i>Vai Trò Tài Khoản
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="fas fa-user-tag text-muted"></i>
                                     </span>
                                     <select class="form-select" id="vaiTro" name="VaiTro">
-                                        <option value="">Chọn vai trò</option>
+                                        <option value="">Chọn Vai Trò</option>
                                         <option value="Thành viên">Thành viên</option>
-                                        <option value="Tình nguyện viên">Tình nguyện viên</option>
+                                        <option value="Tình nguyện viên">Ứng viên</option>
                                     </select>
                                 </div>
                             </div>
@@ -248,7 +250,7 @@
                                     <input class="form-check-input" type="checkbox" id="acceptTerms" required>
                                     <label class="form-check-label" for="acceptTerms">
                                         Tôi đồng ý với <a href="#" style="color: #667eea;">Điều khoản và Điều kiện</a>
-                                        của CLB Kỹ Năng Sống <span class="text-danger">*</span>
+                                        của CLB Kỹ Năng <span class="text-danger">*</span>
                                     </label>
                                 </div>
                             </div>
