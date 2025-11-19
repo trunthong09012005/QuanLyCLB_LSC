@@ -22,10 +22,6 @@ function logout() {
     }
 }
 
-
-// Activity Chart với dữ liệu từ server
-const hoatDongTheoThang = @Html.Raw(Json.Serialize(ViewBag.HoatDongTheoThang ?? new List < int > ()));
-
 const activityChart = new Chart(activityCtx, {
     type: 'line',
     data: {

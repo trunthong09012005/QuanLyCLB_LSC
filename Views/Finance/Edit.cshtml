@@ -1,0 +1,54 @@
+﻿@model QuanLyCLB_LSC.Models.ThuChi
+
+@{
+    ViewData["Title"] = "Sửa giao dịch";
+}
+
+<h2>Sửa giao dịch</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="MaGd" />
+
+    <div class="form-group">
+        <label asp-for="SoTien">Số tiền</label>
+        <input asp-for="SoTien" class="form-control" />
+        <span asp-validation-for="SoTien" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NoiDung">Nội dung</label>
+        <textarea asp-for="NoiDung" class="form-control"></textarea>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+    </div>
+
+    @if (Model.LoaiGd == "Thu")
+    {
+        <div class="form-group">
+            <label>Nguồn thu</label>
+            <select asp-for="MaNguon" class="form-control"
+                    asp-items="@(new SelectList(ViewBag.NguonThus, "MaNguon", "TenNguon", Model.MaNguon))">
+            </select>
+        </div>
+    }
+
+    @if (Model.LoaiGd == "Chi")
+    {
+        <div class="form-group">
+            <label>Hoạt động</label>
+            <select asp-for="MaHd" class="form-control"
+                    asp-items="@(new SelectList(ViewBag.HoatDongs, "MaHd", "TenHd", Model.MaHd))">
+            </select>
+        </div>
+    }
+
+    <div class="form-group">
+        <label>Người thực hiện</label>
+        <select asp-for="NguoiThucHien" class="form-control"
+                asp-items="@(new SelectList(ViewBag.ThanhViens, "MaTv", "HoTen", Model.NguoiThucHien))">
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Lưu thay đổi</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Hủy</a>
+</form>
+

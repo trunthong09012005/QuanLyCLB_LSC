@@ -22,35 +22,42 @@
         </div>
 
         <div class="sidebar-menu">
-            <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+            <a asp-controller="Dashboard" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
                 <i class="fas fa-home"></i>
                 <span>Trang Chủ</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('members')">
+
+            <a asp-controller="Members" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Members" ? "active" : "")">
                 <i class="fas fa-users"></i>
                 <span>Thành Viên</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('activities')">
+
+            <a asp-controller="Activities" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Activities" ? "active" : "")">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Hoạt Động</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('projects')">
+
+            <a asp-controller="Project" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Project" ? "active" : "")">
                 <i class="fas fa-project-diagram"></i>
                 <span>Dự Án</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('finance')">
+
+            <a asp-controller="Finance" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Finance" ? "active" : "")">
                 <i class="fas fa-wallet"></i>
                 <span>Tài Chính</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('reports')">
+
+            <a asp-controller="Reports" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
                 <i class="fas fa-chart-bar"></i>
                 <span>Báo Cáo</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('settings')">
+
+            <a asp-controller="Settings" asp-action="Index" class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
                 <i class="fas fa-cog"></i>
                 <span>Cài Đặt</span>
             </a>
-            <a href="#" class="menu-item" onclick="logout()">
+
+            <a asp-controller="Account" asp-action="Logout" class="menu-item">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Đăng Xuất</span>
             </a>

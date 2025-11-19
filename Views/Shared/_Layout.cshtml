@@ -7,6 +7,13 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/project.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/finance.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/QuanLyCLB_LSC.styles.css" asp-append-version="true" />
 </head>
 <body>
@@ -26,6 +33,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Project" asp-action="Index">Dự án</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Finance" asp-action="Index">Tài chính</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -44,7 +57,11 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (ViewContext.RouteData.Values["action"].ToString() == "Dashboard")
+    {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="~/js/dashboard.js" asp-append-version="true"></script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
