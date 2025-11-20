@@ -18,7 +18,7 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-circle">LSC</div>
-            <h5 class="mb-0">Admin Panel</h5>
+            <h5 class="mb-0">Admin</h5>
             <small>Life Skills Club</small>
         </div>
 
@@ -69,7 +69,7 @@
             <div class="user-info">
                 <div class="position-relative">
                     <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
-                    <span class="notification-badge">3</span>
+                  
                 </div>
                 <div>
                     <div class="fw-bold">Admin</div>
@@ -113,8 +113,22 @@
                     <div class="chart-card">
                         <div class="chart-header d-flex justify-content-between align-items-center">
                             <h5 class="chart-title"><i class="fas fa-chart-area me-2"></i>Hoạt động trong năm</h5>
-                            <select id="yearSelect" class="form-select" style="width: auto;">
-                                <option>@DateTime.Now.Year</option>
+                            <select id="yearSelect" class="form-select" style="width: auto;" onchange="onYearChange(this.value)">
+                                @{ 
+                                    var years = ViewBag.AvailableYears as List<int> ?? new List<int> { DateTime.Now.Year };
+                                    var sel = ViewBag.SelectedYear as int? ?? DateTime.Now.Year;
+                                }
+                                @foreach (var y in years)
+                                {
+                                    if (y == sel)
+                                    {
+                                        <option value="@y" selected>@y</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@y">@y</option>
+                                    }
+                                }
                             </select>
                         </div>
                         <canvas id="activityChart" height="100"></canvas>
@@ -258,6 +272,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
+        function onYearChange(year) {
+            // preserve existing query params (search, loaiId, nguoiId) and change/add year
+            const url = new URL(window.location.href);
+            url.searchParams.set('year', year);
+            // keep other params as-is (they are already in url)
+            window.location.href = url.toString();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             try {
                 let labels = @Html.Raw(ViewBag.ActivityChartLabels ?? "[]");
