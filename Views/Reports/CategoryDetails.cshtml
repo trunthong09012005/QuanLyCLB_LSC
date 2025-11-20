@@ -1,0 +1,386 @@
+﻿@model CategoryDetailsViewModel
+@using QuanLyCLB_LSC.ViewModels
+@using QuanLyCLB_LSC.Models
+@{
+    ViewData["Title"] = "Chi tiết danh mục - Báo cáo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css" />
+<link rel="stylesheet" href="~/css/reports-redesigned.css" />
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-circle">LSC</div>
+        <h5 class="mb-0">Admin Panel</h5>
+        <small>Life Skills Club</small>
+    </div>
+
+    <div class="sidebar-menu">
+        <a href="@Url.Action("Index", "Dashboard")" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Trang Chủ</span>
+        </a>
+        <a href="@Url.Action("Index", "Members")" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Thành Viên</span>
+        </a>
+        <a href="@Url.Action("Index", "Activities")" class="menu-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Hoạt Động</span>
+        </a>
+        <a href="@Url.Action("Index", "Projects")" class="menu-item">
+            <i class="fas fa-project-diagram"></i>
+            <span>Dự Án</span>
+        </a>
+        <a href="@Url.Action("Index", "Finance")" class="menu-item">
+            <i class="fas fa-wallet"></i>
+            <span>Tài Chính</span>
+        </a>
+        <a href="@Url.Action("Index", "Reports")" class="menu-item active">
+            <i class="fas fa-chart-bar"></i>
+            <span>Báo Cáo</span>
+        </a>
+        <a href="@Url.Action("Index", "Settings")" class="menu-item">
+            <i class="fas fa-cog"></i>
+            <span>Cài Đặt</span>
+        </a>
+        <a href="@Url.Action("Login", "Auth")" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Đăng Xuất</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="top-header">
+        <div>
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="user-info">
+            <div class="position-relative">
+                <i class="fas fa-bell" style="font-size: 22px; color: var(--report-accent); cursor: pointer;"></i>
+                <span class="notification-badge">3</span>
+            </div>
+            <div>
+                <div class="fw-bold">Quản trị viên</div>
+                <small class="text-muted">Quản trị viên</small>
+            </div>
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content reports-container">
+        <!-- Header Section -->
+        <div class="reports-header mb-4">
+            <div>
+                <a href="@Url.Action("Index", "Reports")" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+            <div>
+                <h2>
+                    <i class="fas fa-table me-2" style="color: var(--report-accent);"></i>
+                    @GetCategoryTitle(Model.Category)
+                </h2>
+                <p class="text-muted">Hiển thị chi tiết tất cả thông tin về @GetCategoryTitle(Model.Category).ToLower()</p>
+            </div>
+        </div>
+
+        <!-- Filter and Search Section -->
+        <div class="report-card mb-4">
+            <div class="controls-header">
+                <h5>Tìm kiếm và Lọc</h5>
+            </div>
+            <div class="controls-content">
+                <form method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Tìm kiếm</label>
+                        <input type="text" name="search" class="form-control" placeholder="Nhập từ khóa..." value="@Model.Search" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Lọc theo trạng thái</label>
+                        <select name="filterType" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            @{
+                                List<string> filterOptions = new();
+                                if (Model.Category == "members")
+                                {
+                                    filterOptions = new List<string> { "Hoạt động", "Nghỉ học" };
+                                }
+                                else if (Model.Category == "activities")
+                                {
+                                    filterOptions = new List<string> { "Đang chuẩn bị", "Đang thực hiện", "Hoàn thành", "Hủy bỏ" };
+                                }
+                                else if (Model.Category == "projects")
+                                {
+                                    filterOptions = new List<string> { "Đang thực hiện", "Hoàn thành", "Tạm dừng", "Hủy bỏ" };
+                                }
+                                else if (Model.Category == "finance")
+                                {
+                                    filterOptions = new List<string> { "Thu", "Chi" };
+                                }
+
+                                foreach (var option in filterOptions)
+                                {
+                                    if (option == Model.FilterType)
+                                    {
+                                        <option value="@option" selected="selected">@option</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@option">@option</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="report-card">
+            <div class="table-header">
+                <h5>Danh sách (Tổng: @Model.TotalCount bản ghi)</h5>
+            </div>
+
+            @if (Model.Category == "members")
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã TV</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Lớp</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tham gia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Members.Any())
+                            {
+                                @foreach (var member in Model.Members)
+                                {
+                                    <tr>
+                                        <td><strong>@member.MaTv</strong></td>
+                                        <td>@member.HoTen</td>
+                                        <td>@member.Email</td>
+                                        <td>@member.Sdt</td>
+                                        <td>@member.Lop</td>
+                                        <td>
+                                            <span class="badge bg-@(member.TrangThai == "Hoạt động" ? "success" : "secondary")">
+                                                @member.TrangThai
+                                            </span>
+                                        </td>
+                                        <td>@member.NgayThamGia?.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="7" class="text-center text-muted">Không có dữ liệu</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (Model.Category == "activities")
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã HD</th>
+                                <th>Tên hoạt động</th>
+                                <th>Địa điểm</th>
+                                <th>Ngày tổ chức</th>
+                                <th>Người phụ trách</th>
+                                <th>Kinh phí</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Activities.Any())
+                            {
+                                @foreach (var activity in Model.Activities)
+                                {
+                                    <tr>
+                                        <td><strong>@activity.MaHd</strong></td>
+                                        <td>@activity.TenHd</td>
+                                        <td>@activity.DiaDiem</td>
+                                        <td>@activity.NgayToChuc?.ToString("dd/MM/yyyy")</td>
+                                        <td>@activity.NguoiPhuTrachNavigation?.HoTen</td>
+                                        <td>@activity.KinhPhiDuKien?.ToString("N0") ₫</td>
+                                        <td>
+                                            <span class="badge bg-@GetActivityStatusColor(activity.TrangThai)">
+                                                @activity.TrangThai
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="7" class="text-center text-muted">Không có dữ liệu</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (Model.Category == "projects")
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã DA</th>
+                                <th>Tên dự án</th>
+                                <th>Mô tả</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Projects.Any())
+                            {
+                                @foreach (var project in Model.Projects)
+                                {
+                                    <tr>
+                                        <td><strong>@project.MaDa</strong></td>
+                                        <td>@project.TenDuAn</td>
+                                        <td>@(project.MoTa?.Length > 50 ? project.MoTa.Substring(0, 50) + "..." : project.MoTa)</td>
+                                        <td>@project.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                                        <td>@project.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <span class="badge bg-@GetProjectStatusColor(project.TrangThai)">
+                                                @project.TrangThai
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="6" class="text-center text-muted">Không có dữ liệu</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (Model.Category == "finance")
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã GD</th>
+                                <th>Loại giao dịch</th>
+                                <th>Số tiền</th>
+                                <th>Nội dung</th>
+                                <th>Ngày giao dịch</th>
+                                <th>Người thực hiện</th>
+                                <th>Nguồn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ThuChis.Any())
+                            {
+                                @foreach (var transaction in Model.ThuChis)
+                                {
+                                    <tr>
+                                        <td><strong>@transaction.MaGd</strong></td>
+                                        <td>
+                                            <span class="badge bg-@(transaction.LoaiGd == "Thu" ? "success" : "danger")">
+                                                @transaction.LoaiGd
+                                            </span>
+                                        </td>
+                                        <td class="fw-bold">@transaction.SoTien.ToString("N0") ₫</td>
+                                        <td>@(transaction.NoiDung?.Length > 40 ? transaction.NoiDung.Substring(0, 40) + "..." : transaction.NoiDung)</td>
+                                        <td>@transaction.NgayGd?.ToString("dd/MM/yyyy")</td>
+                                        <td>@transaction.NguoiThucHienNavigation?.HoTen</td>
+                                        <td>@transaction.MaNguonNavigation?.TenNguon</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="7" class="text-center text-muted">Không có dữ liệu</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            string queryString = $"?category={Model.Category}&page={i}";
+                            if (!string.IsNullOrWhiteSpace(Model.Search))
+                                queryString += $"&search={Uri.EscapeDataString(Model.Search)}";
+                            if (!string.IsNullOrWhiteSpace(Model.FilterType))
+                                queryString += $"&filterType={Model.FilterType}";
+
+                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("CategoryDetails", "Reports")@queryString">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js"></script>
+}
+
+@functions {
+    private string GetCategoryTitle(string category) => category?.ToLower() switch
+    {
+        "members" => "Thành viên",
+        "activities" => "Hoạt động",
+        "projects" => "Dự án",
+        "finance" => "Tài chính",
+        _ => "Danh mục"
+    };
+
+    private string GetActivityStatusColor(string status) => status switch
+    {
+        "Đang chuẩn bị" => "info",
+        "Đang thực hiện" => "primary",
+        "Hoàn thành" => "success",
+        "Hủy bỏ" => "danger",
+        _ => "secondary"
+    };
+
+    private string GetProjectStatusColor(string status) => status switch
+    {
+        "Đang thực hiện" => "primary",
+        "Hoàn thành" => "success",
+        "Tạm dừng" => "warning",
+        "Hủy bỏ" => "danger",
+        _ => "secondary"
+    };
+}
