@@ -1,18 +1,11 @@
 ﻿@model IEnumerable<QuanLyCLB_LSC.Models.ThanhVien>
 @{
-    ViewData["Title"] = "Quản lý thành viên";
+    ViewData["Title"] = "Thành viên - CLB Kỹ Năng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Trị - Thành Viên</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/dashboard.css" />
-</head>
+
+<link rel="stylesheet" href="~/css/dashboard.css" />
+
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -34,11 +27,11 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span>Hoạt Động</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('projects')">
+            <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
                 <i class="fas fa-project-diagram"></i>
                 <span>Dự Án</span>
             </a>
-            <a href="#" class="menu-item" onclick="showSection('finance')">
+            <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
                 <i class="fas fa-wallet"></i>
                 <span>Tài Chính</span>
             </a>

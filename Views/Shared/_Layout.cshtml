@@ -53,7 +53,9 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <!-- Use full-width container so pages that render full-width (sidebar + main-content) align consistently -->
+    <div class="container-fluid p-0">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

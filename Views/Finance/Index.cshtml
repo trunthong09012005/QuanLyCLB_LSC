@@ -1,8 +1,8 @@
 ﻿@model QuanLyCLB_LSC.ViewModels.DashboardViewModel
 @{
-    ViewData["Title"] = "Quản Lý Tài Chính - CLB Kỹ Năng Sống";
+    ViewData["Title"] = "Tài Chính - CLB Kỹ Năng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<!--Đinh Công Vinh Quang-->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -18,40 +18,40 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo-circle">LSC</div>
-            <h5 class="mb-0">Admin Panel</h5>
-            <small>CLB Kỹ Năng Sống</small>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
         </div>
 
         <div class="sidebar-menu">
-            <a asp-controller="Dashboard" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
                 <i class="fas fa-home"></i>
                 <span>Trang Chủ</span>
             </a>
-            <a asp-controller="Members" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
                 <i class="fas fa-users"></i>
                 <span>Thành Viên</span>
             </a>
-            <a asp-controller="Activities" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Hoạt Động</span>
             </a>
-            <a asp-controller="Project" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
                 <i class="fas fa-project-diagram"></i>
                 <span>Dự Án</span>
             </a>
-            <a asp-controller="Finance" asp-action="Index" class="menu-item active">
+            <a href="@Url.Action("Index", "Finance")" class="menu-item active" onclick="showSection('finance')">
                 <i class="fas fa-wallet"></i>
                 <span>Tài Chính</span>
             </a>
-            <a asp-controller="Reports" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
                 <i class="fas fa-chart-bar"></i>
                 <span>Báo Cáo</span>
             </a>
-            <a asp-controller="Settings" asp-action="Index" class="menu-item">
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
                 <i class="fas fa-cog"></i>
                 <span>Cài Đặt</span>
             </a>
-            <a asp-controller="Account" asp-action="Logout" class="menu-item">
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Đăng Xuất</span>
             </a>
