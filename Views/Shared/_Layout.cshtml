@@ -16,7 +16,6 @@
 
     @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/project.css" asp-append-version="true" />
@@ -65,13 +64,14 @@
             &copy; 2025 - QuanLyCLB_LSC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     @if (ViewContext.RouteData.Values["action"].ToString() == "Dashboard")
     {
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="~/js/dashboard.js" asp-append-version="true"></script>
     }
+    <!-- Scripts -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

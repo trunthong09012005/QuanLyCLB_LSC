@@ -447,27 +447,28 @@ namespace QuanLyCLB_LSC.Controllers
         // GET: Finance/ExportExcel
         public IActionResult ExportExcel()
         {
-            var list = _context.ThuChiChiTiets
-        .Select(x => new
-        {
-            NoiDung = x.NoiDung ?? "",
-            SoTien = x.SoTien,
-            Ngay = x.MaGdNavigation.NgayGd
-        })
-        .ToList();
+            var list = _context.ThuChis
+                .OrderByDescending(x => x.NgayGd)
+                .Select(x => new
+                {
+                    NoiDung = x.NoiDung ?? "",
+                    SoTien = x.SoTien,
+                    Ngay = x.NgayGd
+                })
+                .ToList();
 
-            // Định độ rộng cột
-            int col1 = 40; // Nội dung
-            int col2 = 20; // Số tiền
-            int col3 = 20; // Ngày
+            // Độ rộng cột
+            int col1 = 50; // Nội dung
+            int col2 = 25; // Số tiền
+            int col3 = 15; // Ngày
 
             var sb = new StringBuilder();
 
             // Header
             sb.AppendLine(
                 "Nội dung".PadRight(col1) +
-                "Số tiền".PadRight(col2) +
-                "Ngày".PadRight(col3)
+                "Số tiền".PadLeft(col2) +
+                "Ngày".PadLeft(col3)
             );
 
             sb.AppendLine(new string('-', col1 + col2 + col3));
@@ -478,11 +479,10 @@ namespace QuanLyCLB_LSC.Controllers
                 sb.AppendLine(
                     item.NoiDung.PadRight(col1) +
                     item.SoTien.ToString("N0").PadLeft(col2) +
-                    (item.Ngay?.ToString("dd/MM/yyyy") ?? "").PadRight(col3)
+                    (item.Ngay?.ToString("dd/MM/yyyy") ?? "").PadLeft(col3)
                 );
             }
 
-            // Xuất file
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/plain", "BaoCaoThuChi.txt");
         }
