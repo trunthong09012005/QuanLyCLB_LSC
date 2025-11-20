@@ -1,0 +1,51 @@
+﻿@model dynamic
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Chi tiết dự án</h2>
+
+    <div class="card p-3 shadow-sm mb-4">
+        <p><strong>Mã dự án:</strong> @Model.MaDa</p>
+        <p><strong>Tên dự án:</strong> @Model.TenDuAn</p>
+        <p><strong>Mô tả:</strong> @Model.MoTa</p>
+        <p><strong>Ngày bắt đầu:</strong> @Model.NgayBatDau?.ToString("dd/MM/yyyy")</p>
+        <p><strong>Ngày kết thúc:</strong> @Model.NgayKetThuc?.ToString("dd/MM/yyyy")</p>
+        <p><strong>Trạng thái:</strong> @Model.TrangThai</p>
+    </div>
+
+    <h4>Danh sách thành viên tham gia</h4>
+
+    <table class="table table-bordered mt-2">
+        <thead class="table-dark">
+            <tr>
+                <th>Mã TV</th>
+                <th>Họ tên</th>
+                <th>Nhiệm vụ</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ThanhVien != null && Model.ThanhVien.Count > 0)
+            {
+                foreach (var tv in Model.ThanhVien)
+                {
+                    <tr>
+                        <td>@tv.MaTv</td>
+                        <td>@tv.HoTen</td>
+                        <td>@tv.NhiemVu</td>
+                        <td>@tv.TrangThai</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">Chưa có thành viên nào</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary mt-3" href="/Project/Index">Quay lại</a>
+</div>
+

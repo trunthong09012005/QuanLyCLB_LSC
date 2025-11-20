@@ -1,0 +1,81 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Chi tiết giao dịch";
+}
+
+<h2>Chi tiết giao dịch</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Mã giao dịch</th>
+        <td>@Model.MaGd</td>
+    </tr>
+    <tr>
+        <th>Loại giao dịch</th>
+        <td>@Model.LoaiGd</td>
+    </tr>
+    <tr>
+        <th>Số tiền</th>
+        <td>@Model.SoTien.ToString("N0") VNĐ</td>
+    </tr>
+    <tr>
+        <th>Ngày giao dịch</th>
+        <td>@Model.NgayGd.ToString("dd/MM/yyyy HH:mm")</td>
+    </tr>
+    <tr>
+        <th>Nội dung</th>
+        <td>@Model.NoiDung</td>
+    </tr>
+    <tr>
+        <th>Người thực hiện</th>
+        <td>@Model.NguoiThucHienTen</td>
+    </tr>
+
+    @if (Model.LoaiGd == "Thu")
+    {
+        <tr>
+            <th>Nguồn thu</th>
+            <td>@Model.NguonTen</td>
+        </tr>
+    }
+
+    @if (Model.LoaiGd == "Chi")
+    {
+        <tr>
+            <th>Hoạt động</th>
+            <td>@Model.HoatDongTen</td>
+        </tr>
+    }
+</table>
+
+<h4>Chi tiết giao dịch</h4>
+@if (Model.ChiTiet.Count == 0)
+{
+    <p>Không có chi tiết.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã CT</th>
+                <th>Nội dung</th>
+                <th>Số tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ct in Model.ChiTiet)
+            {
+                <tr>
+                    <td>@ct.MaCt</td>
+                    <td>@ct.NoiDung</td>
+                    <td>@ct.SoTien.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+

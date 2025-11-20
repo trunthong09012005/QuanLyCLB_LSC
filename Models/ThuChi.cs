@@ -21,7 +21,7 @@ public partial class ThuChi
     public decimal SoTien { get; set; }
 
     [Column("NgayGD")]
-    public DateOnly? NgayGd { get; set; }
+    public DateTime? NgayGd { get; set; }
 
     [StringLength(500)]
     public string? NoiDung { get; set; }

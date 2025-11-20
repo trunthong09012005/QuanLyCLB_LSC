@@ -19,9 +19,9 @@ public partial class DuAn
     [StringLength(500)]
     public string? MoTa { get; set; }
 
-    public DateOnly? NgayBatDau { get; set; }
+    public DateTime? NgayBatDau { get; set; }
 
-    public DateOnly? NgayKetThuc { get; set; }
+    public DateTime? NgayKetThuc { get; set; }
 
     [StringLength(50)]
     public string? TrangThai { get; set; }

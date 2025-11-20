@@ -1,0 +1,27 @@
+﻿@model QuanLyCLB_LSC.Models.DuAn
+
+<h2>Tạo dự án</h2>
+
+<form asp-action="Create" method="post">
+
+    <label>Tên dự án</label>
+    <input class="form-control" name="TenDuAn" required />
+
+    <label>Mô tả</label>
+    <textarea class="form-control" name="MoTa"></textarea>
+
+    <label>Ngày bắt đầu</label>
+    <input type="date" class="form-control" name="NgayBatDau" required />
+
+    <label>Ngày kết thúc</label>
+    <input type="date" class="form-control" name="NgayKetThuc" />
+
+    <label>Trạng thái</label>
+    <select class="form-control" name="TrangThai">
+        <option>Đang thực hiện</option>
+        <option>Hoàn thành</option>
+    </select>
+
+    <button class="btn btn-success mt-3">Tạo dự án</button>
+</form>
+

@@ -1,0 +1,46 @@
+﻿@model QuanLyCLB_LSC.Models.DuAn
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Chỉnh sửa dự án</h2>
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden" asp-for="MaDa" />
+
+        <div class="mb-3">
+            <label class="form-label">Tên dự án</label>
+            <input asp-for="TenDuAn" class="form-control" />
+            <span asp-validation-for="TenDuAn" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea asp-for="MoTa" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ngày bắt đầu</label>
+            <input asp-for="NgayBatDau" type="date" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" type="date" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <select asp-for="TrangThai" class="form-control">
+                <option>Đang thực hiện</option>
+                <option>Hoàn thành</option>
+                <option>Tạm dừng</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Cập nhật</button>
+        <a href="/Project/Index" class="btn btn-secondary">Hủy</a>
+
+    </form>
+
+</div>

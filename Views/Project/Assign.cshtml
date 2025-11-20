@@ -1,0 +1,37 @@
+﻿@model QuanLyCLB_LSC.Models.PhanCong
+
+<h2>Phân công nhiệm vụ</h2>
+
+<form asp-action="Assign" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group mb-3">
+        <label>Dự án</label>
+        <select name="MaDa" class="form-control" required>
+            <option value="">-- Chọn dự án --</option>
+            @foreach (var da in ViewBag.DuAns)
+            {
+                <option value="@da.MaDa">@da.TenDuAn</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Thành viên</label>
+        <select name="MaTv" class="form-control" required>
+            <option value="">-- Chọn thành viên --</option>
+            @foreach (var tv in ViewBag.ThanhViens)
+            {
+                <option value="@tv.MaTv">@tv.HoTen</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Nhiệm vụ</label>
+        <input type="text" name="NhiemVu" class="form-control" required />
+    </div>
+
+    <button class="btn btn-primary mt-3" type="submit">Phân công</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+</form>

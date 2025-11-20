@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Báo cáo Thu Chi";
+    Layout = "_Layout"; // hoặc layout bạn đang dùng
+}
+
+<h2>Báo cáo Thu Chi</h2>
+
+<div>
+    <p><strong>Tổng ngân sách:</strong> @ViewBag.TongNganSach.ToString("N0")</p>
+    <p><strong>Tổng thu tháng này:</strong> @ViewBag.TongThuThang.ToString("N0")</p>
+    <p><strong>Tổng chi tháng này:</strong> @ViewBag.TongChiThang.ToString("N0")</p>
+    <p><strong>Chênh lệch tháng này:</strong> @ViewBag.ChenhLech.ToString("N0")</p>
+</div>
+
+<hr />
+
+<h3>Danh sách giao dịch</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Mã GD</th>
+            <th>Loại</th>
+            <th>Số tiền</th>
+            <th>Ngày</th>
+            <th>Nội dung</th>
+            <th>Người thực hiện</th>
+            <th>Nguồn / Hoạt động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var gd in ViewBag.DanhSachGiaoDich)
+        {
+            <tr>
+                <td>@gd.MaGd</td>
+                <td>@gd.LoaiGd</td>
+                <td>@gd.SoTien.ToString("N0")</td>
+                <td>@(gd.NgayGd?.ToString("dd/MM/yyyy") ?? "")</td>
+                <td>@gd.NoiDung</td>
+                <td>@gd.NguoiThucHienTen</td>
+                <td>
+                    @if (gd.LoaiGd == "Thu")
+                    {
+                        @(gd.NguonTen ?? "(Không có nguồn)")
+                    }
+                    else
+                    {
+                        @(gd.HoatDongTen ?? "(Không có hoạt động)")
+                    }
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a href="@Url.Action("ExportExcel", "Finance")" class="btn btn-success">Xuất báo cáo (.txt)</a>
+</p>
