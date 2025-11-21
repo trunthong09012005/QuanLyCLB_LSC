@@ -1,0 +1,355 @@
+﻿@model QuanLyCLB_LSC.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dự Án - CLB Kỹ Năng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css" />
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="@Url.Action("Index", "Project")" class="menu-item active" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <h2 class="mb-4">
+                <i class="fas fa-project-diagram me-2" style="color: var(--primary-color);"></i>
+                Quản Lý Dự Án
+            </h2>
+
+            <!-- Statistics Cards -->
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card blue">
+                        <div class="stat-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.TongDuAn</div>
+                        <div class="stat-label">Tổng Dự Án</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card green">
+                        <div class="stat-icon">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.DangThucHien</div>
+                        <div class="stat-label">Đang Thực Hiện</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card orange">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.SapDenHan</div>
+                        <div class="stat-label">Sắp Đến Hạn</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card purple">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-number">@ViewBag.HoanThanh</div>
+                        <div class="stat-label">Hoàn Thành</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn" onclick="themDuAn()">
+                    <i class="fas fa-folder-plus me-2"></i>Tạo Dự Án Mới
+                </button>
+                <button class="action-btn" onclick="phanCong()">
+                    <i class="fas fa-users me-2"></i>Phân Công Nhiệm Vụ
+                </button>
+                <button class="action-btn" onclick="xuatBaoCao()">
+                    <i class="fas fa-file-export me-2"></i>Xuất Báo Cáo
+                </button>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="row mt-4">
+                @if (ViewBag.DanhSachDuAn != null)
+                {
+                    @foreach (var da in ViewBag.DanhSachDuAn)
+                    {
+                        var progressPercent = CalculateProgress(da.NgayBatDau, da.NgayKetThuc);
+                        var statusClass = GetStatusClass(da.TrangThai);
+                        var progressColor = GetProgressColor(progressPercent);
+
+                        <div class="col-lg-6">
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                            @da.TenDuAn
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            @(da.NgayBatDau?.ToString("dd/MM/yyyy") ?? "Chưa bắt đầu") -
+                                            @(da.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "Chưa xác định")
+                                        </small>
+                                    </div>
+                                    <span class="project-status @statusClass">@da.TrangThai</span>
+                                </div>
+                                <p class="text-muted mb-3">@(da.MoTa ?? "Không có mô tả")</p>
+
+                                <div class="progress-section">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <small class="text-muted">Tiến độ</small>
+                                        <small class="fw-bold" style="color: @progressColor">@progressPercent%</small>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: @progressPercent%; background: @progressColor"></div>
+                                    </div>
+                                </div>
+
+                                <div class="project-footer">
+                                    <div class="project-team">
+                                        @* Hiển thị avatar team members *@
+                                        @for (int i = 0; i < Math.Min(3, da.SoThanhVien); i++)
+                                        {
+                                            <div class="team-avatar">@((char)('A' + i))</div>
+                                        }
+                                        @if (da.SoThanhVien > 3)
+                                        {
+                                            <div class="team-avatar">+@(da.SoThanhVien - 3)</div>
+                                        }
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="xemChiTiet(@da.MaDa)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="chinhSua(@da.MaDa)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="table-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Danh Sách Chi Tiết Dự Án
+                    </h5>
+                    <input type="text" class="form-control" placeholder="Tìm kiếm dự án..." style="width: 300px;" id="searchInput">
+                </div>
+                <table id="tableDuAn" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã DA</th>
+                            <th>Tên Dự Án</th>
+                            <th>Ngày Bắt Đầu</th>
+                            <th>Ngày Kết Thúc</th>
+                            <th>Tiến Độ</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.DanhSachDuAn != null)
+                        {
+                            @foreach (var da in ViewBag.DanhSachDuAn)
+                            {
+                                var progressPercent = CalculateProgress(da.NgayBatDau, da.NgayKetThuc);
+                                var statusClass = GetStatusBadgeClass(da.TrangThai);
+                                var progressColor = GetProgressColor(progressPercent);
+
+                                <tr>
+                                    <td><strong>#DA@(da.MaDa.ToString("D3"))</strong></td>
+                                    <td>@da.TenDuAn</td>
+                                    <td>@(da.NgayBatDau?.ToString("dd/MM/yyyy") ?? "Chưa bắt đầu")</td>
+                                    <td>@(da.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "Chưa xác định")</td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar" style="width: @progressPercent%; background: @progressColor"></div>
+                                        </div>
+                                        <small class="text-muted">@progressPercent%</small>
+                                    </td>
+                                    <td><span class="badge @statusClass">@da.TrangThai</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="xemChiTiet(@da.MaDa)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="chinhSua(@da.MaDa)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="xoa(@da.MaDa)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Định nghĩa biến JavaScript ở đây
+        const hoatDongTheoThang = @Html.Raw(Json.Serialize(ViewBag.HoatDongTheoThang ?? new List<int>()));
+    </script>
+    <script src="~/js/dashboard.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#tableDuAn tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function themDuAn() {
+            window.location.href = '/Project/Create';
+        }
+
+        function phanCong() {
+            window.location.href = '/Project/Assign';
+        }
+
+        function xuatBaoCao() {
+            window.location.href = '/Project/Export';
+        }
+
+        function xemChiTiet(id) {
+            window.location.href = '/Project/Details/' + id;
+        }
+
+        function chinhSua(id) {
+            window.location.href = '/Project/Edit/' + id;
+        }
+
+        function xoa(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa dự án này?')) {
+                window.location.href = '/Project/Delete/' + id;
+            }
+        }
+    </script>
+    <script src="~/js/dashboard.js"></script>
+</body>
+</html>
+
+@functions {
+    int CalculateProgress(DateTime? start, DateTime? end)
+    {
+        if (!start.HasValue || !end.HasValue) return 0;
+
+        var total = (end.Value - start.Value).TotalDays;
+        var elapsed = (DateTime.Now - start.Value).TotalDays;
+
+        if (elapsed < 0) return 0;
+        if (elapsed > total) return 100;
+
+        return (int)((elapsed / total) * 100);
+    }
+
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Đang thực hiện" => "bg-success text-white",
+            "Hoàn thành" => "bg-primary text-white",
+            "Sắp đến hạn" => "bg-warning text-dark",
+            _ => "bg-info text-white"
+        };
+    }
+
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Đang thực hiện" => "bg-success",
+            "Hoàn thành" => "bg-primary",
+            "Sắp đến hạn" => "bg-warning",
+            _ => "bg-info"
+        };
+    }
+
+    string GetProgressColor(int percent)
+    {
+        if (percent >= 80) return "#2ecc71";
+        if (percent >= 50) return "#3498db";
+        if (percent >= 30) return "#f39c12";
+        return "#e74c3c";
+    }
+}

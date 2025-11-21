@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Xuất báo cáo - Dự Án";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị - Dự Án</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="@Url.Action("Index", "Project")" class="menu-item active" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content container mt-4">
+            <h2 class="mb-4"><i class="fas fa-file-export me-2" style="color: var(--primary-color);"></i>Xuất báo cáo dự án</h2>
+
+            <div class="card">
+                <div class="card-body">
+                    <p>Chọn khoảng thời gian và định dạng để xuất báo cáo dự án.</p>
+
+                    <form method="post" asp-action="Export">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Từ ngày</label>
+                                <input type="date" name="from" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Đến ngày</label>
+                                <input type="date" name="to" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Định dạng</label>
+                                <select name="format" class="form-select">
+                                    <option value="excel">Excel</option>
+                                    <option value="pdf">PDF</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Xuất báo cáo</button>
+                        <a class="btn btn-secondary ms-2" href="@Url.Action("Index", "Project")">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+</body>
+</html>

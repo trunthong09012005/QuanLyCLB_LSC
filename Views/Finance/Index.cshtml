@@ -1,0 +1,526 @@
+﻿@model QuanLyCLB_LSC.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Tài Chính - CLB Kỹ Năng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="~/css/finance.css" />
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">LSC</div>
+            <h5 class="mb-0">Admin</h5>
+            <small>Life Skills Club</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+                <i class="fas fa-users"></i>
+                <span>Thành Viên</span>
+            </a>
+            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Hoạt Động</span>
+            </a>
+            <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Dự Án</span>
+            </a>
+            <a href="@Url.Action("Index", "Finance")" class="menu-item active" onclick="showSection('finance')">
+                <i class="fas fa-wallet"></i>
+                <span>Tài Chính</span>
+            </a>
+            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Báo Cáo</span>
+            </a>
+            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </a>
+            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-header">
+            <div>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-info">
+                <div class="position-relative">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div>
+                    <div class="fw-bold">Admin</div>
+                    <small class="text-muted">Quản trị viên</small>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <h2 class="mb-4">
+                <i class="fas fa-wallet me-2" style="color: var(--primary-color);"></i>
+                Quản Lý Tài Chính
+            </h2>
+
+            <!-- Statistics Cards -->
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card blue">
+                        <div class="stat-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-number">@FormatMoney(ViewBag.TongNganSach)</div>
+                        <div class="stat-label">Tổng Ngân Sách</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card green">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-number">@FormatMoney(ViewBag.TongThuThang)</div>
+                        <div class="stat-label">Tổng Thu Tháng Này</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card red">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-number">@FormatMoney(ViewBag.TongChiThang)</div>
+                        <div class="stat-label">Tổng Chi Tháng Này</div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card orange">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-number">@FormatMoney(ViewBag.ChenhLech)</div>
+                        <div class="stat-label">Chênh Lệch</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn" onclick="themThu()">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm Giao Dịch Thu
+                </button>
+                <button class="action-btn" onclick="themChi()">
+                    <i class="fas fa-minus-circle me-2"></i>Thêm Giao Dịch Chi
+                </button>
+                <button class="action-btn" onclick="xemBaoCao()">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Xem Báo Cáo
+                </button>
+                <button class="action-btn" onclick="xuatExcel()">
+                    <i class="fas fa-file-export me-2"></i>Xuất Excel
+                </button>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5 class="chart-title">
+                                <i class="fas fa-chart-area me-2"></i>
+                                Biểu Đồ Thu Chi Năm 2025
+                            </h5>
+                            <select class="form-select" style="width: auto;" id="yearSelect">
+                                <option value="2025" selected>2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+                        <canvas id="financeChart" height="80"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-header d-flex justify-content-between align-items-center">
+                            <h5 class="chart-title" id="pieChartTitle">
+                                <i class="fas fa-chart-pie me-2"></i>
+                                Nguồn Thu
+                            </h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="togglePieChart()">
+                                Chuyển Đổi
+                            </button>
+                        </div>
+
+                        <div id="incomeChartContainer">
+                            <canvas id="sourceChart" height="200"></canvas>
+                        </div>
+                        <div id="expenseChartContainer" style="display: none;">
+                            <canvas id="expenseChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Recent Transactions -->
+            <div class="table-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-clock me-2"></i>
+                    Giao Dịch Gần Đây
+                </h5>
+
+                @if (ViewBag.GiaoDichGanDay != null)
+                {
+                    @foreach (var gd in ViewBag.GiaoDichGanDay)
+                    {
+                        if (gd == null || string.IsNullOrEmpty(gd.LoaiGd))
+                        {
+                            continue; // Bỏ qua phần tử null và chuyển sang phần tử tiếp theo
+                        }
+                        var isIncome = (gd.LoaiGd ?? "") == "Thu";
+                        var transactionClass = isIncome ? "income" : "expense";
+                        var iconClass = isIncome ? "fa-money-bill-wave" : "fa-shopping-cart";
+
+                        <div class="transaction-item @transactionClass">
+                            <div class="transaction-header">
+                                <div>
+                                    <div class="transaction-title">
+                                        <i class="fas @iconClass me-2"></i>
+                                        @gd.NoiDung
+                                    </div>
+                                    <div class="transaction-details">
+                                        <span><i class="fas fa-calendar me-1"></i>@gd.NgayGd.ToString("dd/MM/yyyy")</span>
+                                        <span><i class="fas fa-user me-1"></i>@(gd.NguoiThucHienTen ?? "N/A")</span>
+                                        @if (!string.IsNullOrEmpty(gd.NguonTen))
+                                        {
+                                            <span><i class="fas fa-tag me-1"></i>Nguồn: @gd.NguonTen</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(gd.HoatDongTen))
+                                        {
+                                            <span><i class="fas fa-tag me-1"></i>Hoạt động: @gd.HoatDongTen</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="transaction-amount @transactionClass">
+                                    @(isIncome ? "+" : "-")@FormatMoney(gd.SoTien)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="table-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Chi Tiết Giao Dịch
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" style="width: auto;" id="filterType">
+                            <option value="">Tất cả</option>
+                            <option value="Thu">Thu</option>
+                            <option value="Chi">Chi</option>
+                        </select>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm..." style="width: 250px;" id="searchInput">
+                    </div>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã GD</th>
+                            <th>Loại</th>
+                            <th>Nội Dung</th>
+                            <th>Ngày GD</th>
+                            <th>Người Thực Hiện</th>
+                            <th>Nguồn/Hoạt Động</th>
+                            <th>Số Tiền</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.DanhSachGiaoDich != null)
+                        {
+                            @foreach (var gd in ViewBag.DanhSachGiaoDich)
+                            {
+                                if (gd == null || gd.LoaiGd == null)
+        {
+            continue;
+        }
+                                var isIncome = gd.LoaiGd == "Thu";
+                                var badgeClass = isIncome ? "bg-success" : "bg-danger";
+                                var amountClass = isIncome ? "text-success" : "text-danger";
+                                var sign = isIncome ? "+" : "-";
+
+                                <tr>
+                                    <td><strong>#GD@(gd.MaGd.ToString("D3"))</strong></td>
+                                    <td><span class="badge @badgeClass">@gd.LoaiGd</span></td>
+                                    <td>@gd.NoiDung</td>
+                                    <td>@gd.NgayGd.ToString("dd/MM/yyyy")</td>
+                                    <td>@(gd.NguoiThucHienTen ?? "N/A")</td>
+                                    <td>@(gd.NguonTen ?? gd.HoatDongTen ?? "N/A")</td>
+                                    <td class="@amountClass fw-bold">@sign@FormatMoney(gd.SoTien)</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="xemChiTiet(@gd.MaGd)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="chinhSua(@gd.MaGd)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="xoa(@gd.MaGd)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const filterType = document.getElementById('filterType');
+        const table = document.querySelector('.table-card table tbody');
+
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase();
+            const typeValue = filterType.value; // "" (Tất cả), "Thu", "Chi"
+
+            Array.from(table.rows).forEach(row => {
+                const content = row.cells[2].innerText.toLowerCase(); // Nội dung
+                const type = row.cells[1].innerText; // Loại giao dịch
+
+                const matchesSearch = content.includes(searchText);
+                const matchesType = typeValue === "" || type === typeValue;
+
+                row.style.display = (matchesSearch && matchesType) ? "" : "none";
+            });
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        filterType.addEventListener('change', filterTable);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Định nghĩa biến JavaScript ở đây
+        const hoatDongTheoThang = @Html.Raw(Json.Serialize(ViewBag.HoatDongTheoThang ?? new List<int>()));
+    </script>
+    <script src="~/js/dashboard.js"></script>
+    <script>
+            // Dữ liệu cho biểu đồ
+            const financeData = @Html.Raw(ViewBag.BieuDoThuChiJson ?? "{}");
+            const sourceData = @Html.Raw(ViewBag.BieuDoNguonThuJson ?? "{}");
+            // Đảm bảo biến này tồn tại và có dữ liệu từ Controller
+            const expenseData = @Html.Raw(ViewBag.BieuDoNguonChiJson ?? "{}");
+
+            let currentChartType = 'income'; // Trạng thái hiện tại
+            let expenseChart = null; // Biến lưu trữ đối tượng biểu đồ Chi
+
+            // Màu sắc mặc định cho các lát cắt biểu đồ
+            const defaultColors = [
+                '#667eea', // Blue/Purple
+                '#2ecc71', // Green
+                '#f39c12', // Orange
+                '#e74c3c', // Red
+                '#9b59b6', // Amethyst
+                '#1abc9c', // Turquoise
+                '#3498db', // Peter River
+            ];
+
+            const defaultDoughnutOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            };
+
+            // 1. Finance Chart (Biểu đồ Thu Chi theo tháng) - GIỮ NGUYÊN
+            const financeCtx = document.getElementById('financeChart').getContext('2d');
+            new Chart(financeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                    datasets: [{
+                        label: 'Thu',
+                        data: financeData.thu || [0,0,0,0,0,0,0,0,0,0,0,0],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Chi',
+                        data: financeData.chi || [0,0,0,0,0,0,0,0,0,0,0,0],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    // Hiển thị đơn vị tiền tệ lớn (M cho triệu, K cho nghìn)
+                                    if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(1) + 'M';
+                                    } else if (value >= 1000) {
+                                        return (value / 1000).toFixed(0) + 'K';
+                                    }
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            // 2. Source Chart (Biểu đồ Nguồn Thu/Chi) - PHẦN ĐÃ ĐƯỢC THAY ĐỔI
+
+            // Khởi tạo biểu đồ Nguồn Thu (Mặc định)
+            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+            const incomeChart = new Chart(sourceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: sourceData.labels || ['Không có dữ liệu Thu'],
+                    datasets: [{
+                        data: sourceData.values || [1],
+                        backgroundColor: defaultColors.slice(0, sourceData.labels?.length || 1)
+                    }]
+                },
+                options: defaultDoughnutOptions
+            });
+
+            function initExpenseChart() {
+                if (expenseChart) return; // Nếu đã khởi tạo rồi thì thoát
+
+                const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+                expenseChart = new Chart(expenseCtx, {
+                    type: 'doughnut',
+                    data: {
+                        // Kiểm tra nếu không có dữ liệu Chi, hiển thị nhãn mặc định và giá trị 1 để biểu đồ hiển thị
+                        labels: expenseData.labels || ['Không có dữ liệu Chi'],
+                        datasets: [{
+                            data: expenseData.values || [1],
+                            backgroundColor: defaultColors.slice(0, expenseData.labels?.length || 1)
+                        }]
+                    },
+                    options: defaultDoughnutOptions
+                });
+            }
+
+            // Hàm chuyển đổi biểu đồ
+            function togglePieChart() {
+                const titleElement = document.getElementById('pieChartTitle');
+                const incomeContainer = document.getElementById('incomeChartContainer');
+                const expenseContainer = document.getElementById('expenseChartContainer');
+
+                if (currentChartType === 'income') {
+                    // Chuyển sang Nguồn Chi
+                    initExpenseChart(); // Đảm bảo biểu đồ Chi đã được vẽ lần đầu
+                    incomeContainer.style.display = 'none';
+                    expenseContainer.style.display = 'block';
+                    titleElement.innerHTML = '<i class="fas fa-chart-pie me-2"></i> Nguồn Chi';
+                    currentChartType = 'expense';
+                } else {
+                    // Chuyển sang Nguồn Thu
+                    expenseContainer.style.display = 'none';
+                    incomeContainer.style.display = 'block';
+                    titleElement.innerHTML = '<i class="fas fa-chart-pie me-2"></i> Nguồn Thu';
+                    currentChartType = 'income';
+                }
+            }
+
+        // Action functions
+        function themThu() {
+            window.location.href = '/Finance/CreateIncome';
+        }
+
+        function themChi() {
+            window.location.href = '/Finance/CreateExpense';
+        }
+
+        function xemBaoCao() {
+            window.location.href = '/Finance/Report';
+        }
+
+        function xuatExcel() {
+            window.location.href = '/Finance/ExportExcel';
+        }
+
+        function xemChiTiet(id) {
+            window.location.href = '/Finance/Details/' + id;
+        }
+
+        function chinhSua(id) {
+            window.location.href = '/Finance/Edit/' + id;
+        }
+
+        function xoa(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) {
+                window.location.href = '/Finance/Delete/' + id;
+            }
+        }
+    </script>
+</body>
+</html>
+
+@functions {
+    string FormatMoney(decimal? amount)
+    {
+        if (!amount.HasValue) return "0đ";
+
+        if (amount >= 1000000)
+        {
+            return $"{(amount / 1000000):F1}M";
+        }
+        else if (amount >= 1000)
+        {
+            return $"{(amount / 1000):F0}K";
+        }
+        else
+        {
+            return $"{amount:N0}đ";
+        }
+    }
+}

@@ -29,9 +29,9 @@ public partial class PhanCong
 
     [ForeignKey("MaDa")]
     [InverseProperty("PhanCongs")]
-    public virtual DuAn MaDaNavigation { get; set; } = null!;
+    public virtual DuAn MaDaNavigation { get; set; }
 
     [ForeignKey("MaTv")]
     [InverseProperty("PhanCongs")]
-    public virtual ThanhVien MaTvNavigation { get; set; } = null!;
+    public virtual ThanhVien MaTvNavigation { get; set; }
 }

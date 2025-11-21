@@ -1,0 +1,142 @@
+﻿.transaction-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+}
+
+    .transaction-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .transaction-item.income {
+        border-left-color: #2ecc71;
+    }
+
+    .transaction-item.expense {
+        border-left-color: #e74c3c;
+    }
+
+/* Transaction Header */
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.transaction-title {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+/* Transaction Amount */
+.transaction-amount {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+    .transaction-amount.income {
+        color: #2ecc71;
+    }
+
+    .transaction-amount.expense {
+        color: #e74c3c;
+    }
+
+/* Transaction Details */
+.transaction-details {
+    display: flex;
+    gap: 20px;
+    color: #7f8c8d;
+    font-size: 14px;
+    flex-wrap: wrap;
+}
+
+    .transaction-details span {
+        display: flex;
+        align-items: center;
+    }
+
+/* Filter and Search */
+#filterType, #searchInput {
+    border-radius: 8px;
+    border: 2px solid #ecf0f1;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+}
+
+    #filterType:focus, #searchInput:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+/* Chart Select */
+#yearSelect {
+    border-radius: 8px;
+    border: 2px solid #ecf0f1;
+    padding: 6px 12px;
+}
+
+/* Table Amount Colors */
+.table .text-success {
+    color: #2ecc71 !important;
+}
+
+.table .text-danger {
+    color: #e74c3c !important;
+}
+
+/* Animation for transaction items */
+.transaction-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+    .transaction-item:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .transaction-item:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .transaction-item:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .transaction-item:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .transaction-item:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .transaction-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .transaction-amount {
+        font-size: 18px;
+    }
+
+    .transaction-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #filterType, #searchInput {
+        width: 100% !important;
+    }
+}
