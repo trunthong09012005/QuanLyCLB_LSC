@@ -1,4 +1,4 @@
-// Reports Redesigned - Main JavaScript
+﻿// Reports Redesigned - Main JavaScript
 
 let chartsInstance = {
     membersChart: null,
@@ -145,7 +145,7 @@ function renderCharts(membersLabels, membersData, activitiesLabels, activitiesDa
             data: {
                 labels: membersLabels,
                 datasets: [{
-                    label: 'Th�nh vi�n',
+                    label: 'Thành viên',
                     data: membersData,
                     backgroundColor: gradient,
                     borderColor: colors.primary,
@@ -169,8 +169,11 @@ function renderCharts(membersLabels, membersData, activitiesLabels, activitiesDa
         });
 
         if (membersData.every(v => v === 0)) {
+            // remove existing empty-state if present
+            const existing = membersCanvas.parentElement.parentElement.querySelector('.empty-state');
+            if (existing) existing.remove();
             membersCanvas.parentElement.insertAdjacentHTML('afterend',
-                '<div class="empty-state"><p>Ch?a c� d? li?u</p></div>');
+                '<div class="empty-state"><p>Chưa có dữ liệu</p></div>');
         }
     }
 
@@ -207,8 +210,10 @@ function renderCharts(membersLabels, membersData, activitiesLabels, activitiesDa
         });
 
         if (activitiesData.every(v => v === 0)) {
+            const existing = activitiesCanvas.parentElement.parentElement.querySelector('.empty-state');
+            if (existing) existing.remove();
             activitiesCanvas.parentElement.insertAdjacentHTML('afterend',
-                '<div class="empty-state"><p>Ch?a c� d? li?u</p></div>');
+                '<div class="empty-state"><p>Chưa có dữ liệu</p></div>');
         }
     }
 
@@ -254,8 +259,10 @@ function renderCharts(membersLabels, membersData, activitiesLabels, activitiesDa
         });
 
         if (projectsData.every(v => v === 0)) {
+            const existing = projectsCanvas.parentElement.parentElement.querySelector('.empty-state');
+            if (existing) existing.remove();
             projectsCanvas.parentElement.insertAdjacentHTML('afterend',
-                '<div class="empty-state"><p>Ch?a c� d? li?u</p></div>');
+                '<div class="empty-state"><p>Chưa có dữ liệu</p></div>');
         }
     }
 
@@ -307,8 +314,10 @@ function renderCharts(membersLabels, membersData, activitiesLabels, activitiesDa
         });
 
         if (financeIncome.every(v => v === 0) && financeExpense.every(v => v === 0)) {
+            const existing = financeCanvas.parentElement.parentElement.querySelector('.empty-state');
+            if (existing) existing.remove();
             financeCanvas.parentElement.insertAdjacentHTML('afterend',
-                '<div class="empty-state"><p>Ch?a c� d? li?u</p></div>');
+                '<div class="empty-state"><p>Chưa có dữ liệu</p></div>');
         }
     }
 }

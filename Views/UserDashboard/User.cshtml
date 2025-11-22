@@ -1,13 +1,13 @@
 ﻿@model QuanLyCLB_LSC.ViewModels.UserDashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard - CLB Kỹ Năng X LSC";
+    ViewData["Title"] = "Dashboard - CLB Kỹ Năng - LSC";
 }
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Member Dashboard - CLB Lập Trình LSC</title>
+    <title>Member Dashboard - CLB Kỹ Năng - LSC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="~/css/user.css" />
 </head>
@@ -29,7 +29,7 @@
                             🏠 Trang chủ
                         </button>
                         <button onclick="showTab('timeline')" class="tab-button px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50" id="tab-timeline">
-                            ⏱️ Timeline
+                            ⏱️ Thông Báo
                         </button>
                         <button onclick="showTab('awards')" class="tab-button px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50" id="tab-awards">
                             🏆 Khen thưởng
@@ -88,7 +88,7 @@
                             Chào mừng trở lại, @(Model.HoTen?.Split(' ').LastOrDefault())! 👋
                         </h1>
                         <p class="text-xl text-blue-100 mb-6">
-                            Cùng nhau xây dựng cộng đồng lập trình viên mạnh mẽ và năng động
+                            Cùng nhau xây dựng cộng đồng ứng viên năng động và hòa đồng chăm học hỏi
                         </p>
                         <div class="flex flex-wrap gap-4">
                             <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl">
@@ -458,21 +458,21 @@
             <span class="text-xs text-gray-500">20/06/2025</span>
         </div>
         <h3 class="font-bold text-gray-800 text-sm mb-2">Hackathon 2025</h3>
-        <p class="text-xs text-gray-600 line-clamp-2">Cuộc thi lập trình 24 giờ với nhiều giải thưởng hấp dẫn</p>
+        <p class="text-xs text-gray-600 line-clamp-2">Cuộc thi hùng biện với nhiều giải thưởng hấp dẫn</p>
     </div>
 </div>
 
 <!-- Gallery Item 5 -->
 <div class="gallery-item group relative bg-gray-100 rounded-xl overflow-hidden shadow-md hover-scale">
     <div class="aspect-video overflow-hidden">
-        <img src="~/img/z7163032343816_4d534dc39a3beedd91eb69ceac4ad77a.jpg" alt="Workshop UI/UX" class="w-full h-full object-cover">
+        <img src="~/img/z7163032343816_4d534dc39a3beedd91eb69ceac4ad77a.jpg" alt="Workshop Phá Kén" class="w-full h-full object-cover">
     </div>
     <div class="gallery-overlay">
         <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
             Học thuật
         </span>
         <h3 class="text-white font-bold text-lg mb-1">Workshop thiết kế UI/UX</h3>
-        <p class="text-gray-200 text-sm mb-2">Học cách thiết kế giao diện người dùng chuyên nghiệp</p>
+        <p class="text-gray-200 text-sm mb-2">Lớp Kỹ Năng Thực hành xã hội</p>
         <p class="text-gray-300 text-xs">📅 15/05/2025</p>
     </div>
     <div class="p-4">
@@ -482,8 +482,8 @@
             </span>
             <span class="text-xs text-gray-500">15/05/2025</span>
         </div>
-        <h3 class="font-bold text-gray-800 text-sm mb-2">Workshop thiết kế UI/UX</h3>
-        <p class="text-xs text-gray-600 line-clamp-2">Học cách thiết kế giao diện người dùng chuyên nghiệp</p>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Sinh hoạt thường niên</h3>
+        <p class="text-xs text-gray-600 line-clamp-2">Mật thư truyền tin<p>
     </div>
 </div>
 
@@ -521,8 +521,8 @@
         <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full mb-2 w-fit">
             Giải trí
         </span>
-        <h3 class="text-white font-bold text-lg mb-1">Đêm nhạc "Code & Music"</h3>
-        <p class="text-gray-200 text-sm mb-2">Buổi biểu diễn âm nhạc kết hợp coding performance</p>
+        <h3 class="text-white font-bold text-lg mb-1">Đêm nhạc "KN & Music"</h3>
+        <p class="text-gray-200 text-sm mb-2">Buổi biểu diễn âm nhạc kết hợp các CLB Kỹ Năng trên địa bàn</p>
         <p class="text-gray-300 text-xs">📅 14/02/2025</p>
     </div>
     <div class="p-4">
@@ -532,8 +532,8 @@
             </span>
             <span class="text-xs text-gray-500">14/02/2025</span>
         </div>
-        <h3 class="font-bold text-gray-800 text-sm mb-2">Đêm nhạc "Code & Music"</h3>
-        <p class="text-xs text-gray-600 line-clamp-2">Buổi biểu diễn âm nhạc kết hợp coding performance</p>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">Đêm nhạc "KN & Music"</h3>
+            <p class="text-xs text-gray-600 line-clamp-2">Buổi biểu diễn âm nhạc kết hợp các CLB Kỹ Năng trên địa bàn</p>
     </div>
 </div>
 

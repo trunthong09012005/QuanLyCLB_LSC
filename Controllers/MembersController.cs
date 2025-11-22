@@ -14,7 +14,7 @@ namespace QuanLyCLB_LSC.Controllers
         }
 
         // GET: Members
-        public async Task<IActionResult> Index(string search, int? cvId, int? banId)
+        public async Task<IActionResult> Index(string search, int? cvId, int? banId, string? sortBy, string? sortDir)
         {
             var query = _context.ThanhViens
                 .Include(t => t.MaCvNavigation)
@@ -34,6 +34,28 @@ namespace QuanLyCLB_LSC.Controllers
             if (banId.HasValue)
             {
                 query = query.Where(t => t.MaBan == banId.Value);
+            }
+
+            // expose current sorting to view
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortDir = sortDir;
+
+            // Apply sorting
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
+                query = sortBy.ToLower() switch
+                {
+                    "hoten" => asc ? query.OrderBy(t => t.HoTen) : query.OrderByDescending(t => t.HoTen),
+                    "email" => asc ? query.OrderBy(t => t.Email) : query.OrderByDescending(t => t.Email),
+                    "sdt" => asc ? query.OrderBy(t => t.Sdt) : query.OrderByDescending(t => t.Sdt),
+                    "ngaythamgia" => asc ? query.OrderBy(t => t.NgayThamGia) : query.OrderByDescending(t => t.NgayThamGia),
+                    _ => asc ? query.OrderBy(t => t.MaTv) : query.OrderByDescending(t => t.MaTv),
+                };
+            }
+            else
+            {
+                query = query.OrderByDescending(t => t.MaTv);
             }
 
             ViewBag.ChucVus = await _context.ChucVus.OrderBy(c => c.TenCv).ToListAsync();
@@ -65,7 +87,7 @@ namespace QuanLyCLB_LSC.Controllers
             }
             ViewBag.HoatDong = activeAccounts;
 
-            var list = await query.OrderByDescending(t => t.MaTv).ToListAsync();
+            var list = await query.ToListAsync();
             return View(list);
         }
 

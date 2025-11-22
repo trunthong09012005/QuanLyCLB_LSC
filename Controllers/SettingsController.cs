@@ -54,6 +54,18 @@ namespace QuanLyCLB_LSC.Controllers
                     .FirstOrDefault(tk => tk.TenDn == tenDnToUse);
             }
 
+            // Fallback: nếu không tìm thấy theo TenDN, thử lấy theo MaTV trong session
+            if (taiKhoan == null)
+            {
+                var maTvInSession = HttpContext.Session.GetInt32("MaTV");
+                if (maTvInSession.HasValue)
+                {
+                    taiKhoan = _context.TaiKhoans
+                        .Include(tk => tk.MaTvNavigation)
+                        .FirstOrDefault(tk => tk.MaTv == maTvInSession.Value);
+                }
+            }
+
             ViewBag.TongThanhVien = tongThanhVien;
             ViewBag.TongHoatDong = tongHoatDong;
             ViewBag.TongDuAn = tongDuAn;
@@ -157,7 +169,7 @@ namespace QuanLyCLB_LSC.Controllers
 
                     _context.ChucVus.Remove(chucVu);
                     _context.SaveChanges();
-                    TempData["Success"] = "Xóa chức vụ thành công!";
+                    TempData["Success"] = "Xóa chức vu thành công!";
                 }
             }
             catch (Exception ex)

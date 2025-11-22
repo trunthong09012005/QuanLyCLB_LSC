@@ -23,12 +23,10 @@
                 <div class="row g-0">
                     <!-- Logo Section -->
                     <div class="col-md-5 logo-section d-flex flex-column justify-content-center align-items-center text-center position-relative">
-                        <i class="fas fa-users floating-icons icon1"></i>
-                        <i class="fas fa-lightbulb floating-icons icon2"></i>
-                        <i class="fas fa-star floating-icons icon3"></i>
-                        <i class="fas fa-heart floating-icons icon4"></i>
+                        <!-- sparkles and shimmer beam are provided by login.css -->
+                        <div class="sparkles" aria-hidden="true"></div>
 
-                        <div class="logo-circle">LSC</div>
+                        <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" alt="LSC logo"/></div>
                         <h2 class="fw-bold mb-3">LIFE SKILLS CLUB</h2>
                         <p class="px-3">
                             <i class="fas fa-quote-left me-2"></i>
@@ -44,14 +42,14 @@
                             <p class="text-muted">Chào mừng bạn trở lại!</p>
                         </div>
 
-                        <form asp-action="Login" asp-controller="Auth" method="post">
+                        <form asp-action="Login" asp-controller="Auth" method="post" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-user me-2 text-primary"></i>Tên Đăng Nhập
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
-                                    <input asp-for="TenDN" class="form-control" placeholder="Nhập tên đăng nhập" required />
+                                    <input asp-for="TenDN" class="form-control" placeholder="Nhập tên đăng nhập" required autocomplete="off" />
                                 </div>
                             </div>
 
@@ -61,7 +59,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                                    <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu" required id="matKhau" />
+                                    <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu" required id="matKhau" autocomplete="new-password" />
                                     <button type="button" class="input-group-text password-toggle" onclick="togglePassword()">
                                         <i class="fas fa-eye" id="toggleIcon"></i>
                                     </button>

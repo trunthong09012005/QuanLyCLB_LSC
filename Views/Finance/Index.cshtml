@@ -17,7 +17,7 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-circle">LSC</div>
+             <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
             <h5 class="mb-0">Admin</h5>
             <small>Life Skills Club</small>
         </div>
@@ -138,12 +138,9 @@
                 <button class="action-btn" onclick="themChi()">
                     <i class="fas fa-minus-circle me-2"></i>Thêm Giao Dịch Chi
                 </button>
-                <button class="action-btn" onclick="xemBaoCao()">
-                    <i class="fas fa-file-invoice-dollar me-2"></i>Xem Báo Cáo
-                </button>
-                <button class="action-btn" onclick="xuatExcel()">
-                    <i class="fas fa-file-export me-2"></i>Xuất Excel
-                </button>
+                <a class="action-btn" href="@Url.Action("Index", "Reports")">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> Xem Báo Cáo
+                </a>
             </div>
 
             <!-- Charts Row -->
@@ -234,35 +231,35 @@
             </div>
 
             <!-- Detailed Table -->
-            <div class="table-card">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>
-                        Chi Tiết Giao Dịch
-                    </h5>
-                    <div class="d-flex gap-2">
-                        <select class="form-select" style="width: auto;" id="filterType">
-                            <option value="">Tất cả</option>
-                            <option value="Thu">Thu</option>
-                            <option value="Chi">Chi</option>
-                        </select>
-                        <input type="text" class="form-control" placeholder="Tìm kiếm..." style="width: 250px;" id="searchInput">
-                    </div>
-                </div>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Mã GD</th>
+            <div id="dataTableCard" class="table-card">
+                 <div class="d-flex justify-content-between align-items-center mb-3">
+                     <h5 class="mb-0">
+                         <i class="fas fa-list me-2"></i>
+                         Chi Tiết Giao Dịch
+                     </h5>
+                     <div class="d-flex gap-2">
+                         <select class="form-select" style="width: auto;" id="filterType">
+                             <option value="">Tất cả</option>
+                             <option value="Thu">Thu</option>
+                             <option value="Chi">Chi</option>
+                         </select>
+                         <input type="text" class="form-control" placeholder="Tìm kiếm..." style="width: 250px;" id="searchInput">
+                     </div>
+                 </div>
+                 <table class="table table-hover">
+                     <thead>
+                         <tr>
+                            <th class="sortable" data-sort="magd" style="cursor:pointer">Mã GD <span class="sort-ind">@(ViewBag.SortBy=="magd"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                             <th>Loại</th>
                             <th>Nội Dung</th>
-                            <th>Ngày GD</th>
+                            <th class="sortable" data-sort="ngaygd" style="cursor:pointer">Ngày GD <span class="sort-ind">@(ViewBag.SortBy=="ngaygd"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                             <th>Người Thực Hiện</th>
                             <th>Nguồn/Hoạt Động</th>
-                            <th>Số Tiền</th>
+                            <th class="sortable" data-sort="sotien" style="cursor:pointer">Số Tiền <span class="sort-ind">@(ViewBag.SortBy=="sotien"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                             <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                         </tr>
+                     </thead>
+                     <tbody>
                         @if (ViewBag.DanhSachGiaoDich != null)
                         {
                             @foreach (var gd in ViewBag.DanhSachGiaoDich)
@@ -301,37 +298,75 @@
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const filterType = document.getElementById('filterType');
-        const table = document.querySelector('.table-card table tbody');
+        // AJAX for finance table (search/filter/sort) without reload
+        (function(){
+            const searchInput = document.getElementById('searchInput');
+            const filterType = document.getElementById('filterType');
+            const dataCard = document.getElementById('dataTableCard');
 
-        function filterTable() {
-            const searchText = searchInput.value.toLowerCase();
-            const typeValue = filterType.value; // "" (Tất cả), "Thu", "Chi"
+            function buildUrl(){
+                const params = new URLSearchParams();
+                if (searchInput && searchInput.value) params.set('search', searchInput.value);
+                if (filterType && filterType.value) params.set('filterType', filterType.value);
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('sortBy')) params.set('sortBy', urlParams.get('sortBy'));
+                if (urlParams.get('sortDir')) params.set('sortDir', urlParams.get('sortDir'));
+                return '/Finance/Index?' + params.toString();
+            }
 
-            Array.from(table.rows).forEach(row => {
-                const content = row.cells[2].innerText.toLowerCase(); // Nội dung
-                const type = row.cells[1].innerText; // Loại giao dịch
+            async function fetchData(){
+                try{
+                    const url = buildUrl();
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const newCard = doc.getElementById('dataTableCard');
+                    if (newCard && dataCard) dataCard.innerHTML = newCard.innerHTML;
+                    history.replaceState(null, '', url);
+                }catch(e){ console.error(e); }
+            }
 
-                const matchesSearch = content.includes(searchText);
-                const matchesType = typeValue === "" || type === typeValue;
+            // debounce
+            let t;
+            if (searchInput) searchInput.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(fetchData, 300); });
+            if (filterType) filterType.addEventListener('change', fetchData);
 
-                row.style.display = (matchesSearch && matchesType) ? "" : "none";
+            dataCard.addEventListener('click', function(e){
+                const th = e.target.closest('th.sortable');
+                if (!th) return;
+                const key = th.getAttribute('data-sort');
+                if (!key) return;
+                const urlParams = new URLSearchParams(window.location.search);
+                const current = urlParams.get('sortBy');
+                const dir = urlParams.get('sortDir') || '';
+                const newDir = (current === key) ? ((dir === 'asc') ? 'desc' : 'asc') : 'asc';
+                urlParams.set('sortBy', key);
+                urlParams.set('sortDir', newDir);
+                if (filterType && filterType.value) urlParams.set('filterType', filterType.value);
+                if (searchInput && searchInput.value) urlParams.set('search', searchInput.value);
+                const newUrl = '/Finance/Index?' + urlParams.toString();
+                fetch(newUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+                    .then(r => r.text())
+                    .then(text => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(text, 'text/html');
+                        const newCard = doc.getElementById('dataTableCard');
+                        if (newCard && dataCard) dataCard.innerHTML = newCard.innerHTML;
+                        history.replaceState(null, '', newUrl);
+                    }).catch(err => console.error(err));
             });
-        }
-
-        searchInput.addEventListener('input', filterTable);
-        filterType.addEventListener('change', filterTable);
+        })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
         // Định nghĩa biến JavaScript ở đây
-        const hoatDongTheoThang = @Html.Raw(Json.Serialize(ViewBag.HoatDongTheoThang ?? new List<int>()));
+        const hoatDongTheoThang = @Html.Raw(Json.Serialize(ViewBag.HoatDongTheoThang ?? new List<int>()))
     </script>
     <script src="~/js/dashboard.js"></script>
     <script>
@@ -480,27 +515,10 @@
             window.location.href = '/Finance/CreateExpense';
         }
 
-        function xemBaoCao() {
-            window.location.href = '/Finance/Report';
-        }
-
         function xuatExcel() {
             window.location.href = '/Finance/ExportExcel';
         }
 
-        function xemChiTiet(id) {
-            window.location.href = '/Finance/Details/' + id;
-        }
-
-        function chinhSua(id) {
-            window.location.href = '/Finance/Edit/' + id;
-        }
-
-        function xoa(id) {
-            if (confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) {
-                window.location.href = '/Finance/Delete/' + id;
-            }
-        }
     </script>
 </body>
 </html>

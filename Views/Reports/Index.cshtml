@@ -8,10 +8,41 @@
 <link rel="stylesheet" href="~/css/dashboard.css" />
 <link rel="stylesheet" href="~/css/reports-redesigned.css" />
 
+<style>
+    /* Unified table styling with Dashboard */
+    .reports-container .table-responsive .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    .reports-container .table-responsive .table thead th {
+        color: white !important;
+        font-weight: 600 !important;
+        padding: 15px !important;
+        border: none !important;
+    }
+    
+    .reports-container .table-responsive .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .reports-container .table-responsive .table tbody tr:hover {
+        background: #f8f9fa;
+        transform: scale(1.01);
+    }
+
+    /* Remove underline and ensure full-card clickable */
+    .stat-grid a.stat-card { text-decoration: none; color: inherit; display: block; }
+    .stat-grid a.stat-card:focus, .stat-grid a.stat-card:hover { text-decoration: none; }
+    .stat-card .stat-detail { font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 8px; }
+    .stat-card .stat-label { margin-top: 6px; color: #7f8c8d; }
+    /* hide original numeric styles if present */
+    .stat-card .stat-number { display: none; }
+</style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="logo-circle">LSC</div>
-        <h5 class="mb-0">Admin Panel</h5>
+         <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
+        <h5 class="mb-0">Admin</h5>
         <small>Life Skills Club</small>
     </div>
 
@@ -28,11 +59,11 @@
             <i class="fas fa-calendar-alt"></i>
             <span>Hoạt Động</span>
         </a>
-        <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
+        <a href="@Url.Action("Index", "Project")" class="menu-item">
             <i class="fas fa-project-diagram"></i>
             <span>Dự Án</span>
         </a>
-        <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
+        <a href="@Url.Action("Index", "Finance")" class="menu-item">
             <i class="fas fa-wallet"></i>
             <span>Tài Chính</span>
         </a>
@@ -83,24 +114,32 @@
             </div>
         </div>
 
-        <!-- Statistics Cards -->
+        <!-- Statistics Cards - Unified with Dashboard -->
+        <!-- Statistic buttons: each card is a link to the category details -->
         <div class="stat-grid mb-4">
-            <div class="stat-box">
-                <div class="num">@Model.TongBaoCao</div>
-                <div class="label">Tổng báo cáo</div>
-            </div>
-            <div class="stat-box">
-                <div class="num">@Model.BaoCaoThangNay</div>
-                <div class="label">Báo cáo tháng này</div>
-            </div>
-            <div class="stat-box">
-                <div class="num">@Model.BaoCaoNamNay</div>
-                <div class="label">Báo cáo năm này</div>
-            </div>
-            <div class="stat-box pulse">
-                <div class="num">@Model.DanhSachLoai.Count</div>
-                <div class="label">Loại báo cáo</div>
-            </div>
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "members" })" class="stat-card blue" role="button">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Thành viên</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "activities" })" class="stat-card green" role="button">
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Hoạt động</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "projects" })" class="stat-card orange" role="button">
+                <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Dự án</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "finance" })" class="stat-card purple pulse" role="button">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Tài chính</div>
+            </a>
         </div>
 
         <!-- Controls Section -->
@@ -130,23 +169,12 @@
                         </select>
                     </div>
 
-                    <!-- Category Selector -->
-                    <div class="col-md-6">
-                        <label class="form-label">Xem chi tiết danh mục</label>
-                        <select id="categoryFilter" class="form-select" onchange="viewCategory()">
-                            <option value="">-- Chọn danh mục --</option>
-                            <option value="members">Thành viên</option>
-                            <option value="activities">Hoạt động</option>
-                            <option value="projects">Dự án</option>
-                            <option value="finance">Tài chính</option>
-                        </select>
-                    </div>
-
                     <!-- Action Button -->
                     <div class="col-md-3 d-flex align-items-end">
                         <button class="btn btn-primary w-100" onclick="applyFilters()">
                             <i class="fas fa-filter me-2"></i>Áp dụng
                         </button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -204,4 +232,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="~/js/reports-redesigned.js"></script>
     <script src="~/js/dashboard.js"></script>
+    <script>
+        function exportFinancePdf() {
+            const yearSelect = document.getElementById('yearFilter');
+            const year = yearSelect ? yearSelect.value : (new Date()).getFullYear();
+            const url = '@Url.Action("ExportFinancePdf", "Reports")';
+            window.location.href = url + '?year=' + encodeURIComponent(year);
+        }
+    </script>
 }

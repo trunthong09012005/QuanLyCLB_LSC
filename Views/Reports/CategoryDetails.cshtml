@@ -9,10 +9,33 @@
 <link rel="stylesheet" href="~/css/dashboard.css" />
 <link rel="stylesheet" href="~/css/reports-redesigned.css" />
 
+<style>
+    /* Unified table styling with Dashboard */
+    .table-responsive .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    .table-responsive .table thead th {
+        color: white !important;
+        font-weight: 600 !important;
+        padding: 15px !important;
+        border: none !important;
+    }
+    
+    .table-responsive .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table-responsive .table tbody tr:hover {
+        background: #f8f9fa;
+        transform: scale(1.01);
+    }
+</style>
+
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="logo-circle">LSC</div>
-        <h5 class="mb-0">Admin Panel</h5>
+         <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
+        <h5 class="mb-0">Admin</h5>
         <small>Life Skills Club</small>
     </div>
 
@@ -98,15 +121,15 @@
                 <h5>Tìm kiếm và Lọc</h5>
             </div>
             <div class="controls-content">
-                <form method="get" class="row g-3">
+                <form id="filterForm" method="get" class="row g-3">
                     <div class="col-md-5">
                         <label class="form-label">Tìm kiếm</label>
-                        <input type="text" name="search" class="form-control" placeholder="Nhập từ khóa..." value="@Model.Search" />
+                        <input id="searchInput" type="text" name="search" class="form-control" placeholder="Nhập từ khóa..." value="@Model.Search" autocomplete="off" />
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label">Lọc theo trạng thái</label>
-                        <select name="filterType" class="form-select">
+                        <select id="filterSelect" name="filterType" class="form-select">
                             <option value="">-- Tất cả --</option>
                             @{
                                 List<string> filterOptions = new();
@@ -143,8 +166,20 @@
                     </div>
 
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button id="searchBtn" type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                    </div>
+                    <!-- Export PDF button -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        @if (Model.Category == "finance")
+                        {
+                            <select id="exportYear" class="form-select me-2" style="width:120px;">
+                                @{ for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--) { <text><option value="@y">@y</option></text>; } }
+                            </select>
+                        }
+                        <button type="button" class="btn btn-outline-primary w-100" onclick="exportCategoryPdf()">
+                            <i class="fas fa-file-pdf me-2"></i>Xuất PDF
                         </button>
                     </div>
                 </form>
@@ -152,7 +187,7 @@
         </div>
 
         <!-- Data Table Section -->
-        <div class="report-card">
+        <div id="dataTableCard" class="report-card">
             <div class="table-header">
                 <h5>Danh sách (Tổng: @Model.TotalCount bản ghi)</h5>
             </div>
@@ -163,13 +198,25 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Mã TV</th>
-                                <th>Họ tên</th>
-                                <th>Email</th>
+                                <th class="sortable" data-sort="matv" style="cursor:pointer;">
+                                    Mã TV
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "matv" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="hoten" style="cursor:pointer;">
+                                    Họ tên
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "hoten" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="email" style="cursor:pointer;">
+                                    Email
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "email" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Số điện thoại</th>
                                 <th>Lớp</th>
                                 <th>Trạng thái</th>
-                                <th>Ngày tham gia</th>
+                                <th class="sortable" data-sort="ngaythamgia" style="cursor:pointer;">
+                                    Ngày tham gia
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "ngaythamgia" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -206,13 +253,25 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Mã HD</th>
-                                <th>Tên hoạt động</th>
+                                <th class="sortable" data-sort="mahd" style="cursor:pointer;">
+                                    Mã HD
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "mahd" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="tenhd" style="cursor:pointer;">
+                                    Tên hoạt động
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "tenhd" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Địa điểm</th>
-                                <th>Ngày tổ chức</th>
+                                <th class="sortable" data-sort="ngaytochuc" style="cursor:pointer;">
+                                    Ngày tổ chức
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "ngaytochuc" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Người phụ trách</th>
                                 <th>Kinh phí</th>
-                                <th>Trạng thái</th>
+                                <th class="sortable" data-sort="trangthai" style="cursor:pointer;">
+                                    Trạng thái
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "trangthai" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -249,12 +308,27 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Mã DA</th>
-                                <th>Tên dự án</th>
+                                <th class="sortable" data-sort="mada" style="cursor:pointer;">
+                                    Mã DA
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "mada" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="tenduan" style="cursor:pointer;">
+                                    Tên dự án
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "tenduan" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Mô tả</th>
-                                <th>Ngày bắt đầu</th>
-                                <th>Ngày kết thúc</th>
-                                <th>Trạng thái</th>
+                                <th class="sortable" data-sort="ngaybatdau" style="cursor:pointer;">
+                                    Ngày bắt đầu
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "ngaybatdau" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="ngayketthuc" style="cursor:pointer;">
+                                    Ngày kết thúc
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "ngayketthuc" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
+                                <th class="sortable" data-sort="trangthai" style="cursor:pointer;">
+                                    Trạng thái
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "trangthai" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -290,11 +364,20 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Mã GD</th>
+                                <th class="sortable" data-sort="magd" style="cursor:pointer;">
+                                    Mã GD
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "magd" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Loại giao dịch</th>
-                                <th>Số tiền</th>
+                                <th class="sortable" data-sort="sotien" style="cursor:pointer;">
+                                    Số tiền
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "sotien" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Nội dung</th>
-                                <th>Ngày giao dịch</th>
+                                <th class="sortable" data-sort="ngaygd" style="cursor:pointer;">
+                                    Ngày giao dịch
+                                    <span class="sort-indicator">@(ViewBag.SortBy == "ngaygd" ? (ViewBag.SortDir == "asc" ? "▲" : "▼") : "")</span>
+                                </th>
                                 <th>Người thực hiện</th>
                                 <th>Nguồn</th>
                             </tr>
@@ -354,7 +437,137 @@
 
 @section Scripts {
     <script src="~/js/dashboard.js"></script>
-}
+    <script>
+        // Debounce helper
+        function debounce(fn, delay) {
+            let t;
+            return function(...args) {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        (function() {
+            const category = '@Model.Category';
+            const searchInput = document.getElementById('searchInput');
+            const filterSelect = document.getElementById('filterSelect');
+            const filterForm = document.getElementById('filterForm');
+            const dataCard = document.getElementById('dataTableCard');
+            const exportYear = document.getElementById('exportYear');
+
+            // Prevent full form submit — we handle via AJAX
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
+
+            // Build URL for fetching filtered content
+            function buildUrl(params) {
+                const url = new URL(window.location.origin + '/Reports/CategoryDetails');
+                url.searchParams.set('category', category);
+                if (params.search) url.searchParams.set('search', params.search);
+                if (params.filterType) url.searchParams.set('filterType', params.filterType);
+                if (currentSortBy) url.searchParams.set('sortBy', currentSortBy);
+                if (currentSortDir) url.searchParams.set('sortDir', currentSortDir);
+                url.searchParams.set('page', '1');
+                return url.toString();
+            }
+
+            let currentRequest = 0;
+            async function fetchData() {
+                const reqId = ++currentRequest;
+                const params = {
+                    search: searchInput ? searchInput.value.trim() : '',
+                    filterType: filterSelect ? filterSelect.value : ''
+                };
+
+                const url = buildUrl(params);
+                try {
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    const text = await res.text();
+                    // Only apply if this is the latest request
+                    if (reqId !== currentRequest) return;
+
+                    // Parse returned HTML and replace data table card
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const newCard = doc.getElementById('dataTableCard');
+                    if (newCard && dataCard) {
+                        dataCard.innerHTML = newCard.innerHTML;
+                    } else {
+                        // fallback: replace entire container
+                        const main = doc.querySelector('.reports-container');
+                        const currentMain = document.querySelector('.reports-container');
+                        if (main && currentMain) currentMain.innerHTML = main.innerHTML;
+                    }
+                    // update URL in address bar (without reloading)
+                    const newUrlParams = new URLSearchParams();
+                    if (params.search) newUrlParams.set('search', params.search);
+                    if (params.filterType) newUrlParams.set('filterType', params.filterType);
+                    if (currentSortBy) newUrlParams.set('sortBy', currentSortBy);
+                    if (currentSortDir) newUrlParams.set('sortDir', currentSortDir);
+                    newUrlParams.set('category', category);
+                    history.replaceState(null, '', '/Reports/CategoryDetails?' + newUrlParams.toString());
+                } catch (err) {
+                    console.error('Error fetching filtered data', err);
+                }
+            }
+
+            const debouncedFetch = debounce(fetchData, 300);
+
+            // Sorting state initialized from server
+            let currentSortBy = '@(ViewBag.SortBy ?? "")';
+            let currentSortDir = '@(ViewBag.SortDir ?? "")';
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    debouncedFetch();
+                });
+            }
+
+            if (filterSelect) {
+                filterSelect.addEventListener('change', function() {
+                    fetchData();
+                });
+            }
+
+            // Handle clicks on sort buttons via event delegation
+            if (dataCard) {
+                dataCard.addEventListener('click', function(e) {
+                    const th = e.target.closest('th.sortable');
+                    if (!th) return;
+                    e.preventDefault();
+                    const sortKey = th.getAttribute('data-sort');
+                    if (!sortKey) return;
+                    if (currentSortBy === sortKey) {
+                        // toggle
+                        currentSortDir = (currentSortDir === 'asc') ? 'desc' : 'asc';
+                    } else {
+                        currentSortBy = sortKey;
+                        currentSortDir = 'asc';
+                    }
+                    // perform fetch with new sort
+                    fetchData();
+                });
+            }
+
+            // Export function uses current filters
+            window.exportCategoryPdf = function() {
+                const params = new URLSearchParams();
+                if (searchInput && searchInput.value) params.append('search', searchInput.value.trim());
+                if (filterSelect && filterSelect.value) params.append('filterType', filterSelect.value);
+                if (currentSortBy) params.append('sortBy', currentSortBy);
+                if (currentSortDir) params.append('sortDir', currentSortDir);
+                if (category === 'finance') {
+                    const year = exportYear ? exportYear.value : (new Date()).getFullYear();
+                    params.append('year', year);
+                }
+                const url = '/Reports/ExportCategoryPdf?category=' + encodeURIComponent(category) + '&' + params.toString();
+                window.location.href = url;
+            };
+        })();
+    </script>
+ }
 
 @functions {
     private string GetCategoryTitle(string category) => category?.ToLower() switch
