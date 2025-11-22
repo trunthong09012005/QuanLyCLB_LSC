@@ -16,6 +16,9 @@ namespace QuanLyCLB_LSC.Controllers
         {
             try
             {
+                var sortBy = HttpContext.Request.Query["sortBy"].ToString();
+                var sortDir = HttpContext.Request.Query["sortDir"].ToString();
+
                 // Lấy tổng số dự án
                 ViewBag.TongDuAn = _context.DuAns.Count();
 
@@ -43,7 +46,7 @@ namespace QuanLyCLB_LSC.Controllers
                     .Count(da => da.TrangThai == "Hoàn thành");
 
                 // Lấy danh sách dự án với số thành viên tham gia
-                var danhSachDuAn = _context.DuAns
+                var danhSachDuAnQuery = _context.DuAns
                     .Select(da => new
                     {
                         da.MaDa,
@@ -55,8 +58,25 @@ namespace QuanLyCLB_LSC.Controllers
                         SoThanhVien = _context.PhanCongs
                             .Count(pc => pc.MaDa == da.MaDa)
                     })
-                    .OrderByDescending(da => da.NgayBatDau)
-                    .ToList();
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(sortBy))
+                {
+                    bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
+                    danhSachDuAnQuery = sortBy.ToLower() switch
+                    {
+                        "tenduan" => asc ? danhSachDuAnQuery.OrderBy(da => da.TenDuAn) : danhSachDuAnQuery.OrderByDescending(da => da.TenDuAn),
+                        "ngaybatdau" => asc ? danhSachDuAnQuery.OrderBy(da => da.NgayBatDau) : danhSachDuAnQuery.OrderByDescending(da => da.NgayBatDau),
+                        "trangthai" => asc ? danhSachDuAnQuery.OrderBy(da => da.TrangThai) : danhSachDuAnQuery.OrderByDescending(da => da.TrangThai),
+                        _ => asc ? danhSachDuAnQuery.OrderBy(da => da.MaDa) : danhSachDuAnQuery.OrderByDescending(da => da.MaDa),
+                    };
+                }
+                else
+                {
+                    danhSachDuAnQuery = danhSachDuAnQuery.OrderByDescending(da => da.NgayBatDau);
+                }
+
+                var danhSachDuAn = danhSachDuAnQuery.ToList();
 
                 ViewBag.DanhSachDuAn = danhSachDuAn;
 

@@ -200,7 +200,7 @@
 
 .settings-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     color: white;
     text-decoration: none;
 }
@@ -260,7 +260,7 @@
     color: #721c24;
 }
 
-/* Stats Box */
+/* Stats Box - updated to match Dashboard .stat-card */
 .settings-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -269,29 +269,67 @@
 }
 
 .settings-stat-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: white;
+    border-radius: 15px;
     padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    transition: transform 0.3s;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    text-align: left;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .settings-stat-box:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.settings-stat-box.blue { border-left-color: #3498db; }
+.settings-stat-box.green { border-left-color: #2ecc71; }
+.settings-stat-box.orange { border-left-color: #f39c12; }
+.settings-stat-box.purple { border-left-color: #9b59b6; }
+
+/* Icon inside stat box */
+.settings-stat-box .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.settings-stat-box.blue .stat-icon { 
+    background: rgba(52,152,219,0.1); 
+    color: #3498db; 
+}
+.settings-stat-box.green .stat-icon { 
+    background: rgba(46,204,113,0.1); 
+    color: #2ecc71; 
+}
+.settings-stat-box.orange .stat-icon { 
+    background: rgba(243,156,18,0.1); 
+    color: #f39c12; 
+}
+.settings-stat-box.purple .stat-icon { 
+    background: rgba(155,89,182,0.1); 
+    color: #9b59b6; 
 }
 
 .settings-stat-number {
-    font-size: 36px;
-    font-weight: bold;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
     margin-bottom: 8px;
 }
 
 .settings-stat-label {
+    color: #7f8c8d;
     font-size: 14px;
-    opacity: 0.95;
 }
 
 /* Toggle Switch */
@@ -370,6 +408,50 @@
 
 .tab-content {
     padding: 20px 0;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.settings-stat-box, .settings-card, .settings-form-section, .settings-table-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.settings-stat-box:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.settings-stat-box:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.settings-stat-box:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.settings-stat-box:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.settings-card {
+    animation-delay: 0.2s;
+}
+
+.settings-form-section {
+    animation-delay: 0.3s;
+}
+
+.settings-table-section {
+    animation-delay: 0.4s;
 }
 
 /* Responsive */

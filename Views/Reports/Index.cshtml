@@ -1,48 +1,81 @@
-﻿@{
-    ViewData["Title"] = "Báo Cáo - CLB Kỹ Năng";
+﻿@model ReportStatisticsViewModel
+@using QuanLyCLB_LSC.ViewModels
+@{
+    ViewData["Title"] = "Báo cáo - CLB Kỹ Năng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/dashboard.css" />
-<link rel="stylesheet" href="~/css/reports.css" />
+<link rel="stylesheet" href="~/css/reports-redesigned.css" />
+
+<style>
+    /* Unified table styling with Dashboard */
+    .reports-container .table-responsive .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    .reports-container .table-responsive .table thead th {
+        color: white !important;
+        font-weight: 600 !important;
+        padding: 15px !important;
+        border: none !important;
+    }
+    
+    .reports-container .table-responsive .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .reports-container .table-responsive .table tbody tr:hover {
+        background: #f8f9fa;
+        transform: scale(1.01);
+    }
+
+    /* Remove underline and ensure full-card clickable */
+    .stat-grid a.stat-card { text-decoration: none; color: inherit; display: block; }
+    .stat-grid a.stat-card:focus, .stat-grid a.stat-card:hover { text-decoration: none; }
+    .stat-card .stat-detail { font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 8px; }
+    .stat-card .stat-label { margin-top: 6px; color: #7f8c8d; }
+    /* hide original numeric styles if present */
+    .stat-card .stat-number { display: none; }
+</style>
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="logo-circle">LSC</div>
+         <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
         <h5 class="mb-0">Admin</h5>
         <small>Life Skills Club</small>
     </div>
 
     <div class="sidebar-menu">
-        <a href="@Url.Action("Index", "Dashboard")" class="menu-item" onclick="showSection('dashboard')">
+        <a href="@Url.Action("Index", "Dashboard")" class="menu-item">
             <i class="fas fa-home"></i>
             <span>Trang Chủ</span>
         </a>
-        <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+        <a href="@Url.Action("Index", "Members")" class="menu-item">
             <i class="fas fa-users"></i>
             <span>Thành Viên</span>
         </a>
-        <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+        <a href="@Url.Action("Index", "Activities")" class="menu-item">
             <i class="fas fa-calendar-alt"></i>
             <span>Hoạt Động</span>
         </a>
-        <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
+        <a href="@Url.Action("Index", "Project")" class="menu-item">
             <i class="fas fa-project-diagram"></i>
             <span>Dự Án</span>
         </a>
-        <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
+        <a href="@Url.Action("Index", "Finance")" class="menu-item">
             <i class="fas fa-wallet"></i>
             <span>Tài Chính</span>
         </a>
-        <a href="@Url.Action("Index", "Reports")" class="menu-item active" onclick="showSection('reports')">
+        <a href="@Url.Action("Index", "Reports")" class="menu-item active">
             <i class="fas fa-chart-bar"></i>
             <span>Báo Cáo</span>
         </a>
-        <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+        <a href="@Url.Action("Index", "Settings")" class="menu-item">
             <i class="fas fa-cog"></i>
             <span>Cài Đặt</span>
         </a>
-        <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+        <a href="@Url.Action("Login", "Auth")" class="menu-item">
             <i class="fas fa-sign-out-alt"></i>
             <span>Đăng Xuất</span>
         </a>
@@ -59,11 +92,11 @@
 
         <div class="user-info">
             <div class="position-relative">
-                <i class="fas fa-bell" style="font-size: 22px; color: #667eea; cursor: pointer;"></i>
-          
+                <i class="fas fa-bell" style="font-size: 22px; color: var(--report-accent); cursor: pointer;"></i>
+                <span class="notification-badge">3</span>
             </div>
             <div>
-                <div class="fw-bold">Admin</div>
+                <div class="fw-bold">Quản trị viên</div>
                 <small class="text-muted">Quản trị viên</small>
             </div>
             <div class="user-avatar">
@@ -72,202 +105,139 @@
         </div>
     </div>
 
-    <div class="dashboard-content">
-        <h2 class="mb-4">
-            <i class="fas fa-chart-bar me-2" style="color: var(--primary-color);"></i>
-            Báo Cáo & Thống Kê
-        </h2>
-
-        <!-- Report Types -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="report-card gradient-1">
-                    <div class="report-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h5>Báo Cáo Thành Viên</h5>
-                    <p class="mb-3">Thống kê chi tiết về thành viên CLB</p>
-                    <button class="btn btn-light btn-sm" onclick="generateReport('member')">
-                        <i class="fas fa-file-download me-2"></i>Xem Báo Cáo
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="report-card gradient-2">
-                    <div class="report-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <h5>Báo Cáo Hoạt Động</h5>
-                    <p class="mb-3">Tổng hợp các hoạt động đã tổ chức</p>
-                    <button class="btn btn-light btn-sm" onclick="generateReport('activity')">
-                        <i class="fas fa-file-download me-2"></i>Xem Báo Cáo
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="report-card gradient-3">
-                    <div class="report-icon">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h5>Báo Cáo Tài Chính</h5>
-                    <p class="mb-3">Thu chi và ngân sách CLB</p>
-                    <button class="btn btn-light btn-sm" onclick="generateReport('finance')">
-                        <i class="fas fa-file-download me-2"></i>Xem Báo Cáo
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="report-card gradient-4">
-                    <div class="report-icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <h5>Báo Cáo Dự Án</h5>
-                    <p class="mb-3">Tiến độ và kết quả các dự án</p>
-                    <button class="btn btn-light btn-sm" onclick="generateReport('project')">
-                        <i class="fas fa-file-download me-2"></i>Xem Báo Cáo
-                    </button>
-                </div>
+    <div class="dashboard-content reports-container">
+        <!-- Header Section -->
+        <div class="reports-header mb-4">
+            <div>
+                <h2><i class="fas fa-chart-column me-2" style="color: var(--report-accent);"></i>Báo Cáo Tổng Hợp Dự Án</h2>
+                <p class="text-muted">Thống kê và biểu đồ tổng thể về các hoạt động của CLB</p>
             </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <h5>
-                <i class="fas fa-filter me-2"></i>Bộ Lọc Báo Cáo
-            </h5>
-            <form method="get" asp-action="Export">
+        <!-- Statistics Cards - Unified with Dashboard -->
+        <!-- Statistic buttons: each card is a link to the category details -->
+        <div class="stat-grid mb-4">
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "members" })" class="stat-card blue" role="button">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Thành viên</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "activities" })" class="stat-card green" role="button">
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Hoạt động</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "projects" })" class="stat-card orange" role="button">
+                <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Dự án</div>
+            </a>
+
+            <a href="@Url.Action("CategoryDetails", "Reports", new { category = "finance" })" class="stat-card purple pulse" role="button">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-detail">Thống kê chi tiết</div>
+                <div class="stat-label">Tài chính</div>
+            </a>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="report-card mb-4">
+            <div class="controls-header">
+                <h5>Tuỳ chọn và Bộ lọc</h5>
+            </div>
+            <div class="controls-content">
                 <div class="row g-3">
+                    <!-- Year Filter -->
                     <div class="col-md-3">
-                        <label class="mb-2">Loại Báo Cáo</label>
-                        <select class="form-select" name="loai">
-                            <option value="">Tất cả</option>
-                            <option value="ThanhVien">Thành viên</option>
-                            <option value="HoatDong">Hoạt động</option>
-                            <option value="TaiChinh">Tài chính</option>
-                            <option value="DuAn">Dự án</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="mb-2">Từ Ngày</label>
-                        <input type="date" class="form-control" name="tuNgay">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="mb-2">Đến Ngày</label>
-                        <input type="date" class="form-control" name="denNgay">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="mb-2">Định Dạng</label>
-                        <select class="form-select" name="dinhDang">
-                            <option value="PDF">PDF</option>
-                            <option value="Excel">Excel</option>
-                            <option value="Word">Word</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <button type="submit" class="export-btn me-2">
-                        <i class="fas fa-download me-2"></i>Xuất Báo Cáo
-                    </button>
-                    <a href="@Url.Action("Create")" class="export-btn">
-                        <i class="fas fa-plus me-2"></i>Tạo Báo Cáo Mới
-                    </a>
-                </div>
-            </form>
-        </div>
-
-        <!-- Statistics Overview -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-box">
-                    <div class="stat-number">@ViewBag.TongBaoCao</div>
-                    <div class="stat-label">Báo Cáo Đã Tạo</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-box">
-                    <div class="stat-number">@ViewBag.BaoCaoThangNay</div>
-                    <div class="stat-label">Báo Cáo Tháng Này</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-box">
-                    <div class="stat-number">@(ViewBag.ThongKeTheoLoai?.Count ?? 0)</div>
-                    <div class="stat-label">Loại Báo Cáo</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-box">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Báo Cáo Chờ Duyệt</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Reports Table -->
-        <div class="report-table">
-            <h5>
-                <i class="fas fa-history me-2"></i>Báo Cáo Gần Đây
-            </h5>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-hashtag me-2"></i>Mã BC</th>
-                            <th><i class="fas fa-file-alt me-2"></i>Tiêu Đề</th>
-                            <th><i class="fas fa-list me-2"></i>Loại</th>
-                            <th><i class="fas fa-calendar me-2"></i>Ngày Lập</th>
-                            <th><i class="fas fa-user me-2"></i>Người Lập</th>
-                            <th><i class="fas fa-cog me-2"></i>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (ViewBag.BaoCaoGanDay != null)
-                        {
-                            @foreach (var bc in ViewBag.BaoCaoGanDay)
-                            {
-                                <tr>
-                                    <td>#BC@bc.MaBc.ToString().PadLeft(3, '0')</td>
-                                    <td>@bc.TieuDe</td>
-                                    <td><span class="badge bg-primary">@(bc.LoaiBc ?? "Chưa rõ")</span></td>
-                                    <td>@(bc.NgayLap?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
-                                    <td>@bc.NguoiLap</td>
-                                    <td>
-                                        <a href="@Url.Action("Details", new { id = bc.MaBc })" class="btn btn-sm btn-outline-info" title="Xem">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <button class="btn btn-sm btn-outline-success" title="Tải xuống">
-                                            <i class="fas fa-download"></i>
-                                        </button>
-                                        <form method="post" asp-action="Delete" asp-route-id="@bc.MaBc" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                        <label class="form-label">Chọn năm</label>
+                        <select id="yearFilter" class="form-select" onchange="filterCharts()">
+                            @{
+                                for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                                {
+                                    if (y == (ViewBag.SelectedYear ?? DateTime.Now.Year))
+                                    {
+                                        <option value="@y" selected="selected">@y</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@y">@y</option>
+                                    }
+                                }
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center">Chưa có báo cáo nào</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                        </select>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-filter me-2"></i>Áp dụng
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="report-card mb-4">
+            <div class="charts-header">
+                <h5>Biểu Đồ Thống Kê</h5>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-item">
+                    <div class="chart-title">Thành viên theo tháng</div>
+                    <div class="chart-wrapper">
+                        <canvas id="membersChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-title">Hoạt động theo tháng</div>
+                    <div class="chart-wrapper">
+                        <canvas id="activitiesChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-title">Phân bố dự án theo trạng thái</div>
+                    <div class="chart-wrapper">
+                        <canvas id="projectsChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-title">Thu - Chi theo tháng</div>
+                    <div class="chart-wrapper">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Data Container for JavaScript -->
+<div id="reportData" style="display:none"
+     data-members-labels='@Html.Raw(ViewBag.MembersChartLabels ?? "[]")'
+     data-members-data='@Html.Raw(ViewBag.MembersChartData ?? "[]")'
+     data-activities-labels='@Html.Raw(ViewBag.ActivitiesChartLabels ?? "[]")'
+     data-activities-data='@Html.Raw(ViewBag.ActivitiesChartData ?? "[]")'
+     data-projects-labels='@Html.Raw(ViewBag.ProjectsChartLabels ?? "[]")'
+     data-projects-data='@Html.Raw(ViewBag.ProjectsChartData ?? "[]")'
+     data-finance-labels='@Html.Raw(ViewBag.FinanceChartLabels ?? "[]")'
+     data-finance-income='@Html.Raw(ViewBag.FinanceChartIncome ?? "[]")'
+     data-finance-expense='@Html.Raw(ViewBag.FinanceChartExpense ?? "[]")'>
+</div>
+
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="~/js/reports-redesigned.js"></script>
     <script src="~/js/dashboard.js"></script>
     <script>
-        function generateReport(type) {
-            alert('Đang tạo báo cáo ' + type + '...');
+        function exportFinancePdf() {
+            const yearSelect = document.getElementById('yearFilter');
+            const year = yearSelect ? yearSelect.value : (new Date()).getFullYear();
+            const url = '@Url.Action("ExportFinancePdf", "Reports")';
+            window.location.href = url + '?year=' + encodeURIComponent(year);
         }
     </script>
 }

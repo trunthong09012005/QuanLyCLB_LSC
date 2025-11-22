@@ -28,7 +28,30 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     overflow: hidden;
 }
+.logo-circle {
+    width: 120px;
+    height: 120px;
+    background: white; /* remove white background so logo fills circle */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    padding: 0; /* ensure no inner padding reducing image size */
+}
 
+.logo-circle-img {
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
 .header-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 30px;
@@ -38,42 +61,22 @@
     overflow: hidden;
 }
 
-    .header-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotate 20s linear infinite;
-    }
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+/* rotating soft highlight (base) */
+.header-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
 }
 
-.logo-badge {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #667eea;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    position: relative;
-    z-index: 1;
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .form-control:focus, .form-select:focus {
@@ -189,6 +192,14 @@
 .strength-strong {
     background: #28a745;
     width: 100%;
+}
+
+/* Keep header content above the rotating highlight */
+.header-section > * { position: relative; z-index: 2; }
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .header-section::before { opacity: 0.6; }
 }
 
 

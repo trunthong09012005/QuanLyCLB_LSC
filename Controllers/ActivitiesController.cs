@@ -15,7 +15,7 @@ namespace QuanLyCLB_LSC.Controllers
         }
 
         // GET: Activities
-        public async Task<IActionResult> Index(string search, int? loaiId, int? nguoiId, int? year)
+        public async Task<IActionResult> Index(string search, int? loaiId, int? nguoiId, int? year, string? sortBy, string? sortDir)
         {
             var query = _context.HoatDongs
                 .Include(h => h.MaLoaiHdNavigation)
@@ -35,6 +35,27 @@ namespace QuanLyCLB_LSC.Controllers
             if (nguoiId.HasValue)
             {
                 query = query.Where(h => h.NguoiPhuTrach == nguoiId.Value);
+            }
+
+            // expose sorting
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortDir = sortDir;
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
+                query = sortBy.ToLower() switch
+                {
+                    "tenhd" => asc ? query.OrderBy(h => h.TenHd) : query.OrderByDescending(h => h.TenHd),
+                    "ngaytochuc" => asc ? query.OrderBy(h => h.NgayToChuc) : query.OrderByDescending(h => h.NgayToChuc),
+                    "diadiem" => asc ? query.OrderBy(h => h.DiaDiem) : query.OrderByDescending(h => h.DiaDiem),
+                    "nguoi" => asc ? query.OrderBy(h => h.NguoiPhuTrach) : query.OrderByDescending(h => h.NguoiPhuTrach),
+                    _ => asc ? query.OrderBy(h => h.MaHd) : query.OrderByDescending(h => h.MaHd),
+                };
+            }
+            else
+            {
+                query = query.OrderByDescending(h => h.MaHd);
             }
 
             ViewBag.LoaiHoatDongs = await _context.LoaiHoatDongs.OrderBy(l => l.TenLoaiHd).ToListAsync();
@@ -91,7 +112,7 @@ namespace QuanLyCLB_LSC.Controllers
                 .ToList();
             ViewBag.FeaturedActivities = upcoming;
 
-            var list = await query.OrderByDescending(h => h.MaHd).ToListAsync();
+            var list = await query.ToListAsync();
             return View(list);
         }
 

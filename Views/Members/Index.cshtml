@@ -9,7 +9,7 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-circle">LSC</div>
+             <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
             <h5 class="mb-0">Admin</h5>
             <small>Life Skills Club</small>
         </div>
@@ -115,69 +115,71 @@
                 <a class="action-btn btn btn-primary" href="@Url.Action("Create", "Members")">
                     <i class="fas fa-user-plus me-2"></i>Thêm Thành Viên
                 </a>
-                <a class="action-btn btn btn-outline-secondary" href="@Url.Action("Index", "Reports")">
-                    <i class="fas fa-file-alt me-2"></i>Báo Cáo
+                <a class="action-btn btn btn-outline-secondary" href="@Url.Action("Index", "Reports")" style="text-decoration: underline;">
+                    <i class="fas fa-file-alt me-2"></i> Xem Báo Cáo
                 </a>
             </div>
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="get" class="row g-2 mb-3">
+                    <form id="memberFilterForm" method="get" class="row g-2 mb-3">
                         <div class="col-md-4">
-                            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên, email hoặc SDT" />
+                            <input id="memberSearch" type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên, email hoặc SDT" autocomplete="off" />
                         </div>
                         <div class="col-md-3">
-                            <select name="cvId" class="form-select">
-                                <option value="">-- Lọc theo chức vụ --</option>
-                                @foreach (var cv in ViewBag.ChucVus as List<QuanLyCLB_LSC.Models.ChucVu>)
-                                {
-                                    if (ViewBag.CvId == cv.MaCv)
-                                    {
-                                        <option value="@cv.MaCv" selected>@cv.TenCv</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@cv.MaCv">@cv.TenCv</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select name="banId" class="form-select">
-                                <option value="">-- Lọc theo ban --</option>
-                                @foreach (var b in ViewBag.Bans as List<QuanLyCLB_LSC.Models.BanChuyenMon>)
-                                {
-                                    if (ViewBag.BanId == b.MaBan)
-                                    {
-                                        <option value="@b.MaBan" selected>@b.TenBan</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@b.MaBan">@b.TenBan</option>
-                                    }
-                                }
-                            </select>
-                        </div>
+                            <select id="cvIdSelect" name="cvId" class="form-select">
+                                 <option value="">-- Lọc theo chức vụ --</option>
+                                 @foreach (var cv in ViewBag.ChucVus as List<QuanLyCLB_LSC.Models.ChucVu>)
+                                 {
+                                     if (ViewBag.CvId == cv.MaCv)
+                                     {
+                                         <option value="@cv.MaCv" selected>@cv.TenCv</option>
+                                     }
+                                     else
+                                     {
+                                         <option value="@cv.MaCv">@cv.TenCv</option>
+                                     }
+                                 }
+                             </select>
+                         </div>
+                         <div class="col-md-3">
+                            <select id="banIdSelect" name="banId" class="form-select">
+                                 <option value="">-- Lọc theo ban --</option>
+                                 @foreach (var b in ViewBag.Bans as List<QuanLyCLB_LSC.Models.BanChuyenMon>)
+                                 {
+                                     if (ViewBag.BanId == b.MaBan)
+                                     {
+                                         <option value="@b.MaBan" selected>@b.TenBan</option>
+                                     }
+                                     else
+                                     {
+                                         <option value="@b.MaBan">@b.TenBan</option>
+                                     }
+                                 }
+                             </select>
+                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-primary">Tìm</button>
+                            <button id="memberSearchBtn" class="btn btn-primary">Tìm</button>
                         </div>
-                    </form>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Họ tên</th>
+                        <input type="hidden" id="sortByInput" name="sortBy" value="@(ViewBag.SortBy ?? "")" />
+                        <input type="hidden" id="sortDirInput" name="sortDir" value="@(ViewBag.SortDir ?? "")" />
+                     </form>
+ 
+                     <div id="dataTableCard" class="table-responsive">
+                         <table class="table table-striped">
+                             <thead>
+                                 <tr>
+                                    <th class="sortable" data-sort="matv" style="cursor:pointer"># <span class="sort-ind">@(ViewBag.SortBy=="matv"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="hoten" style="cursor:pointer">Họ tên <span class="sort-ind">@(ViewBag.SortBy=="hoten"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                                     <th>Chức vụ</th>
                                     <th>Ban</th>
-                                    <th>Email</th>
-                                    <th>SDT</th>
+                                    <th class="sortable" data-sort="email" style="cursor:pointer">Email <span class="sort-ind">@(ViewBag.SortBy=="email"?(ViewBag.SortDir=="asc"?("▲"):"▼") : "")</span></th>
+                                    <th class="sortable" data-sort="sdt" style="cursor:pointer">SDT <span class="sort-ind">@(ViewBag.SortBy=="sdt"?(ViewBag.SortDir=="asc"?("▲"):"▼") : "")</span></th>
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                                 </tr>
+                             </thead>
+                             <tbody>
                                 @foreach (var item in Model)
                                 {
                                     <tr>
@@ -221,8 +223,62 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="~/js/dashboard.js"></script>
-</body>
-</html>
+    <script>
+        // AJAX fetch and update table for Members (search/filter/sort)
+        (function(){
+            const searchInput = document.getElementById('memberSearch');
+            const cvSelect = document.getElementById('cvIdSelect');
+            const banSelect = document.getElementById('banIdSelect');
+            const form = document.getElementById('memberFilterForm');
+            const dataCard = document.getElementById('dataTableCard');
+            const sortByInput = document.getElementById('sortByInput');
+            const sortDirInput = document.getElementById('sortDirInput');
+
+            function buildUrl() {
+                const params = new URLSearchParams();
+                if (searchInput && searchInput.value) params.set('search', searchInput.value);
+                if (cvSelect && cvSelect.value) params.set('cvId', cvSelect.value);
+                if (banSelect && banSelect.value) params.set('banId', banSelect.value);
+                if (sortByInput && sortByInput.value) params.set('sortBy', sortByInput.value);
+                if (sortDirInput && sortDirInput.value) params.set('sortDir', sortDirInput.value);
+                return '/Members/Index?' + params.toString();
+            }
+
+            async function fetchData(){
+                try{
+                    const url = buildUrl();
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const newCard = doc.getElementById('dataTableCard');
+                    if (newCard && dataCard) dataCard.innerHTML = newCard.innerHTML;
+                    // update URL
+                    history.replaceState(null, '', url);
+                }catch(e){ console.error(e); }
+            }
+
+            // debounce
+            let t;
+            if (searchInput) searchInput.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(fetchData, 300); });
+            if (cvSelect) cvSelect.addEventListener('change', fetchData);
+            if (banSelect) banSelect.addEventListener('change', fetchData);
+
+            // sortable headers in current table
+            dataCard.addEventListener('click', function(e){
+                const th = e.target.closest('th.sortable');
+                if (!th) return;
+                const key = th.getAttribute('data-sort');
+                if (!key) return;
+                if (sortByInput.value === key) sortDirInput.value = (sortDirInput.value === 'asc') ? 'desc' : 'asc';
+                else { sortByInput.value = key; sortDirInput.value = 'asc'; }
+                fetchData();
+            });
+
+            // prevent normal submit
+            if (form) form.addEventListener('submit', function(e){ e.preventDefault(); fetchData(); });
+        })();
+    </script>
+ </body>
+ </html>

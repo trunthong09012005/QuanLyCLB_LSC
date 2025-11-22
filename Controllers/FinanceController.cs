@@ -13,7 +13,7 @@ namespace QuanLyCLB_LSC.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string? sortBy, string? sortDir, string? search, string? filterType)
         {
             var now = DateTime.Now;
             var startOfMonth = new DateTime(now.Year, now.Month, 1);
@@ -55,7 +55,18 @@ namespace QuanLyCLB_LSC.Controllers
             ViewBag.ChenhLech = chenhLech;
 
             // Lấy giao dịch gần đây (10 giao dịch mới nhất)
-            var giaoDichGanDay = (from tc in _context.ThuChis
+            // base query with optional server-side filters
+            var baseQuery = _context.ThuChis.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(filterType))
+            {
+                baseQuery = baseQuery.Where(tc => tc.LoaiGd == filterType);
+            }
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                baseQuery = baseQuery.Where(tc => tc.NoiDung != null && tc.NoiDung.Contains(search));
+            }
+
+            var giaoDichGanDayQuery = (from tc in baseQuery
                                   orderby tc.NgayGd descending
                                   select new
                                   {
@@ -77,31 +88,57 @@ namespace QuanLyCLB_LSC.Controllers
                                           .Select(hd => hd.TenHd)
                                           .FirstOrDefault() : null
                                   })
-                     .Take(10)
-                     .ToList();
+                     .AsQueryable();
+
+            // Apply sorting to recent transactions if requested
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
+                giaoDichGanDayQuery = sortBy.ToLower() switch
+                {
+                    "sotien" => asc ? giaoDichGanDayQuery.OrderBy(x => x.SoTien) : giaoDichGanDayQuery.OrderByDescending(x => x.SoTien),
+                    "ngaygd" => asc ? giaoDichGanDayQuery.OrderBy(x => x.NgayGd) : giaoDichGanDayQuery.OrderByDescending(x => x.NgayGd),
+                    _ => asc ? giaoDichGanDayQuery.OrderBy(x => x.MaGd) : giaoDichGanDayQuery.OrderByDescending(x => x.MaGd),
+                };
+            }
+
+            var giaoDichGanDay = giaoDichGanDayQuery.Take(10).ToList();
 
             ViewBag.GiaoDichGanDay = giaoDichGanDay;
 
             // Lấy tất cả giao dịch cho bảng chi tiết
-            var danhSachGiaoDich = (from tc in _context.ThuChis
-                                    join tv in _context.ThanhViens on tc.NguoiThucHien equals tv.MaTv into tvJoin
-                                    from tv in tvJoin.DefaultIfEmpty()
-                                    join n in _context.NguonThus on tc.MaNguon equals n.MaNguon into nJoin
-                                    from n in nJoin.DefaultIfEmpty()
-                                    join hd in _context.HoatDongs on tc.MaHd equals hd.MaHd into hdJoin
-                                    from hd in hdJoin.DefaultIfEmpty()
-                                    orderby tc.NgayGd descending
-                                    select new
-                                    {
-                                        tc.MaGd,
-                                        tc.LoaiGd,
-                                        tc.SoTien,
-                                        tc.NgayGd,
-                                        tc.NoiDung,
-                                        NguoiThucHienTen = tv != null ? tv.HoTen : "N/A",
-                                        NguonTen = n != null ? n.TenNguon : null,
-                                        HoatDongTen = hd != null ? hd.TenHd : null
-                                    }).ToList();
+            var danhSachGiaoDichQuery = (from tc in baseQuery
+                                     join tv in _context.ThanhViens on tc.NguoiThucHien equals tv.MaTv into tvJoin
+                                     from tv in tvJoin.DefaultIfEmpty()
+                                     join n in _context.NguonThus on tc.MaNguon equals n.MaNguon into nJoin
+                                     from n in nJoin.DefaultIfEmpty()
+                                     join hd in _context.HoatDongs on tc.MaHd equals hd.MaHd into hdJoin
+                                     from hd in hdJoin.DefaultIfEmpty()
+                                     orderby tc.NgayGd descending
+                                     select new
+                                     {
+                                         tc.MaGd,
+                                         tc.LoaiGd,
+                                         tc.SoTien,
+                                         tc.NgayGd,
+                                         tc.NoiDung,
+                                         NguoiThucHienTen = tv != null ? tv.HoTen : "N/A",
+                                         NguonTen = n != null ? n.TenNguon : null,
+                                         HoatDongTen = hd != null ? hd.TenHd : null
+                                     }).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
+                danhSachGiaoDichQuery = sortBy.ToLower() switch
+                {
+                    "sotien" => asc ? danhSachGiaoDichQuery.OrderBy(x => x.SoTien) : danhSachGiaoDichQuery.OrderByDescending(x => x.SoTien),
+                    "ngaygd" => asc ? danhSachGiaoDichQuery.OrderBy(x => x.NgayGd) : danhSachGiaoDichQuery.OrderByDescending(x => x.NgayGd),
+                    _ => asc ? danhSachGiaoDichQuery.OrderBy(x => x.MaGd) : danhSachGiaoDichQuery.OrderByDescending(x => x.MaGd),
+                };
+            }
+
+            var danhSachGiaoDich = danhSachGiaoDichQuery.ToList();
 
             ViewBag.DanhSachGiaoDich = danhSachGiaoDich;
 

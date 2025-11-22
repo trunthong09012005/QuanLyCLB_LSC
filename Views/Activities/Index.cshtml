@@ -9,7 +9,7 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-circle">LSC</div>
+            <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
             <h5 class="mb-0">Admin</h5>
             <small>Life Skills Club</small>
         </div>
@@ -164,9 +164,9 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="get" class="row g-2 mb-3">
+                    <form id="activityFilterForm" method="get" class="row g-2 mb-3">
                         <div class="col-md-4">
-                            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên, mô tả hoặc địa điểm" />
+                            <input id="activitySearch" type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên, mô tả hoặc địa điểm" autocomplete="off" />
                         </div>
                         <div class="col-md-3">
                             <select name="loaiId" class="form-select">
@@ -201,20 +201,22 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-primary">Tìm</button>
+                            <button id="activitySearchBtn" class="btn btn-primary">Tìm</button>
                         </div>
-                    </form>
+                        <input type="hidden" id="actSortBy" name="sortBy" value="@(ViewBag.SortBy ?? "")" />
+                        <input type="hidden" id="actSortDir" name="sortDir" value="@(ViewBag.SortDir ?? "")" />
+                     </form>
 
-                    <div class="table-responsive">
+                    <div id="dataTableCard" class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Tên hoạt động</th>
-                                    <th>Ngày tổ chức</th>
-                                    <th>Địa điểm</th>
-                                    <th>Người phụ trách</th>
-                                    <th>Trạng thái</th>
+                                    <th class="sortable" data-sort="mahd" style="cursor:pointer"># <span class="sort-ind">@(ViewBag.SortBy=="mahd"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="tenhd" style="cursor:pointer">Tên hoạt động <span class="sort-ind">@(ViewBag.SortBy=="tenhd"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="ngaytochuc" style="cursor:pointer">Ngày tổ chức <span class="sort-ind">@(ViewBag.SortBy=="ngaytochuc"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="diadiem" style="cursor:pointer">Địa điểm <span class="sort-ind">@(ViewBag.SortBy=="diadiem"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="nguoi" style="cursor:pointer">Người phụ trách <span class="sort-ind">@(ViewBag.SortBy=="nguoi"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                                    <th class="sortable" data-sort="trangthai" style="cursor:pointer">Trạng thái <span class="sort-ind">@(ViewBag.SortBy=="trangthai"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
@@ -323,5 +325,69 @@
         });
     </script>
     <script src="~/js/dashboard.js"></script>
+    <script>
+        // AJAX update for Activities table (search, filter, sort) without full reload
+        (function(){
+            const searchInput = document.getElementById('activitySearch');
+            const loaiSelect = document.querySelector('select[name="loaiId"]');
+            const nguoiSelect = document.querySelector('select[name="nguoiId"]');
+            const dataCard = document.getElementById('dataTableCard');
+            const form = document.getElementById('activityFilterForm');
+            const sortByInput = document.getElementById('actSortBy');
+            const sortDirInput = document.getElementById('actSortDir');
+
+            function buildUrl(){
+                const params = new URLSearchParams();
+                if (searchInput && searchInput.value) params.set('search', searchInput.value);
+                if (loaiSelect && loaiSelect.value) params.set('loaiId', loaiSelect.value);
+                if (nguoiSelect && nguoiSelect.value) params.set('nguoiId', nguoiSelect.value);
+                if (sortByInput && sortByInput.value) params.set('sortBy', sortByInput.value);
+                if (sortDirInput && sortDirInput.value) params.set('sortDir', sortDirInput.value);
+                return '/Activities/Index?' + params.toString();
+            }
+
+            async function fetchData(){
+                try{
+                    const url = buildUrl();
+                    console.log('[Activities] fetch url:', url);
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    console.log('[Activities] response length:', text.length);
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const newCard = doc.getElementById('dataTableCard');
+                    if (newCard && dataCard) {
+                        dataCard.innerHTML = newCard.innerHTML;
+                    } else {
+                        console.warn('[Activities] dataTableCard not found in response, fallback to replacing entire main content');
+                        const main = doc.querySelector('.dashboard-content');
+                        const currentMain = document.querySelector('.dashboard-content');
+                        if (main && currentMain) currentMain.innerHTML = main.innerHTML;
+                    }
+                    history.replaceState(null, '', url);
+                }catch(e){ console.error(e); }
+            }
+
+            // debounce search
+            let t;
+            if (searchInput) searchInput.addEventListener('input', function(){ clearTimeout(t); t = setTimeout(fetchData, 300); });
+            if (loaiSelect) loaiSelect.addEventListener('change', fetchData);
+            if (nguoiSelect) nguoiSelect.addEventListener('change', fetchData);
+
+            // sortable header clicks inside dataCard
+            dataCard.addEventListener('click', function(e){
+                const th = e.target.closest('th.sortable');
+                if (!th) return;
+                const key = th.getAttribute('data-sort');
+                if (!key) return;
+                if (sortByInput.value === key) sortDirInput.value = (sortDirInput.value === 'asc') ? 'desc' : 'asc';
+                else { sortByInput.value = key; sortDirInput.value = 'asc'; }
+                fetchData();
+            });
+
+            if (form) form.addEventListener('submit', function(e){ e.preventDefault(); fetchData(); });
+        })();
+    </script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="logo-circle">LSC</div>
+         <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
         <h5 class="mb-0">Admin</h5>
         <small>Life Skills Club</small>
     </div>
@@ -132,19 +132,23 @@
                 <!-- Dashboard Section -->
                 <div id="dashboard-section" class="settings-section @(ViewBag.ActiveSection == "dashboard" || ViewBag.ActiveSection == null ? "active" : "")">
                     <div class="settings-stats">
-                        <div class="settings-stat-box">
+                        <div class="settings-stat-box blue">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
                             <div class="settings-stat-number">@ViewBag.TongThanhVien</div>
                             <div class="settings-stat-label">Tổng Thành Viên</div>
                         </div>
-                        <div class="settings-stat-box">
+                        <div class="settings-stat-box green">
+                            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                             <div class="settings-stat-number">@ViewBag.TongHoatDong</div>
                             <div class="settings-stat-label">Tổng Hoạt Động</div>
                         </div>
-                        <div class="settings-stat-box">
+                        <div class="settings-stat-box orange">
+                            <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
                             <div class="settings-stat-number">@ViewBag.TongDuAn</div>
                             <div class="settings-stat-label">Tổng Dự Án</div>
                         </div>
-                        <div class="settings-stat-box">
+                        <div class="settings-stat-box purple">
+                            <div class="stat-icon"><i class="fas fa-user-circle"></i></div>
                             <div class="settings-stat-number">@ViewBag.TongTaiKhoan</div>
                             <div class="settings-stat-label">Tổng Tài Khoản</div>
                         </div>
@@ -553,46 +557,6 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/settings.js"></script>
     <script src="~/js/dashboard.js"></script>
-    <script>
-        function loadSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.settings-section').forEach(el => {
-                el.classList.remove('active');
-            });
-            // Show selected section
-            const section = document.getElementById(sectionName + '-section');
-            if (section) {
-                section.classList.add('active');
-            }
-
-            // Update menu active state
-            document.querySelectorAll('.settings-menu-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            event.target.closest('.settings-menu-item').classList.add('active');
-        }
-
-        function editChucVu(id, tenCV, moTa) {
-            document.getElementById('editChucVuId').value = id;
-            document.getElementById('editChucVuName').value = tenCV;
-            document.getElementById('editChucVuDesc').value = moTa || '';
-            new bootstrap.Modal(document.getElementById('editChucVuModal')).show();
-        }
-
-        function editBan(id, tenBan, moTa, truongBan) {
-            document.getElementById('editBanId').value = id;
-            document.getElementById('editBanName').value = tenBan;
-            document.getElementById('editBanDesc').value = moTa || '';
-            document.getElementById('editBanTruongBan').value = truongBan || '';
-            new bootstrap.Modal(document.getElementById('editBanModal')).show();
-        }
-
-        function editLoaiHoatDong(id, tenLoaiHD, moTa) {
-            document.getElementById('editLoaiHoatDongId').value = id;
-            document.getElementById('editLoaiHoatDongName').value = tenLoaiHD;
-            document.getElementById('editLoaiHoatDongDesc').value = moTa || '';
-            new bootstrap.Modal(document.getElementById('editLoaiHoatDongModal')).show();
-        }
-    </script>
-}
+}}

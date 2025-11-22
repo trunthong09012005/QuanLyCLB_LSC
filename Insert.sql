@@ -22,13 +22,15 @@ INSERT INTO ChucVu (TenCV, MoTa)
 VALUES 
 (N'Chủ nhiệm', N'Lãnh đạo CLB'),
 (N'Phó chủ nhiệm', N'Hỗ trợ điều hành'),
+(N'Ủy viên', N'Phụ trách điều hành các ban chức năng'),
 (N'Thành viên', N'Tham gia hoạt động');
 
 INSERT INTO BanChuyenMon (TenBan, MoTa)
 VALUES 
 (N'Ban Truyền thông', N'Quản lý hình ảnh và truyền thông'),
 (N'Ban Sự kiện', N'Tổ chức sự kiện CLB'),
-(N'Ban Hậu cần', N'Chuẩn bị vật tư và hậu cần');
+(N'Ban Hậu cần', N'Chuẩn bị vật tư và hậu cần'),
+(N'Ban Nghệ Thuật', N'Ngươi mặt đại diện CLB qua các tiết mục văn nghệ và hỗ trợ nhân sự');
 
 INSERT INTO LoaiHoatDong (TenLoaiHD, MoTa)
 VALUES 
@@ -56,26 +58,26 @@ INSERT INTO ThanhVien (HoTen, NgaySinh, GioiTinh, Lop, Khoa, SDT, Email, DiaChi,
 VALUES
 (N'Nguyễn Vương Khang', '2004-02-15', N'Nam', N'DHKTPM17A', N'Công nghệ thông tin', '0912345678', N'huytm@gmail.com', N'Quận 7, TP.HCM', N'Chủ nhiệm', 1, 1),
 (N'Nguyễn Thị Lan', '2005-05-10', N'Nữ', N'DHKTPM17A', N'Công nghệ thông tin', '0987654321', N'lannt@gmail.com', N'Quận 5, TP.HCM', N'Phó chủ nhiệm', 2, 2),
-(N'Lê Quốc Bảo', '2005-09-21', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'baolq@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 3, 3);
-
+(N'Lê Quốc Bảo', '2005-09-21', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'baolq@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 4, 3),
+(N'Trần Trung Thông', '2005-01-09', N'Nam', N'DHKTPM17B', N'Công nghệ thông tin', '0977112233', N'trantrungthong@gmail.com', N'Quận 10, TP.HCM', N'Thành viên', 4,4 );
 -- Cập nhật Trưởng ban
 UPDATE BanChuyenMon SET TruongBan = 1 WHERE MaBan = 1;
 UPDATE BanChuyenMon SET TruongBan = 2 WHERE MaBan = 2;
 UPDATE BanChuyenMon SET TruongBan = 3 WHERE MaBan = 3;
+UPDATE BanChuyenMon SET TruongBan = 4 WHERE MaBan = 4;
 
-
+select * from ThanhVien;
 -- =============================================
 -- 3️⃣ TÀI KHOẢN
 -- =============================================
-
 INSERT INTO TaiKhoan (TenDN, MatKhau, MaTV, QuyenHan)
 VALUES 
 (N'khangvn', N'123456', 1, N'Quản trị viên'),
 (N'lannt', N'123456', 2, N'Thành viên'),
-(N'baolq', N'123456', 3, N'Thành viên');
+(N'baolq', N'123456', 3, N'Thành viên'),
+(N'thong', N'123456', 4, N'Admin');
+select MaTV from ThanhVien;
 
-INSERT INTO TaiKhoan (MaTV, TenDN, MatKhau, QuyenHan, TrangThai)
-VALUES (5, 'trungthong', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Admin', N'Hoạt động')
 -- =============================================
 -- 4️⃣ HOẠT ĐỘNG
 -- =============================================
@@ -189,35 +191,12 @@ VALUES
 (2, N'ThanhVien', N'Cập nhật', N'MaTV=2', N'Cập nhật số điện thoại');
 GO
 
--- Hash tất cả mật khẩu trong bảng TaiKhoan
-DECLARE @TenDN NVARCHAR(50), @MatKhau NVARCHAR(50), @HashedPW NVARCHAR(64)
-
-DECLARE cur CURSOR FOR SELECT TenDN, MatKhau FROM TaiKhoan
-OPEN cur
-
-FETCH NEXT FROM cur INTO @TenDN, @MatKhau
-WHILE @@FETCH_STATUS = 0
-BEGIN
-    -- Hash mật khẩu bằng SHA2_256
-    SET @HashedPW = CONVERT(NVARCHAR(64), HASHBYTES('SHA2_256', @MatKhau), 2)
-    
-    -- Update vào DB
-    UPDATE TaiKhoan SET MatKhau = LOWER(@HashedPW) WHERE TenDN = @TenDN
-    
-    FETCH NEXT FROM cur INTO @TenDN, @MatKhau
-END
-
-CLOSE cur
-DEALLOCATE cur
-
--- Kiểm tra kết quả
-SELECT TenDN, MatKhau, LEN(MatKhau) as Length FROM TaiKhoan
-
 -- Xóa tất cả mật khẩu đã hash sai
-UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'khangvn'
-UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'lannt'
-UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'baolq'
-UPDATE TaiKhoan SET MatKhau = '123456' WHERE TenDN = 'thong'
-
+UPDATE TaiKhoan SET MatKhau = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92' WHERE TenDN = 'lannt'
+UPDATE TaiKhoan SET MatKhau = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92' WHERE TenDN = 'baolq'
+UPDATE TaiKhoan SET MatKhau = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92' WHERE TenDN = 'khangvn'
+UPDATE TaiKhoan SET MatKhau = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92' WHERE TenDN = 'thong'
 -- Kiểm tra
 SELECT * FROM TaiKhoan
+
+

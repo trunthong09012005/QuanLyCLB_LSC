@@ -9,7 +9,7 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo-circle">LSC</div>
+             <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
             <h5 class="mb-0">Admin</h5>
             <small>Life Skills Club</small>
         </div>
@@ -130,9 +130,9 @@
                 <button class="action-btn" onclick="phanCong()">
                     <i class="fas fa-users me-2"></i>Phân Công Nhiệm Vụ
                 </button>
-                <button class="action-btn" onclick="xuatBaoCao()">
-                    <i class="fas fa-file-export me-2"></i>Xuất Báo Cáo
-                </button>
+                <a class="action-btn" href="@Url.Action("Index", "Reports")">
+                    <i class="fas fa-file-alt me-2"></i> Xem Báo Cáo
+                </a>
             </div>
 
             <!-- Projects Grid -->
@@ -201,23 +201,25 @@
             </div>
 
             <!-- Detailed Table -->
-            <div class="table-card">
+            <div id="dataTableCard" class="table-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">
                         <i class="fas fa-list me-2"></i>
                         Danh Sách Chi Tiết Dự Án
                     </h5>
-                    <input type="text" class="form-control" placeholder="Tìm kiếm dự án..." style="width: 300px;" id="searchInput">
+                    <div style="width: 300px;">
+                        <input id="projectSearch" type="text" class="form-control" placeholder="Tìm kiếm dự án...">
+                    </div>
                 </div>
                 <table id="tableDuAn" class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Mã DA</th>
-                            <th>Tên Dự Án</th>
-                            <th>Ngày Bắt Đầu</th>
+                            <th class="sortable" data-sort="mada" style="cursor:pointer">Mã DA <span class="sort-ind">@(ViewBag.SortBy=="mada"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                            <th class="sortable" data-sort="tenduan" style="cursor:pointer">Tên Dự Án <span class="sort-ind">@(ViewBag.SortBy=="tenduan"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
+                            <th class="sortable" data-sort="ngaybatdau" style="cursor:pointer">Ngày Bắt Đầu <span class="sort-ind">@(ViewBag.SortBy=="ngaybatdau"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                             <th>Ngày Kết Thúc</th>
                             <th>Tiến Độ</th>
-                            <th>Trạng Thái</th>
+                            <th class="sortable" data-sort="trangthai" style="cursor:pointer">Trạng Thái <span class="sort-ind">@(ViewBag.SortBy=="trangthai"?(ViewBag.SortDir=="asc"?"▲":"▼"):"")</span></th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
@@ -269,13 +271,75 @@
     <script src="~/js/dashboard.js"></script>
     <script>
         $(document).ready(function() {
-            $("#searchInput").on("keyup", function() {
+            $("#projectSearch").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
                 $("#tableDuAn tbody tr").filter(function() {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
         });
+    </script>
+    <script>
+        // AJAX sort and search for project table: update #dataTableCard and URL without reload
+        (function(){
+            const searchInput = document.getElementById('projectSearch');
+            const dataCard = document.getElementById('dataTableCard');
+
+            function getParams() {
+                const params = new URLSearchParams();
+                if (searchInput && searchInput.value) params.set('search', searchInput.value);
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('sortBy')) params.set('sortBy', urlParams.get('sortBy'));
+                if (urlParams.get('sortDir')) params.set('sortDir', urlParams.get('sortDir'));
+                return params;
+            }
+
+            async function fetchData() {
+                try {
+                    const params = getParams();
+                    const url = '/Project/Index?' + params.toString();
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const newCard = doc.getElementById('dataTableCard');
+                    if (newCard && dataCard) dataCard.innerHTML = newCard.innerHTML;
+                    history.replaceState(null, '', url);
+                } catch (e) { console.error(e); }
+            }
+
+            // debounce
+            let t;
+            if (searchInput) searchInput.addEventListener('input', function(){ clearTimeout(t); t = setTimeout(fetchData, 300); });
+
+            // handle header clicks
+            dataCard.addEventListener('click', function(e){
+                const th = e.target.closest('th.sortable');
+                if (!th) return;
+                const sortBy = th.getAttribute('data-sort');
+                if (!sortBy) return;
+                const urlParams = new URLSearchParams(window.location.search);
+                const current = urlParams.get('sortBy');
+                const dir = urlParams.get('sortDir') || '';
+                const newDir = (current === sortBy) ? ((dir === 'asc') ? 'desc' : 'asc') : 'asc';
+                urlParams.set('sortBy', sortBy);
+                urlParams.set('sortDir', newDir);
+                // preserve search
+                if (searchInput && searchInput.value) urlParams.set('search', searchInput.value);
+                const newUrl = '/Project/Index?' + urlParams.toString();
+                // fetch new data
+                fetch(newUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(r => r.text())
+                    .then(text => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(text, 'text/html');
+                        const newCard = doc.getElementById('dataTableCard');
+                        if (newCard && dataCard) dataCard.innerHTML = newCard.innerHTML;
+                        history.replaceState(null, '', newUrl);
+                    }).catch(err => console.error(err));
+            });
+        })();
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -285,10 +349,6 @@
 
         function phanCong() {
             window.location.href = '/Project/Assign';
-        }
-
-        function xuatBaoCao() {
-            window.location.href = '/Project/Export';
         }
 
         function xemChiTiet(id) {

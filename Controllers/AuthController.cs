@@ -50,18 +50,24 @@ namespace QuanLyCLB_LSC.Controllers
             HttpContext.Session.SetString("TenDN", user.TenDn);
             HttpContext.Session.SetString("QuyenHan", user.QuyenHan);
 
+            // If AJAX request, return JSON so client can redirect without a full form submission
+            var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
             // Redirect theo role
             if (user.QuyenHan == "Quản trị viên" || user.QuyenHan == "Admin")
             {
+                if (isAjax) return Json(new { success = true, redirect = Url.Action("Index", "Dashboard") });
                 return RedirectToAction("Index", "Dashboard");
             }
             else if (user.QuyenHan == "Member" || user.QuyenHan == "Thành viên")
             {
+                if (isAjax) return Json(new { success = true, redirect = Url.Action("User", "UserDashboard") });
                 return RedirectToAction("User", "UserDashboard");
 
             }
             else
             {
+                if (isAjax) return Json(new { success = false, message = "Role không hợp lệ!" });
                 ViewBag.Error = "Role không hợp lệ!";
                 return View("~/Views/Auth/Login.cshtml", model);
             }
