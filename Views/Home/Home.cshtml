@@ -1,0 +1,119 @@
+﻿@model QL_CLB_LSC1.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Trang Chủ";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLB Kỹ Năng Sống - LSC</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <img src="~/img/logolsc.png" alt="LSC" class="logo-circle-img" />
+            </div>
+            <div class="logo-text">
+                <h1>CLB Kỹ Năng</h1>
+                <span>LSC</span>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <a href="#gallery" class="btn btn-outline">Thư viện ảnh</a>
+            <a href="/Auth/Login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Khám Phá Tiềm Năng<br>Phát Triển Bản Thân</h2>
+            <p>Nơi kết nối những tâm hồn đam mê học hỏi, rèn luyện kỹ năng và tạo nên những giá trị tích cực cho cộng đồng</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">@Model.TotalMembers+</div>
+                    <div class="stat-label">Thành viên</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">@Model.TotalActivities+</div>
+                    <div class="stat-label">Hoạt động</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">@Model.TotalDepartments</div>
+                    <div class="stat-label">Ban chuyên môn</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section" id="gallery">
+        <div class="section-title">
+            <h3>📸 Khoảnh Khắc Đáng Nhớ</h3>
+            <p>Những hình ảnh ghi lại hành trình phát triển của CLB</p>
+        </div>
+        <div class="gallery-grid">
+            @foreach (var item in Model.GalleryItems)
+            {
+                <div class="gallery-item" onclick="openModal(this)">
+                    <img src="@item.ImageUrl" alt="@item.Title">
+                    <span class="gallery-badge">@item.Badge</span>
+                    <div class="gallery-overlay">
+                        <h4>@item.Title</h4>
+                        <span>📍 @item.Location • @item.Date</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Activities Preview -->
+    <section class="activities">
+        <div class="section-title">
+            <h3>🎯 Hoạt Động Nổi Bật</h3>
+            <p>Đăng nhập để tham gia các hoạt động hấp dẫn</p>
+        </div>
+        <div class="activity-cards">
+            @foreach (var activity in Model.ActivityPreviews)
+            {
+                <div class="activity-card">
+                    <div class="activity-icon @activity.GradientClass">
+                        <i class="fas @activity.Icon"></i>
+                    </div>
+                    <h4>@activity.Title</h4>
+                    <p>@activity.Description</p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="social-links">
+            <a href="https://www.facebook.com/share/1DJPnN3AEY/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.tiktok.com/@@clbkynanglsc_utc2?_r=1&_t=ZS-91bhqbpg74p" target="_blank"><i class="fab fa-tiktok"></i></a>
+        
+        </div>
+        <p>© @DateTime.Now.Year CLB Kỹ Năng  - Skills Club. All rights reserved.</p>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img src="" alt="Preview" id="modalImage">
+        </div>
+    </div>
+
+    <script src="~/js/home.js"></script>
+</body>
+</html>
