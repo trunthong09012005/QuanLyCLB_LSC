@@ -230,17 +230,29 @@
                                         <td>@(item.DiaDiem ?? "Chưa xác định")</td>
                                         <td>@item.NguoiPhuTrachNavigation?.HoTen</td>
                                         <td>
-                                            @if (item.TrangThai == "Hoàn thành")
-                                            {
-                                                <span class="badge bg-success">@item.TrangThai</span>
+                                            @{
+                                                var statusMap = ViewBag.ActivityStatuses as Dictionary<int, string> ?? new Dictionary<int, string>();
+                                                var s = statusMap.ContainsKey(item.MaHd) ? statusMap[item.MaHd] : (item.TrangThai ?? "Chưa rõ");
                                             }
-                                            else if (item.TrangThai == "Đang chuẩn bị")
+                                            @if (s == "Đã tổ chức")
                                             {
-                                                <span class="badge bg-warning text-dark">@item.TrangThai</span>
+                                                <span class="badge bg-secondary">@s</span>
+                                            }
+                                            else if (s == "Đang diễn ra")
+                                            {
+                                                <span class="badge bg-success">@s</span>
+                                            }
+                                            else if (s == "Sắp diễn ra")
+                                            {
+                                                <span class="badge bg-info text-dark">@s</span>
+                                            }
+                                            else if (s == "Đang chuẩn bị")
+                                            {
+                                                <span class="badge bg-warning text-dark">@s</span>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-secondary">@item.TrangThai</span>
+                                                <span class="badge bg-secondary">@s</span>
                                             }
                                         </td>
                                         <td>

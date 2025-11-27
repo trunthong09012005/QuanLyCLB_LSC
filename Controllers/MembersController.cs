@@ -1,16 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
+using QuanLyCLB_LSC.Services;
+using System.Security.Claims;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class MembersController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public MembersController(QlClbLscContext context)
+        public MembersController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
 
         // GET: Members
@@ -36,27 +40,22 @@ namespace QuanLyCLB_LSC.Controllers
                 query = query.Where(t => t.MaBan == banId.Value);
             }
 
-            // expose current sorting to view
-            ViewBag.SortBy = sortBy;
-            ViewBag.SortDir = sortDir;
+            // normalize sort params and expose to view
+            var sortByParam = string.IsNullOrWhiteSpace(sortBy) ? "matv" : sortBy.ToLower();
+            // default to descending so most recent items come first
+            var sortDirParam = string.IsNullOrWhiteSpace(sortDir) ? "desc" : sortDir.ToLower();
+            ViewBag.SortBy = sortByParam;
+            ViewBag.SortDir = sortDirParam;
 
-            // Apply sorting
-            if (!string.IsNullOrWhiteSpace(sortBy))
+            bool asc = string.Equals(sortDirParam, "asc", StringComparison.OrdinalIgnoreCase);
+            query = sortByParam switch
             {
-                bool asc = string.Equals(sortDir, "asc", StringComparison.OrdinalIgnoreCase);
-                query = sortBy.ToLower() switch
-                {
-                    "hoten" => asc ? query.OrderBy(t => t.HoTen) : query.OrderByDescending(t => t.HoTen),
-                    "email" => asc ? query.OrderBy(t => t.Email) : query.OrderByDescending(t => t.Email),
-                    "sdt" => asc ? query.OrderBy(t => t.Sdt) : query.OrderByDescending(t => t.Sdt),
-                    "ngaythamgia" => asc ? query.OrderBy(t => t.NgayThamGia) : query.OrderByDescending(t => t.NgayThamGia),
-                    _ => asc ? query.OrderBy(t => t.MaTv) : query.OrderByDescending(t => t.MaTv),
-                };
-            }
-            else
-            {
-                query = query.OrderByDescending(t => t.MaTv);
-            }
+                "hoten" => asc ? query.OrderBy(t => t.HoTen) : query.OrderByDescending(t => t.HoTen),
+                "email" => asc ? query.OrderBy(t => t.Email) : query.OrderByDescending(t => t.Email),
+                "sdt" => asc ? query.OrderBy(t => t.Sdt) : query.OrderByDescending(t => t.Sdt),
+                "ngaythamgia" => asc ? query.OrderBy(t => t.NgayThamGia) : query.OrderByDescending(t => t.NgayThamGia),
+                _ => asc ? query.OrderBy(t => t.MaTv) : query.OrderByDescending(t => t.MaTv),
+            };
 
             ViewBag.ChucVus = await _context.ChucVus.OrderBy(c => c.TenCv).ToListAsync();
             ViewBag.Bans = await _context.BanChuyenMons.OrderBy(b => b.TenBan).ToListAsync();
@@ -67,25 +66,22 @@ namespace QuanLyCLB_LSC.Controllers
             // Statistics for the header cards
             ViewBag.TongThanhVien = await _context.ThanhViens.CountAsync();
             ViewBag.TongTaiKhoan = await _context.TaiKhoans.CountAsync();
-            // Count active accounts robustly: prefer TaiKhoan.TrangThai, trim whitespace if supported; fallback to counting accounts whose ThanhVien.TrangThai == "Ho?t ??ng"
-            long activeAccounts = 0;
+
+            // Count number of ThanhVien whose TrangThai indicates active membership ("Hoạt động")
+            var activeStatus = "Hoạt động";
+            int thanhVienHoatDong = 0;
             try
             {
-                activeAccounts = await _context.TaiKhoans.CountAsync(t => t.TrangThai != null && t.TrangThai.Trim() == "Ho?t ??ng");
+                // try equality with trim (may translate depending on provider)
+                thanhVienHoatDong = await _context.ThanhViens.CountAsync(tv => tv.TrangThai != null && tv.TrangThai.Trim() == activeStatus);
             }
             catch
             {
-                // If Trim() isn't translatable, use LIKE as fallback
-                activeAccounts = await _context.TaiKhoans.CountAsync(t => t.TrangThai != null && EF.Functions.Like(t.TrangThai, "%Ho?t ??ng%"));
+                // fallback to SQL LIKE which is translatable
+                thanhVienHoatDong = await _context.ThanhViens.CountAsync(tv => tv.TrangThai != null && EF.Functions.Like(tv.TrangThai, "%Hoạt động%"));
             }
 
-            if (activeAccounts == 0)
-            {
-                activeAccounts = await _context.TaiKhoans
-                    .Include(t => t.MaTvNavigation)
-                    .CountAsync(t => t.MaTvNavigation != null && t.MaTvNavigation.TrangThai == "Ho?t ??ng");
-            }
-            ViewBag.HoatDong = activeAccounts;
+            ViewBag.HoatDong = thanhVienHoatDong; // used in the view card
 
             var list = await query.ToListAsync();
             return View(list);
@@ -108,6 +104,16 @@ namespace QuanLyCLB_LSC.Controllers
             {
                 _context.Add(thanhVien);
                 await _context.SaveChangesAsync();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                await _audit.LogAsync(userId, "ThanhVien", "Thêm", $"MaTV={thanhVien.MaTv}", $"Thêm thành viên: {thanhVien.HoTen}");
+
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.ChucVus = _context.ChucVus.OrderBy(c => c.TenCv).ToList();
@@ -151,6 +157,15 @@ namespace QuanLyCLB_LSC.Controllers
                 {
                     _context.Update(thanhVien);
                     await _context.SaveChangesAsync();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    await _audit.LogAsync(userId, "ThanhVien", "Cập nhật", $"MaTV={thanhVien.MaTv}", $"Cập nhật thành viên: {thanhVien.HoTen}");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -172,8 +187,17 @@ namespace QuanLyCLB_LSC.Controllers
             var tv = await _context.ThanhViens.FindAsync(id);
             if (tv != null)
             {
+                var name = tv.HoTen;
                 _context.ThanhViens.Remove(tv);
                 await _context.SaveChangesAsync();
+
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                await _audit.LogAsync(userId, "ThanhVien", "Xóa", $"MaTV={id}", $"Xóa thành viên: {name}");
             }
             return RedirectToAction(nameof(Index));
         }

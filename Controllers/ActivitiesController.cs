@@ -1,17 +1,21 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC.Models;
 using System.Text.Json;
+using QuanLyCLB_LSC.Services;
+using System.Security.Claims;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public ActivitiesController(QlClbLscContext context)
+        public ActivitiesController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
 
         // GET: Activities
@@ -85,7 +89,47 @@ namespace QuanLyCLB_LSC.Controllers
             // compute activities this month count for current month/year
             ViewBag.ActivitiesThisMonth = dates.Count(d => d.Year == now.Year && d.Month == now.Month);
 
-            ViewBag.ActiveActivities = await _context.HoatDongs.CountAsync(h => h.TrangThai == "?ang chu?n b?");
+            // compute statuses based on NgayToChuc relative to today
+            var list = await query.ToListAsync();
+            var statusMap = new Dictionary<int, string>();
+            var todayDateOnly = DateOnly.FromDateTime(DateTime.Today);
+            foreach (var h in list)
+            {
+                string s = "Chưa rõ";
+                if (h.NgayToChuc.HasValue)
+                {
+                    var d = h.NgayToChuc.Value;
+                    if (d < todayDateOnly)
+                    {
+                        s = "Đã tổ chức";
+                    }
+                    else if (d == todayDateOnly)
+                    {
+                        s = "Đang diễn ra";
+                    }
+                    else
+                    {
+                        // future date
+                        // calculate hours until that date (from now)
+                        var target = d.ToDateTime(System.TimeOnly.MinValue);
+                        var hoursUntil = (target - DateTime.Now).TotalHours;
+                        if (hoursUntil <= 48)
+                        {
+                            s = "Sắp diễn ra";
+                        }
+                        else
+                        {
+                            s = "Đang chuẩn bị";
+                        }
+                    }
+                }
+                statusMap[h.MaHd] = s;
+            }
+
+            ViewBag.ActivityStatuses = statusMap; // Dictionary<int,string>
+
+            // Active/Preparing count
+            ViewBag.ActiveActivities = statusMap.Values.Count(v => v == "Đang chuẩn bị");
 
             // Chart data: counts per month for selected year
             var monthlyCounts = new int[12];
@@ -105,14 +149,12 @@ namespace QuanLyCLB_LSC.Controllers
                 .Include(h => h.NguoiPhuTrachNavigation)
                 .Where(h => h.NgayToChuc != null)
                 .ToListAsync();
-            var todayDateOnly = DateOnly.FromDateTime(DateTime.Today);
             var upcoming = allWithDates.Where(h => h.NgayToChuc >= todayDateOnly)
                 .OrderBy(h => h.NgayToChuc)
                 .Take(5)
                 .ToList();
             ViewBag.FeaturedActivities = upcoming;
 
-            var list = await query.ToListAsync();
             return View(list);
         }
 
@@ -129,10 +171,27 @@ namespace QuanLyCLB_LSC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("TenHd,NgayToChuc,DiaDiem,MoTa,MaLoaiHd,NguoiPhuTrach,KinhPhiDuKien,TrangThai")] HoatDong hoatDong)
         {
+            // Server-side: disallow creating activities with NgayToChuc earlier than today
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            if (hoatDong.NgayToChuc.HasValue && hoatDong.NgayToChuc.Value < today)
+            {
+                ModelState.AddModelError("NgayToChuc", "Ngày tổ chức không thể nhỏ hơn hôm nay.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(hoatDong);
                 await _context.SaveChangesAsync();
+
+                // audit log
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                await _audit.LogAsync(userId, "HoatDong", "Thêm", $"MaHD={hoatDong.MaHd}", $"Tạo hoạt động: {hoatDong.TenHd}");
+
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.LoaiHoatDongs = _context.LoaiHoatDongs.OrderBy(l => l.TenLoaiHd).ToList();
@@ -176,6 +235,14 @@ namespace QuanLyCLB_LSC.Controllers
                 {
                     _context.Update(hoatDong);
                     await _context.SaveChangesAsync();
+
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    await _audit.LogAsync(userId, "HoatDong", "Cập nhật", $"MaHD={hoatDong.MaHd}", $"Cập nhật hoạt động: {hoatDong.TenHd}");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -199,6 +266,14 @@ namespace QuanLyCLB_LSC.Controllers
             {
                 _context.HoatDongs.Remove(hd);
                 await _context.SaveChangesAsync();
+
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                await _audit.LogAsync(userId, "HoatDong", "Xóa", $"MaHD={id}", $"Xóa hoạt động: {hd.TenHd}");
             }
             return RedirectToAction(nameof(Index));
         }

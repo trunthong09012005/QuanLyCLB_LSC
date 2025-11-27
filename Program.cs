@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuanLyCLB_LSC;
 using QuanLyCLB_LSC.Models;
+using QuanLyCLB_LSC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<QlClbLscContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbconn"))
 );
+
+// register audit service
+builder.Services.AddScoped<IAuditService, AuditService>();
 
 // ============================
 // 2️⃣ Thêm MVC (Controller + View)

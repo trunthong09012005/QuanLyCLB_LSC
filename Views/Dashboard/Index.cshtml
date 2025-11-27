@@ -7,138 +7,316 @@
     var recentActivities = ViewBag.HoatDongGanDay as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
     var memberRoleLabels = ViewBag.MemberRoleLabels as IEnumerable<string> ?? Enumerable.Empty<string>();
     var memberRoleData = ViewBag.MemberRoleData as IEnumerable<int> ?? Enumerable.Empty<int>();
+    var topDiemRenLuyen = ViewBag.TopDiemRenLuyen as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var thongBaos = ViewBag.ThongBaos as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var recentFeedbacks = ViewBag.RecentFeedbacks as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var lichSu = ViewBag.LichSu as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var recentKhenThuong = ViewBag.RecentKhenThuong as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var recentKyLuat = ViewBag.RecentKyLuat as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
 }
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Trị - CLB Kỹ Năng</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/dashboard.css" />
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <img src="~/img/logolsc.png" alt="LSC" class="logo-circle-img" />
-            <h5 class="mb-0">Admin</h5>
-            <small>Life Skills Club</small>
-        </div>
-        <div class="sidebar-menu">
-            <a href="@Url.Action("Index", "Dashboard")" class="menu-item active" onclick="showSection('dashboard')">
-                <i class="fas fa-home"></i>
-                <span>Trang Chủ</span>
-            </a>
-            <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
-                <i class="fas fa-users"></i>
-                <span>Thành Viên</span>
-            </a>
-            <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Hoạt Động</span>
-            </a>
-            <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
-                <i class="fas fa-project-diagram"></i>
-                <span>Dự Án</span>
-            </a>
-            <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
-                <i class="fas fa-wallet"></i>
-                <span>Tài Chính</span>
-            </a>
-            <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
-                <i class="fas fa-chart-bar"></i>
-                <span>Báo Cáo</span>
-            </a>
-            <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
-                <i class="fas fa-cog"></i>
-                <span>Cài Đặt</span>
-            </a>
-            <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Đăng Xuất</span>
-            </a>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="~/img/logolsc.png" alt="LSC" class="logo-circle-img" />
+        <h5 class="mb-0">Admin</h5>
+        <small>Life Skills Club</small>
+    </div>
+    <div class="sidebar-menu">
+        <a href="@Url.Action("Index", "Dashboard")" class="menu-item active" onclick="showSection('dashboard')">
+            <i class="fas fa-home"></i>
+            <span>Trang Chủ</span>
+        </a>
+        <a href="@Url.Action("Index", "Members")" class="menu-item" onclick="showSection('members')">
+            <i class="fas fa-users"></i>
+            <span>Thành Viên</span>
+        </a>
+        <a href="@Url.Action("Index", "Activities")" class="menu-item" onclick="showSection('activities')">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Hoạt Động</span>
+        </a>
+        <a href="@Url.Action("Index", "Project")" class="menu-item" onclick="showSection('projects')">
+            <i class="fas fa-project-diagram"></i>
+            <span>Dự Án</span>
+        </a>
+        <a href="@Url.Action("Index", "Finance")" class="menu-item" onclick="showSection('finance')">
+            <i class="fas fa-wallet"></i>
+            <span>Tài Chính</span>
+        </a>
+        <a href="@Url.Action("Index", "Reports")" class="menu-item" onclick="showSection('reports')">
+            <i class="fas fa-chart-bar"></i>
+            <span>Báo Cáo</span>
+        </a>
+        <a href="@Url.Action("Index", "Settings")" class="menu-item" onclick="showSection('settings')">
+            <i class="fas fa-cog"></i>
+            <span>Cài Đặt</span>
+        </a>
+        <a href="@Url.Action("Login", "Auth")" class="menu-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Đăng Xuất</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="top-header">
+        <div><button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button></div>
+        <div class="user-info">
+            <div><div class="fw-bold">Admin</div><small class="text-muted">Quản trị viên</small></div>
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
         </div>
     </div>
 
-    <div class="main-content" id="mainContent">
-        <div class="top-header">
-            <div><button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button></div>
-            <div class="user-info">
-                
-                <div><div class="fw-bold">Admin</div><small class="text-muted">Quản trị viên</small></div>
-                <div class="user-avatar"><i class="fas fa-user"></i></div>
-            </div>
+    <div class="dashboard-content">
+        <h2 class="mb-4"><i class="fas fa-chart-line me-2" style="color:var(--primary-color)"></i>Tổng Quan Dashboard</h2>
+
+        <div class="row g-4">
+            <div class="col-xl-3 col-md-6"><div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number">@ViewBag.TongThanhVien</div><div class="stat-label">Tổng Thành Viên</div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card green"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-number">@ViewBag.HoatDongThangNay</div><div class="stat-label">Hoạt Động Tháng Này</div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card orange"><div class="stat-icon"><i class="fas fa-project-diagram"></i></div><div class="stat-number">@ViewBag.DuAnDangChay</div><div class="stat-label">Dự Án Đang Chạy</div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card red"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-number">@ViewBag.NganSach</div><div class="stat-label">Ngân Sách</div></div></div>
         </div>
 
-        <div class="dashboard-content">
-            <h2 class="mb-4"><i class="fas fa-chart-line me-2" style="color:var(--primary-color)"></i>Tổng Quan Dashboard</h2>
-
-            <div class="row g-4">
-                <div class="col-xl-3 col-md-6"><div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number">@ViewBag.TongThanhVien</div><div class="stat-label">Tổng Thành Viên</div></div></div>
-                <div class="col-xl-3 col-md-6"><div class="stat-card green"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-number">@ViewBag.HoatDongThangNay</div><div class="stat-label">Hoạt Động Tháng Này</div></div></div>
-                <div class="col-xl-3 col-md-6"><div class="stat-card orange"><div class="stat-icon"><i class="fas fa-project-diagram"></i></div><div class="stat-number">@ViewBag.DuAnDangChay</div><div class="stat-label">Dự Án Đang Chạy</div></div></div>
-                <div class="col-xl-3 col-md-6"><div class="stat-card red"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-number">@ViewBag.NganSach</div><div class="stat-label">Ngân Sách</div></div></div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="card mt-3">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div><i class="fas fa-calendar-alt me-2"></i>Hoạt Động Năm @selectedYear</div>
-                            <select id="yearSelect" class="form-select" style="width:auto" onchange="onDashboardYearChange(this.value)">
-                                @foreach (var y in availableYears)
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><i class="fas fa-calendar-alt me-2"></i>Hoạt Động Năm @selectedYear</div>
+                        <select id="yearSelect" class="form-select" style="width:auto" onchange="onDashboardYearChange(this.value)">
+                            @foreach (var y in availableYears)
+                            {
+                                if (y == selectedYear)
                                 {
-                                    if (y == selectedYear)
-                                    {
-                                        <text><option value="@y" selected>@y</option></text>
-                                    }
-                                    else
-                                    {
-                                        <text><option value="@y">@y</option></text>
-                                    }
+                                    <text><option value="@y" selected>@y</option></text>
                                 }
-                            </select>
-                        </div>
-                        <div class="card-body">
-                            @if (activitiesForYear.Any()) {
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr><th>#</th><th>Tên</th><th>Ngày</th><th>Địa điểm</th><th>Trạng thái</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach(var a in activitiesForYear) {
-                                                <tr>
-                                                    <td>@a.MaHd</td>
-                                                    <td>@a.TenHd</td>
-                                                    <td>@(a.NgayToChuc?.ToString("dd/MM/yyyy") ?? "Chưa rõ")</td>
-                                                    <td>@(a.DiaDiem ?? "Chưa xác định")</td>
-                                                    <td>@a.TrangThai</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            } else {
-                                <div>Không có hoạt động cho năm này.</div>
+                                else
+                                {
+                                    <text><option value="@y">@y</option></text>
+                                }
                             }
-                        </div>
+                        </select>
                     </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="chart-card">
-                        <div class="chart-header"><h5 class="chart-title"><i class="fas fa-chart-pie me-2"></i>Phân Bổ Thành Viên Theo Vai Trò</h5></div>
-                        <div class="card-body"><canvas id="memberChart" height="200"></canvas></div>
+                    <div class="card-body">
+                        @if (activitiesForYear.Any()) {
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr><th>#</th><th>Tên</th><th>Ngày</th><th>Địa điểm</th><th>Trang thái</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach(var a in activitiesForYear) {
+                                            <tr>
+                                                <td>@a.MaHd</td>
+                                                <td>@a.TenHd</td>
+                                                <td>@(a.NgayToChuc?.ToString("dd/MM/yyyy") ?? "Chưa rõ")</td>
+                                                <td>@(a.DiaDiem ?? "Chưa xác định")</td>
+                                                <td>@a.TrangThai</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        } else {
+                            <div>Không có hoạt động cho năm này.</div>
+                        }
                     </div>
                 </div>
             </div>
 
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-header"><h5 class="chart-title"><i class="fas fa-chart-pie me-2"></i>Phân Bổ Thành Viên Theo Vai Trò</h5></div>
+                    <div class="card-body"><canvas id="memberChart" height="200"></canvas></div>
+                </div>
+            </div>
         </div>
-    </div>
 
+        <div class="row g-4 mt-3">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <div><i class="fas fa-trophy me-2"></i>Bảng xếp hạng - Điểm Rèn Luyện</div>
+                        <small class="text-muted ms-2">Top 5 thành viên có điểm cao nhất</small>
+                    </div>
+                    <div class="card-body">
+                        @if (topDiemRenLuyen.Any()) {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr><th>Hạng</th><th>Họ Tên</th><th>Điểm</th><th>Học Kỳ</th><th>Năm Học</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach(var r in topDiemRenLuyen.Select((item, idx) => new { item, idx })) {
+                                            <tr>
+                                                <td>@(r.idx + 1)</td>
+                                                <td>@(r.item.Ten ?? "Không rõ")</td>
+                                                <td>@(r.item.Diem)</td>
+                                                <td>@(r.item.HocKy ?? "-")</td>
+                                                <td>@(r.item.NamHoc ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        } else {
+                            <div>Chưa có dữ liệu điểm rèn luyện.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-header d-flex align-items-center">
+                        <div><i class="fas fa-bullhorn me-2"></i>Thông báo mới</div>
+                        <small class="text-muted ms-2">(@(thongBaos.Count()))</small>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            @if (thongBaos.Any()) {
+                                @foreach(var t in thongBaos) {
+                                    <li class="list-group-item">
+                                        <div class="fw-bold">@t.TieuDe</div>
+                                        <small class="text-muted">@((t.NgayDang?.ToString("dd/MM/yyyy HH:mm") ?? ""))</small>
+                                        <div class="text-truncate mt-1">@((t.NoiDung ?? "").Length > 120 ? ((t.NoiDung ?? "").Substring(0,120) + "...") : (t.NoiDung ?? ""))</div>
+                                    </li>
+                                }
+                            } else {
+                                <li class="list-group-item">Chưa có thông báo.</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <div><i class="fas fa-comments me-2"></i>Đánh giá (Feedback)</div>
+                        <small class="text-muted ms-2">Mới nhất</small>
+                    </div>
+                    <div class="card-body" style="max-height:320px; overflow:auto;">
+                        @if (recentFeedbacks.Any()) {
+                            <div class="list-group">
+                                @foreach(var f in recentFeedbacks) {
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">@f.Ten</h6>
+                                            <small class="text-muted">@((f.Ngay?.ToString("dd/MM/yyyy") ?? ""))</small>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty((string)f.HoatDong)) {
+                                            <small class="text-muted">Hoạt động: @f.HoatDong</small>
+                                        }
+                                        <p class="mb-1 mt-2 text-break">@f.NoiDung</p>
+                                    </div>
+                                }
+                            </div>
+                        } else {
+                            <div>Chưa có đánh giá.</div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row g-4 mt-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <div><i class="fas fa-medal me-2"></i>Khen thưởng</div>
+                        <small class="text-muted ms-2">Mới nhất</small>
+                    </div>
+                    <div class="card-body" style="max-height:320px; overflow:auto;">
+                        @if (recentKhenThuong.Any()) {
+                            <ul class="list-group">
+                                @foreach(var kt in recentKhenThuong) {
+                                    <li class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <strong>@kt.Ten</strong>
+                                            <small class="text-muted">@((kt.Ngay?.ToString("dd/MM/yyyy") ?? ""))</small>
+                                        </div>
+                                        <div class="text-muted small">Lý do: @kt.LyDo</div>
+                                        @if (!string.IsNullOrEmpty((string)kt.NguoiLap)) {
+                                            <div class="mt-1"><small class="text-muted">Người lập: @kt.NguoiLap</small></div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        } else {
+                            <div class="text-center text-muted">Chưa có khen thưởng.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <div><i class="fas fa-gavel me-2"></i>Kỷ luật</div>
+                        <small class="text-muted ms-2">Mới nhất</small>
+                    </div>
+                    <div class="card-body" style="max-height:320px; overflow:auto;">
+                        @if (recentKyLuat.Any()) {
+                            <ul class="list-group">
+                                @foreach(var kl in recentKyLuat) {
+                                    <li class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <strong>@kl.Ten</strong>
+                                            <small class="text-muted">@((kl.Ngay?.ToString("dd/MM/yyyy") ?? ""))</small>
+                                        </div>
+                                        <div class="text-muted small">Lý do: @kl.LyDo</div>
+                                        @if (!string.IsNullOrEmpty((string)kl.NguoiLap)) {
+                                            <div class="mt-1"><small class="text-muted">Người lập: @kl.NguoiLap</small></div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        } else {
+                            <div class="text-center text-muted">Chưa có kỷ luật.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <div class="col-12">
+                <div class="card history-card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div><i class="fas fa-history me-2"></i> Lịch sử thao tác</div>
+                        <small class="text-muted">Hiển thị 10 thao tác gần nhất</small>
+                    </div>
+                    <div class="card-body">
+                        @if (lichSu.Any()) {
+                            <ul class="timeline">
+                                @foreach(var h in lichSu) {
+                                    <li>
+                                        <div class="timeline-time">@((h.Ngay != null) ? ((DateTime)h.Ngay).ToString("dd/MM/yyyy HH:mm") : "--")</div>
+                                        <div class="timeline-badge"></div>
+                                        <div class="timeline-panel">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong class="me-2">@h.TenThanhVien</strong>
+                                                    <span class="badge bg-primary ms-1">@h.LoaiThaoTac</span>
+                                                </div>
+                                                <small class="text-muted">@((h.KhoaChinh ?? "").ToString())</small>
+                                            </div>
+                                            <div class="mt-2 text-muted small">Bảng: <span class="fw-semibold">@h.TenBang</span> — Khóa chính: <span class="fw-semibold">@h.KhoaChinh</span></div>
+                                            <p class="mt-2 mb-0">@((h.NoiDung ?? "-"))</p>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        } else {
+                            <div class="text-center text-muted">Chưa có lịch sử thao tác.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
@@ -168,5 +346,4 @@
         });
     </script>
     <script src="~/js/dashboard.js"></script>
-</body>
-</html>
+}

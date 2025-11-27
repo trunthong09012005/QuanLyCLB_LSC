@@ -6,16 +6,20 @@ using System.Linq;
 using System.Text.Json;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
+using QuanLyCLB_LSC.Services;
+using System.Security.Claims;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class ReportsController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public ReportsController(QlClbLscContext context)
+        public ReportsController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
 
         // GET: Reports/Index - Báo cáo tổng thể dự án
@@ -342,6 +346,16 @@ namespace QuanLyCLB_LSC.Controllers
                 {
                     pdfDocument.Save(stream, false);
                     var fileName = $"BaoCaoTaiChinh_{year}.pdf";
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "BaoCao", "Xuất PDF", $"FinanceYear={year}", $"Xuất báo cáo tài chính năm {year}").ConfigureAwait(false);
+
                     return File(stream.ToArray(), "application/pdf", fileName);
                 }
             }
@@ -364,6 +378,15 @@ namespace QuanLyCLB_LSC.Controllers
                         membersQuery = membersQuery.Where(m => m.TrangThai == filterType);
                     var members = membersQuery.OrderByDescending(m => m.NgayThamGia).ToList();
 
+                    // audit
+                    int? userIdMembers = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userIdMembers = parsed;
+                    }
+                    _audit.LogAsync(userIdMembers, "BaoCao", "Xuất PDF", $"Category=members", $"Xuất báo cáo Members (count={members.Count})").ConfigureAwait(false);
+
                     return GenerateMembersPdf(members, category);
 
                 case "activities":
@@ -377,6 +400,14 @@ namespace QuanLyCLB_LSC.Controllers
                         .OrderByDescending(a => a.NgayToChuc)
                         .ToList();
 
+                    int? userIdActivities = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userIdActivities = parsed;
+                    }
+                    _audit.LogAsync(userIdActivities, "BaoCao", "Xuất PDF", $"Category=activities", $"Xuất báo cáo Activities (count={activities.Count})").ConfigureAwait(false);
+
                     return GenerateActivitiesPdf(activities, category);
 
                 case "projects":
@@ -387,6 +418,14 @@ namespace QuanLyCLB_LSC.Controllers
                         projectsQuery = projectsQuery.Where(p => p.TrangThai == filterType);
                     var projects = projectsQuery.OrderByDescending(p => p.NgayBatDau).ToList();
 
+                    int? userIdProjects = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userIdProjects = parsed;
+                    }
+                    _audit.LogAsync(userIdProjects, "BaoCao", "Xuất PDF", $"Category=projects", $"Xuất báo cáo Projects (count={projects.Count})").ConfigureAwait(false);
+
                     return GenerateProjectsPdf(projects, category);
 
                 case "finance":
@@ -395,8 +434,15 @@ namespace QuanLyCLB_LSC.Controllers
                         .Include(f => f.NguoiThucHienNavigation)
                         .Include(f => f.MaNguonNavigation)
                         .Where(f => f.NgayGd.HasValue && f.NgayGd.Value.Year == yr)
-                        .OrderByDescending(f => f.NgayGd)
                         .ToList();
+
+                    int? userIdFinance = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userIdFinance = parsed;
+                    }
+                    _audit.LogAsync(userIdFinance, "BaoCao", "Xuất PDF", $"Category=finance;Year={yr}", $"Xuất báo cáo Finance (count={financeData.Count})").ConfigureAwait(false);
 
                     return GenerateFinancePdf(financeData, yr);
 

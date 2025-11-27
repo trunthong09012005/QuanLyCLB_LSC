@@ -3,16 +3,19 @@ using QuanLyCLB_LSC.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using QuanLyCLB_LSC.Helpers;
+using QuanLyCLB_LSC.Services;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class SettingsController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public SettingsController(QlClbLscContext context)
+        public SettingsController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
 
         public IActionResult Index(string section = "dashboard")
@@ -110,6 +113,16 @@ namespace QuanLyCLB_LSC.Controllers
                 };
                 _context.ChucVus.Add(chucVu);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "ChucVu", "Thêm", $"MaCV={chucVu.MaCv}", $"Thêm chức vụ: {chucVu.TenCv}").ConfigureAwait(false);
+
                 TempData["Success"] = "Thêm chức vụ thành công!";
             }
             catch (Exception ex)
@@ -142,6 +155,16 @@ namespace QuanLyCLB_LSC.Controllers
                     chucVu.TenCv = tenCV;
                     chucVu.MoTa = moTa;
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "ChucVu", "Cập nhật", $"MaCV={chucVu.MaCv}", $"Cập nhật chức vụ: {chucVu.TenCv}").ConfigureAwait(false);
+
                     TempData["Success"] = "Cập nhật chức vụ thành công!";
                 }
             }
@@ -169,6 +192,16 @@ namespace QuanLyCLB_LSC.Controllers
 
                     _context.ChucVus.Remove(chucVu);
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "ChucVu", "Xóa", $"MaCV={id}", $"Xóa chức vụ: {chucVu.TenCv}").ConfigureAwait(false);
+
                     TempData["Success"] = "Xóa chức vu thành công!";
                 }
             }
@@ -204,6 +237,16 @@ namespace QuanLyCLB_LSC.Controllers
                 };
                 _context.BanChuyenMons.Add(ban);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "BanChuyenMon", "Thêm", $"MaBan={ban.MaBan}", $"Thêm ban: {ban.TenBan}").ConfigureAwait(false);
+
                 TempData["Success"] = "Thêm ban chuyên môn thành công!";
             }
             catch (Exception ex)
@@ -237,6 +280,16 @@ namespace QuanLyCLB_LSC.Controllers
                     ban.MoTa = moTa;
                     ban.TruongBan = truongBan;
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "BanChuyenMon", "Cập nhật", $"MaBan={ban.MaBan}", $"Cập nhật ban: {ban.TenBan}").ConfigureAwait(false);
+
                     TempData["Success"] = "Cập nhật ban chuyên môn thành công!";
                 }
             }
@@ -264,6 +317,16 @@ namespace QuanLyCLB_LSC.Controllers
 
                     _context.BanChuyenMons.Remove(ban);
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "BanChuyenMon", "Xóa", $"MaBan={id}", $"Xóa ban: {ban.TenBan}").ConfigureAwait(false);
+
                     TempData["Success"] = "Xóa ban chuyên môn thành công!";
                 }
             }
@@ -299,6 +362,16 @@ namespace QuanLyCLB_LSC.Controllers
                 };
                 _context.LoaiHoatDongs.Add(loaiHD);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "LoaiHoatDong", "Thêm", $"MaLoaiHd={loaiHD.MaLoaiHd}", $"Thêm loại hoạt động: {loaiHD.TenLoaiHd}").ConfigureAwait(false);
+
                 TempData["Success"] = "Thêm loại hoạt động thành công!";
             }
             catch (Exception ex)
@@ -331,6 +404,16 @@ namespace QuanLyCLB_LSC.Controllers
                     loaiHD.TenLoaiHd = tenLoaiHD;
                     loaiHD.MoTa = moTa;
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "LoaiHoatDong", "Cập nhật", $"MaLoaiHd={loaiHD.MaLoaiHd}", $"Cập nhật loại hoạt động: {loaiHD.TenLoaiHd}").ConfigureAwait(false);
+
                     TempData["Success"] = "Cập nhật loại hoạt động thành công!";
                 }
             }
@@ -358,6 +441,16 @@ namespace QuanLyCLB_LSC.Controllers
 
                     _context.LoaiHoatDongs.Remove(loaiHD);
                     _context.SaveChanges();
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "LoaiHoatDong", "Xóa", $"MaLoaiHd={id}", $"Xóa loại hoạt động: {loaiHD.TenLoaiHd}").ConfigureAwait(false);
+
                     TempData["Success"] = "Xóa loại hoạt động thành công!";
                 }
             }
@@ -430,6 +523,15 @@ namespace QuanLyCLB_LSC.Controllers
 
                     _context.SaveChanges();
                     TempData["Success"] = "Cập nhật thông tin cá nhân thành công!";
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "ThanhVien", "Cập nhật", $"MaTV={maTv}", $"Cập nhật thông tin cá nhân: {hoTen}").ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -479,6 +581,15 @@ namespace QuanLyCLB_LSC.Controllers
                 _context.SaveChanges();
 
                 TempData["Success"] = "Thay đổi mật khẩu thành công!";
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "TaiKhoan", "Thay đổi mật khẩu", $"TenDN={tenDn}", "Thay đổi mật khẩu").ConfigureAwait(false);
             }
             catch (Exception ex)
             {

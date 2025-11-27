@@ -6,7 +6,6 @@
 
 <link rel="stylesheet" href="~/css/dashboard.css" />
 
-<body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
              <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" /></div>
@@ -180,10 +179,11 @@
                                  </tr>
                              </thead>
                              <tbody>
+                                @{ var rowIndex = 1; }
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td>@item.MaTv</td>
+                                        <td>@rowIndex</td>
                                         <td>@item.HoTen</td>
                                         <td>@item.MaCvNavigation?.TenCv</td>
                                         <td>@item.MaBanNavigation?.TenBan</td>
@@ -212,6 +212,7 @@
                                             </form>
                                         </td>
                                     </tr>
+                                    rowIndex++;
                                 }
                             </tbody>
                         </table>
@@ -280,5 +281,3 @@
             if (form) form.addEventListener('submit', function(e){ e.preventDefault(); fetchData(); });
         })();
     </script>
- </body>
- </html>

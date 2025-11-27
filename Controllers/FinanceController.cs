@@ -2,16 +2,20 @@
 using QuanLyCLB_LSC.Models;
 using System.Text;
 using System.Text.Json;
+using QuanLyCLB_LSC.Services;
+using System.Security.Claims;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class FinanceController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public FinanceController(QlClbLscContext context)
+        public FinanceController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
         public IActionResult Index(string? sortBy, string? sortDir, string? search, string? filterType)
         {
@@ -259,6 +263,42 @@ namespace QuanLyCLB_LSC.Controllers
             return View(giaoDich);
         }
 
+        // GET: Finance/DetailsPartial/5
+        public IActionResult DetailsPartial(int id)
+        {
+            var giaoDich = _context.ThuChis
+                .Where(tc => tc.MaGd == id)
+                .Select(tc => new
+                {
+                    tc.MaGd,
+                    tc.LoaiGd,
+                    tc.SoTien,
+                    tc.NgayGd,
+                    tc.NoiDung,
+                    NguoiThucHienTen = _context.ThanhViens
+                        .Where(tv => tv.MaTv == tc.NguoiThucHien)
+                        .Select(tv => tv.HoTen)
+                        .FirstOrDefault(),
+                    NguonTen = _context.NguonThus
+                        .Where(n => n.MaNguon == tc.MaNguon)
+                        .Select(n => n.TenNguon)
+                        .FirstOrDefault(),
+                    HoatDongTen = _context.HoatDongs
+                        .Where(hd => hd.MaHd == tc.MaHd)
+                        .Select(hd => hd.TenHd)
+                        .FirstOrDefault(),
+                    ChiTiet = _context.ThuChiChiTiets
+                        .Where(ct => ct.MaGd == id)
+                        .ToList()
+                })
+                .FirstOrDefault();
+
+            if (giaoDich == null) return NotFound();
+
+            // return a partial view string
+            return PartialView("Details", giaoDich);
+        }
+
         // GET: Finance/CreateIncome
         public IActionResult CreateIncome()
         {
@@ -280,6 +320,15 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.ThuChis.Add(thuChi);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "ThuChi", "Thêm", $"MaGD={thuChi.MaGd}", $"Thêm giao dịch Thu: {thuChi.NoiDung} - {thuChi.SoTien}").ConfigureAwait(false);
 
                 TempData["Success"] = "Thêm giao dịch thu thành công!";
                 return RedirectToAction(nameof(Index));
@@ -312,6 +361,15 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.ThuChis.Add(thuChi);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "ThuChi", "Thêm", $"MaGD={thuChi.MaGd}", $"Thêm giao dịch Chi: {thuChi.NoiDung} - {thuChi.SoTien}").ConfigureAwait(false);
 
                 TempData["Success"] = "Thêm giao dịch chi thành công!";
                 return RedirectToAction(nameof(Index));
@@ -375,6 +433,15 @@ namespace QuanLyCLB_LSC.Controllers
 
                 _context.SaveChanges();
 
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "ThuChi", "Cập nhật", $"MaGD={id}", $"Cập nhật giao dịch: {existing.NoiDung} - {existing.SoTien}").ConfigureAwait(false);
+
                 TempData["Success"] = "Cập nhật giao dịch thành công!";
                 return RedirectToAction(nameof(Index));
             }
@@ -401,6 +468,15 @@ namespace QuanLyCLB_LSC.Controllers
             {
                 _context.ThuChis.Remove(thuChi);
                 _context.SaveChanges();
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "ThuChi", "Xóa", $"MaGD={id}", $"Xóa giao dịch: {thuChi.NoiDung} - {thuChi.SoTien}").ConfigureAwait(false);
 
                 TempData["Success"] = "Xóa giao dịch thành công!";
             }
@@ -522,6 +598,56 @@ namespace QuanLyCLB_LSC.Controllers
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/plain", "BaoCaoThuChi.txt");
+        }
+
+        // GET: Finance/ExportTransaction/5
+        public IActionResult ExportTransaction(int id)
+        {
+            var gd = _context.ThuChis.Find(id);
+            if (gd == null) return NotFound();
+
+            var chiTiets = _context.ThuChiChiTiets.Where(ct => ct.MaGd == id).ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Sao kê giao dịch: #GD" + gd.MaGd.ToString("D3"));
+            sb.AppendLine("Loại: " + gd.LoaiGd);
+            sb.AppendLine("Nội dung: " + (gd.NoiDung ?? ""));
+            sb.AppendLine("Số tiền: " + gd.SoTien.ToString("N0") + " VNĐ");
+            sb.AppendLine("Ngày: " + (gd.NgayGd.HasValue ? gd.NgayGd.Value.ToString("dd/MM/yyyy HH:mm") : ""));
+            sb.AppendLine("Người thực hiện: " + (_context.ThanhViens.Where(t => t.MaTv == gd.NguoiThucHien).Select(t => t.HoTen).FirstOrDefault() ?? "N/A"));
+            if (gd.LoaiGd == "Thu")
+            {
+                sb.AppendLine("Nguồn thu: " + (_context.NguonThus.Where(n => n.MaNguon == gd.MaNguon).Select(n => n.TenNguon).FirstOrDefault() ?? "N/A"));
+            }
+            if (gd.LoaiGd == "Chi")
+            {
+                sb.AppendLine("Hoạt động: " + (_context.HoatDongs.Where(h => h.MaHd == gd.MaHd).Select(h => h.TenHd).FirstOrDefault() ?? "N/A"));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Chi tiết giao dịch:");
+            sb.AppendLine("--------------------");
+            if (!chiTiets.Any()) sb.AppendLine("Không có chi tiết.");
+            else
+            {
+                foreach (var ct in chiTiets)
+                {
+                    sb.AppendLine($"- [{ct.MaCt}] {ct.NoiDung} : {ct.SoTien.ToString("N0")} VNĐ");
+                }
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+
+            // audit export
+            int? userIdExport = null;
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(idClaim, out var parsed)) userIdExport = parsed;
+            }
+            _audit.LogAsync(userIdExport, "ThuChi", "Xuất khẩu", $"MaGD={id}", $"Xuất sao kê giao dịch: MaGD={id}").ConfigureAwait(false);
+
+            return File(bytes, "text/plain", $"SaoKe_GD{gd.MaGd.ToString("D3")}.txt");
         }
     }
 }

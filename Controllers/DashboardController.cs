@@ -72,19 +72,62 @@ namespace QuanLyCLB_LSC.Controllers
                 })
                 .ToList();
 
-            // Activities for selected year
-            var activitiesForYear = _context.HoatDongs
+            // Activities for selected year - fetch and compute displayed status similarly to ActivitiesController
+            var rawActivities = _context.HoatDongs
                 .Where(h => h.NgayToChuc.HasValue && h.NgayToChuc.Value.Year == selectedYear)
                 .OrderByDescending(h => h.NgayToChuc)
-                .Select(h => new
+                .ToList();
+
+            var todayDateOnly = DateOnly.FromDateTime(DateTime.Today);
+            var activitiesForYear = rawActivities.Select(h =>
+            {
+                string status;
+                if (!string.IsNullOrWhiteSpace(h.TrangThai))
+                {
+                    status = h.TrangThai!;
+                }
+                else
+                {
+                    if (h.NgayToChuc.HasValue)
+                    {
+                        var d = h.NgayToChuc.Value;
+                        if (d < todayDateOnly)
+                        {
+                            status = "Đã tổ chức";
+                        }
+                        else if (d == todayDateOnly)
+                        {
+                            status = "Đang diễn ra";
+                        }
+                        else
+                        {
+                            var target = d.ToDateTime(System.TimeOnly.MinValue);
+                            var hoursUntil = (target - DateTime.Now).TotalHours;
+                            if (hoursUntil <= 48)
+                            {
+                                status = "Sắp diễn ra";
+                            }
+                            else
+                            {
+                                status = "Đang chuẩn bị";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        status = "Chưa rõ";
+                    }
+                }
+
+                return new
                 {
                     h.MaHd,
                     h.TenHd,
                     h.NgayToChuc,
                     h.DiaDiem,
-                    h.TrangThai
-                })
-                .ToList();
+                    TrangThai = status
+                };
+            }).ToList();
 
             // ✅ Dữ liệu biểu đồ - Hoạt động theo tháng for selectedYear
             var hoatDongTheoThang = Enumerable.Range(1, 12)
@@ -114,6 +157,105 @@ namespace QuanLyCLB_LSC.Controllers
             var memberRoleLabels = memberRoleGroups.Select(m => m.Role).ToList();
             var memberRoleData = memberRoleGroups.Select(m => m.Count).ToList();
 
+            // ✅ Top DiemRenLuyen - bảng xếp hạng (lấy 5 cao nhất)
+            var topDiemRenLuyen = _context.DiemRenLuyens
+                .Include(d => d.MaTvNavigation)
+                .Where(d => d.Diem != null)
+                .OrderByDescending(d => d.Diem)
+                .Take(5)
+                .Select(d => new
+                {
+                    d.MaTv,
+                    Ten = d.MaTvNavigation.HoTen,
+                    Diem = d.Diem ?? 0,
+                    d.HocKy,
+                    d.NamHoc
+                })
+                .ToList();
+
+            // ✅ Thông báo mới (5)
+            var thongBaos = _context.ThongBaos
+                .OrderByDescending(t => t.NgayDang)
+                .Take(5)
+                .Select(t => new
+                {
+                    t.MaTb,
+                    t.TieuDe,
+                    t.NoiDung,
+                    t.NgayDang
+                })
+                .ToList();
+
+            // ✅ Feedback gần đây (5)
+            var recentFeedbacks = _context.Feedbacks
+                .Include(f => f.MaTvNavigation)
+                .Include(f => f.MaHdNavigation)
+                .OrderByDescending(f => f.NgayGopY)
+                .Take(5)
+                .Select(f => new
+                {
+                    Ten = f.MaTvNavigation.HoTen,
+                    NoiDung = f.NoiDung,
+                    Ngay = f.NgayGopY,
+                    HoatDong = f.MaHdNavigation != null ? f.MaHdNavigation.TenHd : null
+                })
+                .ToList();
+
+            // ✅ Lịch sử thao tác gần đây (10)
+            var lichSu = _context.LichSuThaoTacs
+                .Include(l => l.MaTvNavigation)
+                .OrderByDescending(l => l.NgayThucHien)
+                .Take(10)
+                .Select(l => new
+                {
+                    l.MaLstt,
+                    TenThanhVien = l.MaTvNavigation != null ? l.MaTvNavigation.HoTen : "Hệ thống",
+                    l.TenBang,
+                    l.LoaiThaoTac,
+                    l.KhoaChinh,
+                    NoiDung = l.NoiDung,
+                    Ngay = l.NgayThucHien
+                })
+                .ToList();
+
+            // ✅ Khen thưởng gần đây (5)
+            var recentKhenThuong = _context.KhenThuongs
+                .Include(k => k.MaTvNavigation)
+                .OrderByDescending(k => k.NgayKt)
+                .Take(5)
+                .Select(k => new
+                {
+                    k.MaKt,
+                    MaTv = k.MaTv,
+                    Ten = k.MaTvNavigation != null ? k.MaTvNavigation.HoTen : "--",
+                    k.LyDo,
+                    Ngay = k.NgayKt,
+                    NguoiLap = k.NguoiLap != null ? _context.ThanhViens
+                                    .Where(tv => tv.MaTv == k.NguoiLap)
+                                    .Select(tv => tv.HoTen)
+                                    .FirstOrDefault() : null
+                })
+                .ToList();
+
+            // ✅ Kỷ luật gần đây (5)
+            var recentKyLuat = _context.KyLuats
+                .Include(k => k.MaTvNavigation)
+                .OrderByDescending(k => k.NgayKl)
+                .Take(5)
+                .Select(k => new
+                {
+                    k.MaKl,
+                    MaTv = k.MaTv,
+                    Ten = k.MaTvNavigation != null ? k.MaTvNavigation.HoTen : "--",
+                    k.LyDo,
+                    Ngay = k.NgayKl,
+                    NguoiLap = k.NguoiLap != null ? _context.ThanhViens
+                                    .Where(tv => tv.MaTv == k.NguoiLap)
+                                    .Select(tv => tv.HoTen)
+                                    .FirstOrDefault() : null
+                })
+                .ToList();
+
             // Gửi dữ liệu sang View
             ViewBag.TongThanhVien = tongThanhVien;
             ViewBag.HoatDongThangNay = hoatDongThangNay;
@@ -130,6 +272,12 @@ namespace QuanLyCLB_LSC.Controllers
             ViewBag.ActivitiesForYear = activitiesForYear;
             ViewBag.MemberRoleLabels = memberRoleLabels;
             ViewBag.MemberRoleData = memberRoleData;
+            ViewBag.TopDiemRenLuyen = topDiemRenLuyen;
+            ViewBag.ThongBaos = thongBaos;
+            ViewBag.RecentFeedbacks = recentFeedbacks;
+            ViewBag.LichSu = lichSu;
+            ViewBag.RecentKhenThuong = recentKhenThuong;
+            ViewBag.RecentKyLuat = recentKyLuat;
 
             return View();
         }

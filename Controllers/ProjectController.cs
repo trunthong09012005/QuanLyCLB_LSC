@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuanLyCLB_LSC.Models;
+using QuanLyCLB_LSC.Services;
+using System.Security.Claims;
 
 namespace QuanLyCLB_LSC.Controllers
 {
     public class ProjectController : Controller
     {
         private readonly QlClbLscContext _context;
+        private readonly IAuditService _audit;
 
-        public ProjectController(QlClbLscContext context)
+        public ProjectController(QlClbLscContext context, IAuditService audit)
         {
             _context = context;
+            _audit = audit;
         }
 
         public IActionResult Index()
@@ -160,6 +164,16 @@ namespace QuanLyCLB_LSC.Controllers
                     _context.SaveChanges();
 
                     TempData["Success"] = "Tạo dự án thành công!";
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "DuAn", "Thêm", $"MaDA={duAn.MaDa}", $"Tạo dự án: {duAn.TenDuAn}").ConfigureAwait(false);
+
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -211,6 +225,16 @@ namespace QuanLyCLB_LSC.Controllers
                     _context.SaveChanges();
 
                     TempData["Success"] = "Cập nhật dự án thành công!";
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "DuAn", "Cập nhật", $"MaDA={duAn.MaDa}", $"Cập nhật dự án: {duAn.TenDuAn}").ConfigureAwait(false);
+
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -239,6 +263,16 @@ namespace QuanLyCLB_LSC.Controllers
                 _context.SaveChanges();
 
                 TempData["Success"] = "Xóa dự án thành công!";
+
+                // audit
+                int? userId = null;
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                }
+                _audit.LogAsync(userId, "DuAn", "Xóa", $"MaDA={id}", $"Xóa dự án: {duAn.TenDuAn}").ConfigureAwait(false);
+
             }
             catch (Exception ex)
             {
@@ -289,6 +323,16 @@ namespace QuanLyCLB_LSC.Controllers
                     _context.SaveChanges();
 
                     TempData["Success"] = "Phân công nhiệm vụ thành công!";
+
+                    // audit
+                    int? userId = null;
+                    if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (int.TryParse(idClaim, out var parsed)) userId = parsed;
+                    }
+                    _audit.LogAsync(userId, "PhanCong", "Thêm", $"MaTV={phanCong.MaTv};MaDA={phanCong.MaDa}", $"Phân công: TV={phanCong.MaTv} -> DA={phanCong.MaDa}").ConfigureAwait(false);
+
                     return RedirectToAction(nameof(Index));
                 }
 

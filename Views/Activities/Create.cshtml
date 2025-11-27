@@ -86,7 +86,15 @@
             <h2 class="mb-4"><i class="fas fa-calendar-plus me-2"></i>Tạo hoạt động</h2>
             <div class="card">
                 <div class="card-body">
-                    <form asp-action="Create" method="post">
+                    @* Validation summary *@
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false)
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" id="createActivityForm">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -95,7 +103,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label>Ngày tổ chức</label>
-                                    <input asp-for="NgayToChuc" class="form-control" type="date" />
+                                    <input asp-for="NgayToChuc" class="form-control" type="date" id="NgayToChuc" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <span class="text-danger">@Html.ValidationMessageFor(m => m.NgayToChuc)</span>
                                 </div>
                                 <div class="mb-3">
                                     <label>Địa điểm</label>
@@ -134,7 +143,7 @@
                             <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
                         </div>
                         <div>
-                            <button class="btn btn-primary">Lưu</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
                             <a class="btn btn-secondary ms-2" href="@Url.Action("Index", "Activities")">Hủy</a>
                         </div>
                     </form>
@@ -146,6 +155,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="~/js/dashboard.js"></script>
+
+    <script>
+        (function () {
+            var form = document.getElementById('createActivityForm');
+            var dateInput = document.getElementById('NgayToChuc');
+            form.addEventListener('submit', function (e) {
+                if (!dateInput) return;
+                var val = dateInput.value;
+                if (!val) return; // let server-side validation handle required if needed
+                var selected = new Date(val + 'T00:00:00');
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (selected < today) {
+                    e.preventDefault();
+                    alert('Ngày tổ chức không thể nhỏ hơn hôm nay. Vui lòng chọn ngày hợp lệ.');
+                    return false;
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>

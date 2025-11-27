@@ -12,7 +12,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f6fa;
+    background: #ffffff; /* changed from light gray to white per request */
     overflow-x: hidden;
 }
 
@@ -131,6 +131,10 @@ body {
     .main-content.expanded {
         margin-left: 80px;
     }
+
+.main-content {
+    background: #ffffff; /* Ensure main content has a white background */
+}
 
 /* Top Header */
 .top-header {
@@ -278,6 +282,39 @@ body {
     color: #2c3e50;
 }
 
+/* Chart header select styling to match mockup (rounded white box with subtle border and arrow) */
+.chart-header .form-select,
+.chart-card .form-select,
+.card .form-select {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    padding: 6px 12px;
+    height: auto;
+    min-width: 110px;
+    box-shadow: none;
+    color: #111827; /* dark text */
+    font-weight: 500;
+
+    /* preserve dropdown arrow similar to Bootstrap */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='currentColor' d='M4.646 6.646a.5.5 0 1 1 .708-.708L8 8.586l2.646-2.648a.5.5 0 1 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.25rem; /* space for the arrow */
+}
+
+/* Reduce default Bootstrap form-select arrow size and align vertically */
+.chart-header .form-select::after,
+.card .form-select::after {
+    font-size: 14px;
+}
+
+/* Ensure select doesn't overflow and has adequate line-height */
+.chart-header .form-select option,
+.card .form-select option {
+    line-height: 1.6;
+}
+
 /* Table */
 .table-card {
     background: white;
@@ -344,6 +381,103 @@ body {
     }
 
 
+
+/* History / Timeline styles (updated to grid layout to prevent overlap) */
+.history-card {
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.08);
+}
+
+.history-card .card-header {
+    background: linear-gradient(90deg, rgba(102,126,234,0.12), rgba(118,75,162,0.06));
+    border-bottom: none;
+    font-weight: 700;
+    padding: 18px 24px;
+}
+
+.timeline {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* vertical line for the timeline */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 140px; /* position of the line (matches grid column) */
+    top: 18px;
+    bottom: 18px;
+    width: 3px;
+    background: linear-gradient(180deg, rgba(102,126,234,0.12), rgba(118,75,162,0.06));
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.timeline li {
+    display: grid;
+    grid-template-columns: 120px 24px 1fr; /* time | badge | content */
+    gap: 12px 18px;
+    align-items: start;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.timeline li:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.06);
+}
+
+.timeline .timeline-badge {
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(102,126,234,0.15);
+    justify-self: center; /* center in the badge column */
+    align-self: start;
+    margin-top: 4px;
+    z-index: 2;
+}
+
+.timeline .timeline-time {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: left;
+    align-self: start;
+}
+
+.timeline .timeline-panel {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.timeline .badge {
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .timeline::before { left: 120px; }
+    .timeline li { grid-template-columns: 100px 20px 1fr; }
+}
+
+@media (max-width: 767px) {
+    /* Stack time above content on very small screens */
+    .timeline::before { display: none; }
+    .timeline li {
+        display: block;
+        padding: 12px 14px;
+    }
+    .timeline .timeline-time { margin-bottom: 8px; display: block; }
+    .timeline .timeline-badge { position: relative; left: 0; margin: 6px 0; }
+}
 
 /* Responsive */
 @media (max-width: 768px) {
