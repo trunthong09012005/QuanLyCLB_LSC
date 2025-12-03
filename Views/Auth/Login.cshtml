@@ -13,20 +13,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-
     <link href="~/css/login.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="login-container col-lg-10 col-xl-8">
-            <div class="card">  
+            <div class="card">
                 <div class="row g-0">
                     <!-- Logo Section -->
                     <div class="col-md-5 logo-section d-flex flex-column justify-content-center align-items-center text-center position-relative">
-                        <!-- sparkles and shimmer beam are provided by login.css -->
                         <div class="sparkles" aria-hidden="true"></div>
-
-                        <div class="logo-circle"> <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" alt="LSC logo"/></div>
+                        <div class="logo-circle">
+                            <img src="@(Url.Content("~/img/logolsc.png"))" class="logo-circle-img" alt="LSC logo" />
+                        </div>
                         <h2 class="fw-bold mb-3">LIFE SKILLS CLUB</h2>
                         <p class="px-3">
                             <i class="fas fa-quote-left me-2"></i>
@@ -42,53 +41,99 @@
                             <p class="text-muted">Chào mừng bạn trở lại!</p>
                         </div>
 
-                        <form asp-action="Login" asp-controller="Auth" method="post" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                        <!-- Error/Success Messages -->
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.Error
+                                @if (ViewBag.RemainingAttempts != null)
+                                {
+                                    <br>
+                            
+                                    <small>@ViewBag.RemainingAttempts</small>
+                                }
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        @if (ViewBag.Message != null)
+                        {
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>@ViewBag.Message
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <form asp-action="Login" asp-controller="Auth" method="post" id="loginForm" novalidate>
+                            @Html.AntiForgeryToken()
+
+                            <!-- Tên Đăng Nhập -->
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">
+                                <label asp-for="TenDN" class="form-label fw-semibold">
                                     <i class="fas fa-user me-2 text-primary"></i>Tên Đăng Nhập
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
-                                    <input asp-for="TenDN" class="form-control" placeholder="Nhập tên đăng nhập" required autocomplete="off" />
+                                    <input asp-for="TenDN"
+                                           class="form-control"
+                                           placeholder="Nhập tên đăng nhập"
+                                           maxlength="50"
+                                           autocomplete="username"
+                                           autocorrect="off"
+                                           autocapitalize="off"
+                                           spellcheck="false" />
                                 </div>
+                                <span asp-validation-for="TenDN" class="text-danger small"></span>
+                                <div class="invalid-feedback"></div>
                             </div>
 
+                            <!-- Mật Khẩu -->
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">
+                                <label asp-for="MatKhau" class="form-label fw-semibold">
                                     <i class="fas fa-lock me-2 text-primary"></i>Mật Khẩu
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                                    <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu" required id="matKhau" autocomplete="new-password" />
+                                    <input asp-for="MatKhau"
+                                           type="password"
+                                           class="form-control"
+                                           placeholder="Nhập mật khẩu"
+                                           id="matKhau"
+                                           maxlength="100"
+                                           autocomplete="current-password" />
                                     <button type="button" class="input-group-text password-toggle" onclick="togglePassword()">
                                         <i class="fas fa-eye" id="toggleIcon"></i>
                                     </button>
                                 </div>
+                                <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                                <div class="invalid-feedback"></div>
                             </div>
 
+                            <!-- Remember Me & Forgot Password -->
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="rememberMe">
-                                    <label class="form-check-label text-muted">Ghi nhớ đăng nhập</label>
+                                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label asp-for="RememberMe" class="form-check-label text-muted">
+                                        Ghi nhớ đăng nhập
+                                    </label>
                                 </div>
-                                <a href="#" class="text-decoration-none" style="color:#667eea"><small>Quên mật khẩu?</small></a>
+                                <a href="#" class="text-decoration-none" style="color:#667eea">
+                                    <small>Quên mật khẩu?</small>
+                                </a>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-login w-100 text-white mb-3">
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary btn-login w-100 text-white mb-3" id="btnLogin">
                                 <i class="fas fa-sign-in-alt me-2"></i>Đăng Nhập
                             </button>
 
+                            <!-- Register Link -->
                             <div class="text-center">
                                 <span class="text-muted">Chưa có tài khoản?</span>
-
-                                <a href="@Url.Action("Register", "Register")" class="text-decoration-none fw-semibold ms-1" style="color:#667eea;">Đăng ký ngay</a>
+                                <a href="@Url.Action("Register", "Register")" class="text-decoration-none fw-semibold ms-1" style="color:#667eea;">
+                                    Đăng ký ngay
+                                </a>
                             </div>
                         </form>
-
-                        @if (ViewBag.Message != null)
-                        {
-                            <div class="alert alert-info mt-3">@ViewBag.Message</div>
-                        }
                     </div>
                 </div>
             </div>
@@ -97,5 +142,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/login.js"></script>
+
+
 </body>
 </html>

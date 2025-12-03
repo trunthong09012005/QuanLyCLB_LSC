@@ -55,7 +55,7 @@ app.UseAuthorization();
 // ============================
 // 5️⃣ Cấu hình route mặc định
 // ============================
-app.MapControllerRoute(
+app.MapControllerRoute( 
     name: "default",
     pattern: "{controller=Home}/{action=Home}/{id?}"
 );
